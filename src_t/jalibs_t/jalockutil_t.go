@@ -14,7 +14,7 @@ func init_session_dbc_locks_test() bool {
 
 	rtn = int(C.init_session_dbc_locks()) == 1
 	if !rtn {
-		fmt.Printf("%s(), got failed!\n", __function_name)
+		fmt.Printf("%s() got failed!\n", __function_name)
 	}
 
 	return rtn
