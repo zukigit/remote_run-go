@@ -20,5 +20,4 @@ func TestJobarranger(t *testing.T) {
 			t.Errorf("test failed for: %s", reflect.TypeOf(e))
 		}
 	}
-
 }
