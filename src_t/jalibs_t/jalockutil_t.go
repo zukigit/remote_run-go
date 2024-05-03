@@ -12,7 +12,7 @@ func init_session_dbc_locks_test() bool {
 	const __function_name = "init_session_dbc_locks_test"
 	var rtn bool = false
 
-	rtn = int(C.init_session_dbc_locks()) == 1
+	rtn = int(C.init_session_dbc_locks()) == 0
 	if !rtn {
 		fmt.Printf("%s() got failed!\n", __function_name)
 	}
