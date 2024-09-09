@@ -1,3 +1,3 @@
-module pro2.jobarranger.info/jobarranger/test
+module zukigit/remote_test-go
 
-go 1.20
+go 1.23.1
