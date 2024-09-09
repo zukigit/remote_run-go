@@ -31,7 +31,7 @@
           <mxGeometry x="587" y="50" width="40" height="30" as="geometry" />
         </mxCell>
         <mxCell id="4NxBRebtptWnb1yivDOK-9" value="Jobarg_SERVER" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="660" y="210" width="120" height="60" as="geometry" />
+          <mxGeometry x="658" y="210" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="4NxBRebtptWnb1yivDOK-12" value="ssh" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
           <mxGeometry x="270" y="180" width="40" height="30" as="geometry" />
@@ -48,11 +48,12 @@
         <mxCell id="4NxBRebtptWnb1yivDOK-14" value="&lt;div&gt;JA_GET_INFO&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="467" y="254" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="4NxBRebtptWnb1yivDOK-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.99;entryY=0.4;entryDx=0;entryDy=0;entryPerimeter=0;fillColor=#008a00;strokeColor=#005700;" edge="1" parent="1">
+        <mxCell id="4NxBRebtptWnb1yivDOK-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.99;entryY=0.4;entryDx=0;entryDy=0;entryPerimeter=0;fillColor=#008a00;strokeColor=#005700;exitX=0;exitY=0.75;exitDx=0;exitDy=0;" edge="1" parent="1" source="4NxBRebtptWnb1yivDOK-9">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="660" y="251" as="sourcePoint" />
+            <mxPoint x="650" y="252" as="sourcePoint" />
             <mxPoint x="585.8" y="288.9999999999999" as="targetPoint" />
             <Array as="points">
+              <mxPoint x="658" y="252" />
               <mxPoint x="620" y="252" />
               <mxPoint x="620" y="289" />
             </Array>
