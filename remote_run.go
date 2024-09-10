@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"zukigit/remote_run-go/src/lib"
 
 	"golang.org/x/term"
 )
@@ -50,9 +51,21 @@ func main() {
 		fmt.Println("Error:", err.Error())
 		os.Exit(1)
 	}
-	pass := string(bytepw)
+	password := string(bytepw)
 
-	fmt.Println("user", user)
-	fmt.Println("host", host)
-	fmt.Println("pass", pass)
+	config := lib.Get_config(user, password)
+
+	// Connect to the SSH server
+	client := lib.Get_client(host, config)
+	defer client.Close()
+
+	// Create a session for the command
+	session := lib.Get_session(client)
+	defer session.Close()
+
+	// Run the command on the remote server
+	output := lib.Get_output("pwd", session)
+
+	// Print the output
+	fmt.Print(string(output))
 }
