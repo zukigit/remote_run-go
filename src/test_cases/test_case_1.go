@@ -1,4 +1,4 @@
-package dao
+package testcases
 
 type Test_case_1 struct {
 	test_case_description string
