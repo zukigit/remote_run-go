@@ -7,6 +7,7 @@ import (
 	"strings"
 	"syscall"
 	"zukigit/remote_run-go/src/lib"
+	testcases "zukigit/remote_run-go/src/test_cases"
 
 	"golang.org/x/term"
 )
@@ -65,6 +66,9 @@ func get_auth() *auth {
 }
 
 func main() {
+	var testcases []testcases.Test_case
+	testcases = append(testcases, new(testcases.Test_case_1))
+
 	auth := get_auth()
 	config := lib.Get_config(auth.username, auth.password)
 
