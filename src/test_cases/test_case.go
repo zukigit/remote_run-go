@@ -1,5 +1,5 @@
 package dao
 
-type TC interface {
+type Test_case interface {
 	Run()
 }
