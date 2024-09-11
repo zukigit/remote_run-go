@@ -65,9 +65,25 @@ func get_auth() *auth {
 	}
 }
 
+type Test_case interface {
+	Run()
+	Set_tc_values()
+}
+
+func set_tc_default_values(t []Test_case) {
+	for _, test_case := range t {
+		test_case.Set_tc_values()
+	}
+}
+
+func run_tc(t []Test_case) {
+	for _, test_case := range t {
+		test_case.Run()
+	}
+}
+
 func main() {
-	var testcases []testcases.Test_case
-	testcases = append(testcases, new(testcases.Test_case_1))
+	var test_cases []Test_case
 
 	auth := get_auth()
 	config := lib.Get_config(auth.username, auth.password)
@@ -80,9 +96,10 @@ func main() {
 	session := lib.Get_session(client)
 	defer session.Close()
 
-	// Run the command on the remote server
-	output := lib.Get_output("pwd", session)
+	// add test cases from here
+	test_cases = append(test_cases, new(testcases.Test_case_1))
 
-	// Print the output
-	fmt.Print(string(output))
+	set_tc_default_values(test_cases)
+
+	run_tc(test_cases) // run test cases
 }

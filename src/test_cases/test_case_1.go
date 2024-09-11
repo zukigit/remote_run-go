@@ -7,7 +7,7 @@ type Test_case_1 struct {
 	jobnet_id             string
 }
 
-func (T *Test_case_1) get_test_case() {
+func (T *Test_case_1) Set_tc_values() {
 	T.test_case_description = "Test 1 is goood lol"
 	T.jobnet_id = "JOBNET-1"
 }
