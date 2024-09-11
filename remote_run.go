@@ -11,7 +11,11 @@ import (
 	"golang.org/x/term"
 )
 
-func main() {
+type auth struct {
+	username, password, hostname string
+}
+
+func get_auth() *auth {
 	arg_len := len(os.Args)
 	var host string
 	port := "22"
@@ -53,10 +57,19 @@ func main() {
 	}
 	password := string(bytepw)
 
-	config := lib.Get_config(user, password)
+	return &auth{
+		username: user,
+		password: password,
+		hostname: host,
+	}
+}
+
+func main() {
+	auth := get_auth()
+	config := lib.Get_config(auth.username, auth.password)
 
 	// Connect to the SSH server
-	client := lib.Get_client(host, config)
+	client := lib.Get_client(auth.hostname, config)
 	defer client.Close()
 
 	// Create a session for the command
@@ -68,6 +81,4 @@ func main() {
 
 	// Print the output
 	fmt.Print(string(output))
-
-	// dao.TC.Run()
 }
