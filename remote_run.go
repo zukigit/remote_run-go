@@ -85,7 +85,7 @@ func run_tc(t []Test_case) {
 func main() {
 	var test_cases []Test_case
 
-	auth := get_auth()
+	auth := get_auth() // Get login informations from user
 	config := lib.Get_config(auth.username, auth.password)
 
 	// Connect to the SSH server
