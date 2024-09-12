@@ -9,6 +9,7 @@ import (
 	"zukigit/remote_run-go/src/lib"
 	testcases "zukigit/remote_run-go/src/test_cases"
 
+	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
 )
 
@@ -67,12 +68,12 @@ func get_auth() *auth {
 
 type Test_case interface {
 	Run()
-	Set_tc_values()
+	Set_tc_values(session *ssh.Session)
 }
 
-func set_tc_default_values(t []Test_case) {
+func set_tc_default_values(t []Test_case, session *ssh.Session) {
 	for _, test_case := range t {
-		test_case.Set_tc_values()
+		test_case.Set_tc_values(session)
 	}
 }
 
@@ -89,17 +90,24 @@ func main() {
 	config := lib.Get_config(auth.username, auth.password)
 
 	// Connect to the SSH server
-	client := lib.Get_client(auth.hostname, config)
+	client, err := lib.Get_client(auth.hostname, config)
+	if err != nil {
+		fmt.Println("Error:", err.Error())
+		os.Exit(1)
+	}
 	defer client.Close()
 
 	// Create a session for the command
-	session := lib.Get_session(client)
+	session, err := lib.Get_session(client)
+	if err != nil {
+		fmt.Println("Error:", err.Error())
+		os.Exit(1)
+	}
 	defer session.Close()
 
 	// add test cases from here
 	test_cases = append(test_cases, new(testcases.Test_case_1))
-
-	set_tc_default_values(test_cases)
+	set_tc_default_values(test_cases, session)
 
 	run_tc(test_cases) // run test cases
 }
