@@ -18,17 +18,20 @@ func set_tc_default_values(t []dao.Test_case, session *ssh.Session) {
 
 func run_tc(t []dao.Test_case) {
 	for _, test_case := range t {
-		test_case.Run()
+		test_case.Set_is_passed(test_case.Run())
+		lib.Write_tc_log(test_case)
 	}
 }
 
 func add_test_cases(test_cases *[]dao.Test_case) {
 	// Add test cases here
 	*test_cases = append(*test_cases, new(testcases.Test_case_1))
+	// is it rainy day?
 }
 
 func main() {
 	var test_cases []dao.Test_case
+
 	auth := dao.Get_auth() // Get login informations from user
 	config := lib.Get_config(auth.Username, auth.Password)
 
