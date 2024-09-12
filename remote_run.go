@@ -83,8 +83,16 @@ func run_tc(t []Test_case) {
 	}
 }
 
-func main() {
+func get_test_cases() []Test_case {
 	var test_cases []Test_case
+
+	// Add TestCases here
+	test_cases = append(test_cases, new(testcases.Test_case_1))
+
+	return test_cases
+}
+
+func main() {
 
 	auth := get_auth() // Get login informations from user
 	config := lib.Get_config(auth.username, auth.password)
@@ -105,8 +113,7 @@ func main() {
 	}
 	defer session.Close()
 
-	// add test cases from here
-	test_cases = append(test_cases, new(testcases.Test_case_1))
+	test_cases := get_test_cases()
 	set_tc_default_values(test_cases, session)
 
 	run_tc(test_cases) // run test cases
