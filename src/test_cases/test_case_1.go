@@ -41,7 +41,7 @@ func (T *Test_case_1) Get_is_passed() bool {
 }
 
 func (T *Test_case_1) Run() bool {
-	output, error := T.session.Output("trsggs")
+	output, error := T.session.Output("pwd")
 	if error != nil {
 		T.test_case_log = "Got error:" + error.Error()
 		return false

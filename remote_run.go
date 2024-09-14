@@ -31,6 +31,7 @@ func add_test_cases(test_cases *[]dao.Test_case) {
 
 func main() {
 	var test_cases []dao.Test_case
+	add_test_cases(&test_cases)
 
 	auth := dao.Get_auth() // Get login informations from user
 	config := lib.Get_config(auth.Username, auth.Password)
@@ -51,7 +52,6 @@ func main() {
 	}
 	defer session.Close()
 
-	add_test_cases(&test_cases)
 	set_tc_default_values(test_cases, session)
 
 	run_tc(test_cases) // run test cases
