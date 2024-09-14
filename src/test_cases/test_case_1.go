@@ -50,12 +50,12 @@ func (T *Test_case_1) Run() bool {
 	lib.Set_test_case(T)
 
 	// Your logic from here
-	output, error := lib.Ssh_exec("pwd")
+	output, error := lib.Exec("pwd")
 	if error != nil {
-		T.test_case_log = "Got error:" + error.Error()
+		lib.Err_log(error.Error())
 		return false
 	}
 
-	T.test_case_log = string(output)
+	lib.Info_log(output)
 	return true
 }
