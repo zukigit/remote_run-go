@@ -56,6 +56,8 @@ func (T *Test_case_1) Run() bool {
 		return false
 	}
 
-	lib.Info_log(output)
+	lib.Info_log("output: %s", output)
+	lib.Info_log("output: %s", output)
+
 	return true
 }
