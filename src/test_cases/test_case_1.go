@@ -1,6 +1,8 @@
 package testcases
 
 import (
+	"zukigit/remote_run-go/src/lib"
+
 	"golang.org/x/crypto/ssh"
 )
 
@@ -45,7 +47,10 @@ func (T *Test_case_1) Get_session() *ssh.Session {
 }
 
 func (T *Test_case_1) Run() bool {
-	output, error := T.session.Output("pwd")
+	lib.Set_test_case(T)
+
+	// Your logic from here
+	output, error := lib.Ssh_exec("pwd")
 	if error != nil {
 		T.test_case_log = "Got error:" + error.Error()
 		return false
