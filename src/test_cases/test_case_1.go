@@ -40,6 +40,10 @@ func (T *Test_case_1) Get_is_passed() bool {
 	return T.is_passed
 }
 
+func (T *Test_case_1) Get_session() *ssh.Session {
+	return T.session
+}
+
 func (T *Test_case_1) Run() bool {
 	output, error := T.session.Output("pwd")
 	if error != nil {

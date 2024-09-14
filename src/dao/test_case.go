@@ -11,4 +11,5 @@ type Test_case interface {
 	Get_tc_dsctn() string
 	Set_tc_log(tc_log string)
 	Get_tc_log() string
+	Get_session() *ssh.Session
 }
