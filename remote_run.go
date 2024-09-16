@@ -22,7 +22,7 @@ func run_tc(t []dao.Ticket) {
 
 func add_tickets(t *[]dao.Ticket) {
 	// Add new tickets here
-	*t = append(*t, new(tickets.Ticket_1))
+	*t = append(*t, new(tickets.Ticket_1318))
 	// is it rainy day?
 }
 
