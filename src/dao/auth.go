@@ -7,14 +7,16 @@ import (
 	"strings"
 	"syscall"
 
+	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
 )
 
-type auth struct {
+type Auth struct {
 	Username, Password, Hostname string
+	Session                      *ssh.Session
 }
 
-func Get_auth() *auth {
+func Get_auth() *Auth {
 	arg_len := len(os.Args)
 	var host string
 	port := "22"
@@ -56,7 +58,7 @@ func Get_auth() *auth {
 	}
 	password := string(bytepw)
 
-	return &auth{
+	return &Auth{
 		Username: user,
 		Password: password,
 		Hostname: host,
