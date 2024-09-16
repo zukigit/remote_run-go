@@ -15,8 +15,9 @@ func set_ticket_values(t []dao.Ticket, auth *dao.Auth) {
 }
 
 func run_tc(t []dao.Ticket) {
-	for _, test_case := range t {
-		test_case.Run()
+	for _, ticket := range t {
+		lib.Set_ticket(ticket)
+		ticket.Run()
 	}
 }
 

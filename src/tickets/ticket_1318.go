@@ -31,10 +31,17 @@ func (T *Ticket_1318) Get_auth() *dao.Auth {
 }
 
 func (T *Ticket_1318) Run() {
-	lib.Set_ticket(T)
-
 	// Enter Your logic from here
-	// _, error := lib.Exec("pwd")
+	tc_168 := dao.New_TestCase(168, "Default Case")
 
-	fmt.Println("Ran", T)
+	_, err := lib.Start_jaz_server()
+	if err != nil {
+		tc_168.Add_log(err.Error())
+		tc_168.Fail()
+	} else {
+		// add info log
+		tc_168.Succeed()
+	}
+
+	fmt.Println("Ran", tc_168)
 }
