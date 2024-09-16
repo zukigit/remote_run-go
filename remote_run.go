@@ -10,19 +10,19 @@ import (
 
 func set_ticket_values(t []dao.Ticket, auth *dao.Auth) {
 	for _, test_case := range t {
-		test_case.Set_Ticket_values(auth)
+		test_case.Set_ticket_values(auth)
 	}
 }
 
 func run_tc(t []dao.Ticket) {
 	for _, ticket := range t {
 		lib.Set_ticket(ticket)
-		ticket.Run()
+		ticket.Run_ticket()
 	}
 }
 
 func add_tickets(t *[]dao.Ticket) {
-	// Add new tickets here
+	// Add your tickets here
 	*t = append(*t, new(tickets.Ticket_1318))
 	// is it rainy day?
 }

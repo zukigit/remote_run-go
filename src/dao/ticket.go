@@ -1,9 +1,11 @@
 package dao
 
 type Ticket interface {
-	Run()
-	Set_Ticket_values(auth *Auth)
-	Get_Ticket_no() uint
-	Get_Ticket_dsctn() string
+	Run_ticket()
+	Set_ticket_values(auth *Auth)
+	Get_ticket_no() uint
+	Get_ticket_dsctn() string
 	Get_auth() *Auth
+	Add_testcase(tc TestCase)
+	Add_testcases()
 }
