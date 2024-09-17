@@ -9,15 +9,15 @@ import (
 )
 
 func set_ticket_values(t []dao.Ticket, auth *dao.Auth) {
-	for _, test_case := range t {
-		test_case.Set_ticket_values(auth)
+	for _, ticket := range t {
+		ticket.Set_values(auth)
 	}
 }
 
 func run_tc(t []dao.Ticket) {
 	for _, ticket := range t {
 		lib.Set_ticket(ticket)
-		ticket.Run_ticket()
+		ticket.Run()
 	}
 }
 

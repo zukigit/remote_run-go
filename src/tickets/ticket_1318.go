@@ -11,17 +11,17 @@ type Ticket_1318 struct {
 	testcases   []dao.TestCase
 }
 
-func (t *Ticket_1318) Set_ticket_values(auth *dao.Auth) {
+func (t *Ticket_1318) Set_values(auth *dao.Auth) {
 	t.no = 1318
 	t.description = "Fixed for negative JOB_EXT_CD return value."
 	t.auth = auth
 }
 
-func (t *Ticket_1318) Get_ticket_no() uint {
+func (t *Ticket_1318) Get_no() uint {
 	return t.no
 }
 
-func (t *Ticket_1318) Get_ticket_dsctn() string {
+func (t *Ticket_1318) Get_dsctn() string {
 	return t.description
 }
 
@@ -45,7 +45,7 @@ func (t *Ticket_1318) Add_testcases() {
 
 }
 
-func (t *Ticket_1318) Run_ticket() {
+func (t *Ticket_1318) Run() {
 	t.Add_testcases()
 
 	for _, tc := range t.testcases {
