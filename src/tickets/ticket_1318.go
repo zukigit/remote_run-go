@@ -1,6 +1,7 @@
 package tickets
 
 import (
+	"fmt"
 	"zukigit/remote_run-go/src/dao"
 )
 
@@ -43,6 +44,13 @@ func (t *Ticket_1318) Add_testcases() {
 	)
 	t.Add_testcase(*tc_168)
 
+	tc_169 := dao.New_TestCase(169, "Normal Case") // create test case
+	tc_169.Add_function(                           // Add function to test case
+		func() bool {
+			return true
+		},
+	)
+	t.Add_testcase(*tc_169) // Add testcase to ticket
 }
 
 func (t *Ticket_1318) Run() {
@@ -51,8 +59,9 @@ func (t *Ticket_1318) Run() {
 	for _, tc := range t.testcases {
 		if !tc.Is_function_nil() {
 			tc.Set_is_passed(tc.Run_function())
+			fmt.Println("tc", tc)
 		} else {
-			// add error log
+			// will add error log
 		}
 	}
 }
