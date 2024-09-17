@@ -39,29 +39,26 @@ func (t *Ticket_1318) Add_testcases() {
 	tc_168 := dao.New_TestCase(168, "Normal Case")
 	tc_168.Add_function(
 		func() bool {
-			return false
+			return true
 		},
 	)
 	t.Add_testcase(*tc_168)
 
 	tc_169 := dao.New_TestCase(169, "Normal Case") // create test case
-	tc_169.Add_function(                           // Add function to test case
-		func() bool {
-			return true
-		},
-	)
-	t.Add_testcase(*tc_169) // Add testcase to ticket
+	t.Add_testcase(*tc_169)                        // Add testcase to ticket
 }
 
 func (t *Ticket_1318) Run() {
 	t.Add_testcases()
 
 	for _, tc := range t.testcases {
+		fmt.Println(tc.Info_log("Test case no [%d] is running...", tc.Get_id()))
 		if !tc.Is_function_nil() {
 			tc.Set_is_passed(tc.Run_function())
-			fmt.Println("tc", tc)
 		} else {
-			// will add error log
+			fmt.Println(tc.Err_log("Test case [%d] has no function. SKIPPED!", tc.Get_id()))
+			tc.Set_is_passed(false)
 		}
+		fmt.Println(tc.Info_log("Test case no [%d] is finished!", tc.Get_id()))
 	}
 }
