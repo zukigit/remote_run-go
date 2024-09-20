@@ -63,8 +63,8 @@ func (t *TestCase) Logi(level int, log string) string {
 		log = formattedTime + ", [INFO] " + log
 		t.Set_log(log)
 	case ERR:
-		log = formattedTime + ", [ERR] " + log
-		t.Set_log(formattedTime + ", [ERR] " + log)
+		log = formattedTime + ", [ERROR]!!! " + log
+		t.Set_log(log)
 	}
 
 	return log

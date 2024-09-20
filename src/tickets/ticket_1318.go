@@ -34,6 +34,10 @@ func (t *Ticket_1318) Set_testcase(tc dao.TestCase) {
 	t.testcases = append(t.testcases, tc)
 }
 
+func (t *Ticket_1318) Get_testcases() []dao.TestCase {
+	return t.testcases
+}
+
 func (t *Ticket_1318) Run() {
 	for _, tc := range t.testcases {
 		fmt.Println(tc.Info_log("Test case no [%d] is running...", tc.Get_id()))
@@ -53,7 +57,8 @@ func (t *Ticket_1318) Add_testcases() {
 	tc_168 := t.New_testcase(168, "Normal Case")
 	tc_168.Set_function(
 		func() bool {
-			_, error := tc_168.Ssh_exec_to_str("ls")
+			result, error := tc_168.Ssh_exec_to_str("ls")
+			tc_168.Info_log("Result is %s", result)
 			return error == nil
 		},
 	)
