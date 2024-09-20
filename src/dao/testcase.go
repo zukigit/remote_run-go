@@ -3,6 +3,7 @@ package dao
 import (
 	"fmt"
 	"time"
+	"zukigit/remote_run-go/src/lib"
 )
 
 const INFO = 1
@@ -14,16 +15,18 @@ type TestCase struct {
 	logs        []string
 	is_passed   bool
 	function    func() bool
+	auth        *Auth
 }
 
-func New_TestCase(testcase_id uint, testcase_description string) *TestCase {
+func New_testcase(testcase_id uint, testcase_description string, auth *Auth) *TestCase {
 	return &TestCase{
 		id:          testcase_id,
 		description: testcase_description,
+		auth:        auth,
 	}
 }
 
-func (t *TestCase) Add_log(log string) {
+func (t *TestCase) Set_log(log string) {
 	t.logs = append(t.logs, log)
 }
 
@@ -39,7 +42,7 @@ func (t *TestCase) Set_is_passed(is_passed bool) {
 	t.is_passed = is_passed
 }
 
-func (t *TestCase) Add_function(function func() bool) {
+func (t *TestCase) Set_function(function func() bool) {
 	t.function = function
 }
 
@@ -58,10 +61,10 @@ func (t *TestCase) Logi(level int, log string) string {
 	switch level {
 	case INFO:
 		log = formattedTime + ", [INFO] " + log
-		t.Add_log(log)
+		t.Set_log(log)
 	case ERR:
 		log = formattedTime + ", [ERR] " + log
-		t.Add_log(formattedTime + ", [ERR] " + log)
+		t.Set_log(formattedTime + ", [ERR] " + log)
 	}
 
 	return log
@@ -75,4 +78,12 @@ func (t *TestCase) Err_log(unfmt string, arg ...any) string {
 func (t *TestCase) Info_log(unfmt string, arg ...any) string {
 	log := fmt.Sprintf(unfmt, arg...)
 	return t.Logi(INFO, log)
+}
+
+func (t *TestCase) Ssh_exec(command string) ([]byte, error) {
+	return lib.Ssh_exec(command, t.auth.Session)
+}
+
+func (t *TestCase) Ssh_exec_to_str(command string) (string, error) {
+	return lib.Ssh_exec_to_str(command, t.auth.Session)
 }
