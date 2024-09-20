@@ -2,7 +2,6 @@ package dao
 
 import (
 	"fmt"
-	"time"
 	"zukigit/remote_run-go/src/lib"
 )
 
@@ -34,7 +33,7 @@ func (t *TestCase) Get_id() uint {
 	return t.id
 }
 
-func (t *TestCase) Get_log() []string {
+func (t *TestCase) Get_logs() []string {
 	return t.logs
 }
 
@@ -55,17 +54,8 @@ func (t *TestCase) Is_function_nil() bool {
 }
 
 func (t *TestCase) Logi(level int, log string) string {
-	currentTime := time.Now()
-	formattedTime := currentTime.Format("2001-02-10 15:04:05")
-
-	switch level {
-	case INFO:
-		log = formattedTime + ", [INFO] " + log
-		t.Set_log(log)
-	case ERR:
-		log = formattedTime + ", [ERROR]!!! " + log
-		t.Set_log(log)
-	}
+	log = lib.Formatted_log(level, log)
+	t.Set_log(log)
 
 	return log
 }

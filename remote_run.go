@@ -18,6 +18,7 @@ func run_tc(t []dao.Ticket) {
 	for _, ticket := range t {
 		ticket.Add_testcases()
 		ticket.Run()
+		lib.Logi()
 	}
 }
 
