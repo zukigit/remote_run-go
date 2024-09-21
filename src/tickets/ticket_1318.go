@@ -69,9 +69,7 @@ func (t *Ticket_1318) Add_testcases() {
 			return false
 		}
 
-		fmt.Println("result", jobnet_info)
-
-		return true
+		return jobnet_info.Status == "END" && jobnet_info.Job_status == "NORMAL"
 	}
 	tc_168.Set_function(tc_func)
 	t.Set_testcase(*tc_168)
