@@ -105,6 +105,10 @@ func (t *TestCase) Jobarg_exec(jobid string) (string, error) {
 	}
 
 	cmd = "cat /tmp/moon_jobarg_exec_result"
+	result, err := lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	if err != nil {
+		return "", err
+	}
 
-	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	return lib.Get_res_no(result)
 }
