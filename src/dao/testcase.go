@@ -33,6 +33,10 @@ func (t *TestCase) Get_id() uint {
 	return t.id
 }
 
+func (t *TestCase) Get_dsctn() string {
+	return t.description
+}
+
 func (t *TestCase) Get_logs() []string {
 	return t.logs
 }
@@ -52,6 +56,8 @@ func (t *TestCase) Run_function() bool {
 func (t *TestCase) Is_function_nil() bool {
 	return t.function == nil
 }
+
+// From here is test case util functions
 
 func (t *TestCase) Logi(level int, log string) string {
 	log = lib.Formatted_log(level, log)

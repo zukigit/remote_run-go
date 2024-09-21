@@ -1,8 +1,6 @@
 package lib
 
 import (
-	"fmt"
-	"strings"
 	"time"
 )
 
@@ -21,15 +19,4 @@ func Formatted_log(level int, log string) string {
 	}
 
 	return log
-}
-
-func Logi() {
-	left := strings.Repeat("-", 60)
-	right := strings.Repeat("-", 60)
-
-	// Save the balanced string to a variable
-	endticket := fmt.Sprintf("%s><%s", left, right)
-
-	// Print the balanced string
-	fmt.Println(endticket)
 }
