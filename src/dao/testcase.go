@@ -2,6 +2,7 @@ package dao
 
 import (
 	"fmt"
+	"time"
 	"zukigit/remote_run-go/src/lib"
 )
 
@@ -72,6 +73,7 @@ func (t *TestCase) Is_function_nil() bool {
 // From here is test case util functions
 
 func (t *TestCase) Logi(level int, log string) string {
+	log = fmt.Sprintf("Test_case no[%d], %s", t.Get_id(), log)
 	log = lib.Formatted_log(level, log)
 	t.Set_log(log)
 
@@ -111,4 +113,58 @@ func (t *TestCase) Jobarg_exec(jobid string) (string, error) {
 	}
 
 	return lib.Get_res_no(result)
+}
+
+func (t *TestCase) Jobarg_get_JA_JOBNETSTATUS(registry_number string) (string, error) {
+	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $JA_JOBNETSTATUS", t.Get_auth().Hostname, registry_number)
+	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+}
+
+func (t *TestCase) Jobarg_get_JA_JOBSTATUS(registry_number string) (string, error) {
+	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $JA_JOBSTATUS", t.Get_auth().Hostname, registry_number)
+	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+}
+
+func (t *TestCase) Jobarg_get_LASTEXITCD(registry_number string) (string, error) {
+	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $LASTEXITCD", t.Get_auth().Hostname, registry_number)
+	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+}
+
+func (t *TestCase) Jobarg_get_LASTSTDOUT(registry_number string) (string, error) {
+	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $LASTSTDOUT", t.Get_auth().Hostname, registry_number)
+	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+}
+
+func (t *TestCase) Jobarg_get_LASTSTDERR(registry_number string) (string, error) {
+	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $LASTSTDERR", t.Get_auth().Hostname, registry_number)
+	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+}
+
+// Jobarg_get_jobnet_run_info waits util the jobnet is done or get error and returns Jobnet run info.
+func (t *TestCase) Jobarg_get_jobnet_run_info(registry_number string) (*Jobnet, error) {
+	var status, job_status, exit_cd, std_out, std_error string
+	var err error
+	var index int
+
+	for {
+		status, err = t.Jobarg_get_JA_JOBNETSTATUS(registry_number)
+		if err != nil {
+			lib.Formatted_log(INFO, "Error:%s", err.Error())
+		}
+
+		job_status, err = t.Jobarg_get_JA_JOBSTATUS(registry_number)
+		if err != nil {
+			lib.Formatted_log(INFO, "Error:%s", err.Error())
+		}
+
+		if status == "END" || (status == "RUN" && job_status == "ERROR") {
+			break
+		}
+		lib.Spinner_log(index, lib.Formatted_log(INFO, "Getting jobnet run info but jobnet is not finished yet"))
+		time.Sleep(1 * time.Second)
+		index++
+	}
+
+	fmt.Println()
+	return New_Jobnet(status, job_status, exit_cd, std_out, std_error), nil
 }

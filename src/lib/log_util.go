@@ -10,6 +10,8 @@ import (
 const INFO = 1
 const ERR = 2
 
+var spinner = []rune{'|', '/', '-', '\\'}
+
 func Get_formatted_time() string {
 	currentTime := time.Now()
 	return currentTime.Format("20060102150405")
@@ -62,4 +64,8 @@ func Logi(log string, filename string) {
 		fmt.Println("Error:", err.Error())
 		os.Exit(1)
 	}
+}
+
+func Spinner_log(index int, log string) {
+	fmt.Printf("\r%s %c", log, spinner[index%len(spinner)])
 }

@@ -11,6 +11,9 @@ import (
 
 var left, right, endticket, endtestcase, log_filename string
 
+const INFO = 1
+const ERR = 2
+
 func set_ticket_values(t []tickets.Ticket, auth *dao.Auth) {
 	for _, ticket := range t {
 		ticket.Set_values(auth)
@@ -35,7 +38,7 @@ func get_logs(t tickets.Ticket) string {
 			not_pass_count++
 		}
 
-		body = fmt.Sprintf("%s\n\nTestcase_NO: %d\nTestcase_DES: %s\nStatus: %s\nLogs:", body, testcase.Get_id(), testcase.Get_dsctn(), status)
+		body = fmt.Sprintf("%s\nTestcase_NO: %d\nTestcase_DES: %s\nStatus: %s\nLogs:", body, testcase.Get_id(), testcase.Get_dsctn(), status)
 
 		logs := testcase.Get_logs()
 		for _, log_value := range logs {
@@ -47,7 +50,7 @@ func get_logs(t tickets.Ticket) string {
 		}
 	}
 
-	log_str = fmt.Sprintf("%sPassed: %d, Failed: %d", head, pass_count, not_pass_count)
+	log_str = fmt.Sprintf("%sPassed: %d, Failed: %d\n\n%s", head, pass_count, not_pass_count, endtestcase)
 
 	return fmt.Sprintf("%s%s\n\n%s", log_str, body, endticket)
 }
