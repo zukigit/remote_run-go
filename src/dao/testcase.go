@@ -37,6 +37,10 @@ func (t *TestCase) Get_id() uint {
 	return t.id
 }
 
+func (t *TestCase) Get_auth() Auth {
+	return *t.auth
+}
+
 func (t *TestCase) Get_dsctn() string {
 	return t.description
 }
@@ -90,4 +94,10 @@ func (t *TestCase) Ssh_exec(command string) ([]byte, error) {
 
 func (t *TestCase) Ssh_exec_to_str(command string) (string, error) {
 	return lib.Ssh_exec_to_str(command, t.auth.Session)
+}
+
+func (t *TestCase) Jobarg_exec(jobid string) (string, error) {
+	fmt.Println("t.Get_auth().Hostname", t.Get_auth().Hostname)
+	cmd := fmt.Sprintf("jobarg_exec -z %s -U Admin -P zabbix -j %s", t.Get_auth().Hostname, jobid)
+	return lib.Ssh_exec_to_str(cmd, t.auth.Session)
 }

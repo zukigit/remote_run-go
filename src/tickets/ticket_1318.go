@@ -55,18 +55,16 @@ func (t *Ticket_1318) Run() {
 func (t *Ticket_1318) Add_testcases() {
 	// Add your test case here
 	tc_168 := t.New_testcase(168, "Normal Case")
-	tc_168.Set_function(
-		func() bool {
-			_, error := tc_168.Ssh_exec_to_str("ls")
-			if error != nil {
-				fmt.Println("Error:", error.Error())
-				tc_168.Err_log("Error: %s", error.Error())
-				return false
-			}
+	tc_func := func() bool {
+		_, error := tc_168.Jobarg_exec("JOBNET_1")
+		if error != nil {
+			tc_168.Err_log("Error: %s", error.Error())
+			return false
+		}
 
-			return true
-		},
-	)
+		return true
+	}
+	tc_168.Set_function(tc_func)
 	t.Set_testcase(*tc_168)
 
 	tc_169 := t.New_testcase(169, "Abnormal Case") // create test case

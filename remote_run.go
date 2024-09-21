@@ -83,7 +83,7 @@ func main() {
 	config := lib.Get_config(auth.Username, auth.Password)
 
 	// Connect to the SSH server
-	client, err := lib.Get_client(auth.Hostname, config)
+	client, err := lib.Get_client(auth.Hostname+":22", config)
 	if err != nil {
 		fmt.Println("Error:", err.Error())
 		os.Exit(1)

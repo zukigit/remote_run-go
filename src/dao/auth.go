@@ -13,23 +13,25 @@ import (
 
 type Auth struct {
 	Username, Password, Hostname string
+	Port                         int
 	Session                      *ssh.Session
 }
 
 func Get_auth() *Auth {
 	arg_len := len(os.Args)
 	var host string
-	port := "22"
+	port_int := 22
+	var err error
 
 	// check args
 	if arg_len == 2 {
 		host = os.Args[1]
 	} else if arg_len == 3 {
 		host = os.Args[1]
-		port = os.Args[2]
+		port := os.Args[2]
 
 		// check port
-		if _, err := strconv.Atoi(port); err != nil {
+		if port_int, err = strconv.Atoi(port); err != nil {
 			fmt.Printf("Error: Bad port '%s'\n", port)
 			os.Exit(1)
 		}
@@ -46,7 +48,7 @@ func Get_auth() *Auth {
 	}
 
 	user := parts[0]
-	host = parts[1] + ":" + port
+	host = parts[1]
 
 	// get password
 	fmt.Printf("%s's password:", os.Args[1])
@@ -62,5 +64,6 @@ func Get_auth() *Auth {
 		Username: user,
 		Password: password,
 		Hostname: host,
+		Port:     port_int,
 	}
 }
