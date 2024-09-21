@@ -14,7 +14,8 @@ func Get_formatted_time() string {
 	currentTime := time.Now()
 	return currentTime.Format("20060102150405")
 }
-func Formatted_log(level int, log string) string {
+func Formatted_log(level int, unfmt string, arg ...any) string {
+	log := fmt.Sprintf(unfmt, arg...)
 	formattedTime := Get_formatted_time()
 
 	switch level {

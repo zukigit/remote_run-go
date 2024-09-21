@@ -101,4 +101,5 @@ func main() {
 
 	set_ticket_values(tickets, auth)
 	run_tc(tickets) // run test cases
+	fmt.Println(lib.Formatted_log(1, "Logged Filename: %s", log_filename))
 }
