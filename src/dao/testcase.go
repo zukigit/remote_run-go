@@ -96,8 +96,10 @@ func (t *TestCase) Ssh_exec_to_str(command string) (string, error) {
 	return lib.Ssh_exec_to_str(command, t.auth.Session)
 }
 
+// output=$(jobarg_exec -z 10.0.2.4 -U Admin -P zabbix -j JOBNET_1 2>&1 | tee /dev/tty)
 func (t *TestCase) Jobarg_exec(jobid string) (string, error) {
 	fmt.Println("t.Get_auth().Hostname", t.Get_auth().Hostname)
-	cmd := fmt.Sprintf("jobarg_exec -z %s -U Admin -P zabbix -j %s", t.Get_auth().Hostname, jobid)
+	cmd := fmt.Sprintf("output=$(jobarg_exec -z %s -U Admin -P zabbix -j %s 2>&1 | tee /dev/tty", t.Get_auth().Hostname, jobid)
+
 	return lib.Ssh_exec_to_str(cmd, t.auth.Session)
 }
