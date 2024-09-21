@@ -56,11 +56,13 @@ func (t *Ticket_1318) Add_testcases() {
 	// Add your test case here
 	tc_168 := t.New_testcase(168, "Normal Case")
 	tc_func := func() bool {
-		_, error := tc_168.Jobarg_exec("JOBNET_1")
+		result, error := tc_168.Jobarg_exec("JOBNET_1")
 		if error != nil {
 			tc_168.Err_log("Error: %s", error.Error())
 			return false
 		}
+
+		fmt.Println("result", result)
 
 		return true
 	}

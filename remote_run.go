@@ -90,14 +90,7 @@ func main() {
 	}
 	defer client.Close()
 
-	// Create a session for the command
-	session, err := lib.Get_session(client)
-	if err != nil {
-		fmt.Println("Error:", err.Error())
-		os.Exit(1)
-	}
-	defer session.Close()
-	auth.Session = session
+	auth.Ssh_client = client
 
 	set_ticket_values(tickets, auth)
 	run_tc(tickets) // run test cases

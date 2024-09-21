@@ -14,7 +14,7 @@ import (
 type Auth struct {
 	Username, Password, Hostname string
 	Port                         int
-	Session                      *ssh.Session
+	Ssh_client                   *ssh.Client
 }
 
 func Get_auth() *Auth {

@@ -89,17 +89,22 @@ func (t *TestCase) Info_log(unfmt string, arg ...any) string {
 }
 
 func (t *TestCase) Ssh_exec(command string) ([]byte, error) {
-	return lib.Ssh_exec(command, t.auth.Session)
+	return lib.Ssh_exec(command, t.auth.Ssh_client)
 }
 
 func (t *TestCase) Ssh_exec_to_str(command string) (string, error) {
-	return lib.Ssh_exec_to_str(command, t.auth.Session)
+	return lib.Ssh_exec_to_str(command, t.auth.Ssh_client)
 }
 
-// output=$(jobarg_exec -z 10.0.2.4 -U Admin -P zabbix -j JOBNET_1 2>&1 | tee /dev/tty)
 func (t *TestCase) Jobarg_exec(jobid string) (string, error) {
-	fmt.Println("t.Get_auth().Hostname", t.Get_auth().Hostname)
-	cmd := fmt.Sprintf("output=$(jobarg_exec -z %s -U Admin -P zabbix -j %s 2>&1 | tee /dev/tty", t.Get_auth().Hostname, jobid)
+	cmd := fmt.Sprintf("jobarg_exec -z %s -U Admin -P zabbix -j %s &> /tmp/moon_jobarg_exec_result", t.Get_auth().Hostname, jobid)
 
-	return lib.Ssh_exec_to_str(cmd, t.auth.Session)
+	_, err := lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	if err != nil {
+		return "", err
+	}
+
+	cmd = "cat /tmp/moon_jobarg_exec_result"
+
+	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
 }
