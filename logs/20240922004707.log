@@ -1,0 +1,20 @@
+1318 - Fixed for negative JOB_EXT_CD return value.
+Passed: 1, Failed: 1
+
+-------------------------><-------------------------
+Testcase_NO: 168
+Testcase_DES: Normal Case
+Status: Passed
+Logs:
+20240922004709, [INFO] Test_case no[168], running...
+20240922004719, [INFO] Test_case no[168], finished!
+-------------------------><-------------------------
+Testcase_NO: 169
+Testcase_DES: Abnormal Case
+Status: Failed
+Logs:
+20240922004719, [INFO] Test_case no[169], running...
+20240922004719, [ERROR] Test_case no[169], has no function. SKIPPED!
+20240922004719, [INFO] Test_case no[169], finished!
+
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||X||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

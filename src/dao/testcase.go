@@ -126,17 +126,17 @@ func (t *TestCase) Jobarg_get_JA_JOBSTATUS(registry_number string) (string, erro
 }
 
 func (t *TestCase) Jobarg_get_LASTEXITCD(registry_number string) (string, error) {
-	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $LASTEXITCD", t.Get_auth().Hostname, registry_number)
+	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $JA_LASTEXITCD", t.Get_auth().Hostname, registry_number)
 	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
 }
 
 func (t *TestCase) Jobarg_get_LASTSTDOUT(registry_number string) (string, error) {
-	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $LASTSTDOUT", t.Get_auth().Hostname, registry_number)
+	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $JA_LASTSTDOUT", t.Get_auth().Hostname, registry_number)
 	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
 }
 
 func (t *TestCase) Jobarg_get_LASTSTDERR(registry_number string) (string, error) {
-	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $LASTSTDERR", t.Get_auth().Hostname, registry_number)
+	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $JA_LASTSTDERR", t.Get_auth().Hostname, registry_number)
 	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
 }
 
@@ -160,9 +160,24 @@ func (t *TestCase) Jobarg_get_jobnet_run_info(registry_number string) (*Jobnet, 
 		if status == "END" || (status == "RUN" && job_status == "ERROR") {
 			break
 		}
-		lib.Spinner_log(index, lib.Formatted_log(INFO, "Getting jobnet run info but jobnet is not finished yet"))
+		lib.Spinner_log(index, lib.Formatted_log(INFO, "Getting jobnet[%s] run info but jobnet is not finished yet", registry_number))
 		time.Sleep(1 * time.Second)
 		index++
+	}
+
+	exit_cd, err = t.Jobarg_get_LASTEXITCD(registry_number)
+	if err != nil {
+		lib.Formatted_log(INFO, "Error:%s", err.Error())
+	}
+
+	std_out, err = t.Jobarg_get_LASTSTDOUT(registry_number)
+	if err != nil {
+		lib.Formatted_log(INFO, "Error:%s", err.Error())
+	}
+
+	std_error, err = t.Jobarg_get_LASTSTDERR(registry_number)
+	if err != nil {
+		lib.Formatted_log(INFO, "Error:%s", err.Error())
 	}
 
 	fmt.Println()
