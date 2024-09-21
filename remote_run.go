@@ -9,16 +9,12 @@ import (
 	"zukigit/remote_run-go/src/tickets"
 )
 
-var left, right, endticket, endtestcase string
+var left, right, endticket, endtestcase, log_filename string
 
 func set_ticket_values(t []tickets.Ticket, auth *dao.Auth) {
 	for _, ticket := range t {
 		ticket.Set_values(auth)
 	}
-}
-
-func logi(log string) {
-	fmt.Println(log)
 }
 
 func get_logs(t tickets.Ticket) string {
@@ -60,7 +56,7 @@ func run_tc(t []tickets.Ticket) {
 	for _, ticket := range t {
 		ticket.Add_testcases()
 		ticket.Run()
-		logi(get_logs(ticket))
+		lib.Logi(get_logs(ticket), log_filename)
 	}
 }
 
@@ -73,6 +69,7 @@ func add_tickets(t *[]tickets.Ticket) {
 func main() {
 	var tickets []tickets.Ticket
 	add_tickets(&tickets)
+	log_filename = lib.Get_log_filename()
 
 	left = strings.Repeat("|", 60)
 	right = strings.Repeat("|", 60)
