@@ -9,7 +9,7 @@ import (
 	"zukigit/remote_run-go/src/tickets"
 )
 
-var left, right, endticket string
+var left, right, endticket, endtestcase string
 
 func set_ticket_values(t []tickets.Ticket, auth *dao.Auth) {
 	for _, ticket := range t {
@@ -17,24 +17,50 @@ func set_ticket_values(t []tickets.Ticket, auth *dao.Auth) {
 	}
 }
 
-func logi(t tickets.Ticket) {
-	fmt.Printf("Ticket_NO: '%d', Ticket_DES: '%s'\n", t.Get_no(), t.Get_dsctn())
-	fmt.Println("Testcases:")
-	fmt.Println()
-	// Print the balanced string
+func logi(log string) {
+	fmt.Println(log)
+}
+
+func get_logs(t tickets.Ticket) string {
+	var pass_count, not_pass_count int
+	var body, log_str, status string
 	testcases := t.Get_testcases()
 
-	for _, testcase := range testcases {
-		fmt.Printf("Testcase_NO: %d, Testcase_DES: %s\n", testcase.Get_id(), testcase.Get_dsctn())
+	head := fmt.Sprintf("%d - %s\n", t.Get_no(), t.Get_dsctn())
+
+	for index, testcase := range testcases {
+		is_passed := testcase.Get_is_passed()
+		switch is_passed {
+		case true:
+			status = "Passed"
+			pass_count++
+		case false:
+			status = "Failed"
+			not_pass_count++
+		}
+
+		body = fmt.Sprintf("%s\n\nTestcase_NO: %d\nTestcase_DES: %s\nStatus: %s\nLogs:", body, testcase.Get_id(), testcase.Get_dsctn(), status)
+
+		logs := testcase.Get_logs()
+		for _, log_value := range logs {
+			body = fmt.Sprintf("%s\n%s", body, log_value)
+		}
+
+		if index < len(testcases)-1 {
+			body = fmt.Sprintf("%s\n%s", body, endtestcase)
+		}
 	}
-	fmt.Println(endticket)
+
+	log_str = fmt.Sprintf("%sPassed: %d, Failed: %d", head, pass_count, not_pass_count)
+
+	return fmt.Sprintf("%s%s\n\n%s", log_str, body, endticket)
 }
 
 func run_tc(t []tickets.Ticket) {
 	for _, ticket := range t {
 		ticket.Add_testcases()
 		ticket.Run()
-		logi(ticket)
+		logi(get_logs(ticket))
 	}
 }
 
@@ -48,9 +74,13 @@ func main() {
 	var tickets []tickets.Ticket
 	add_tickets(&tickets)
 
-	left = strings.Repeat("-", 60)
-	right = strings.Repeat("-", 60)
-	endticket = fmt.Sprintf("%s><%s", left, right)
+	left = strings.Repeat("|", 60)
+	right = strings.Repeat("|", 60)
+	endticket = fmt.Sprintf("%sX%s", left, right)
+
+	left = strings.Repeat("-", 25)
+	right = strings.Repeat("-", 25)
+	endtestcase = fmt.Sprintf("%s><%s", left, right)
 
 	auth := dao.Get_auth() // Get login informations from user
 	config := lib.Get_config(auth.Username, auth.Password)
@@ -73,6 +103,5 @@ func main() {
 	auth.Session = session
 
 	set_ticket_values(tickets, auth)
-
 	run_tc(tickets) // run test cases
 }

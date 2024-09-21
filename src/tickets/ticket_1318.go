@@ -57,13 +57,18 @@ func (t *Ticket_1318) Add_testcases() {
 	tc_168 := t.New_testcase(168, "Normal Case")
 	tc_168.Set_function(
 		func() bool {
-			result, error := tc_168.Ssh_exec_to_str("ls")
-			tc_168.Info_log("Result is %s", result)
-			return error == nil
+			_, error := tc_168.Ssh_exec_to_str("ls")
+			if error != nil {
+				fmt.Println("Error:", error.Error())
+				tc_168.Err_log("Error: %s", error.Error())
+				return false
+			}
+
+			return true
 		},
 	)
 	t.Set_testcase(*tc_168)
 
-	tc_169 := t.New_testcase(169, "Normal Case") // create test case
-	t.Set_testcase(*tc_169)                      // Add testcase to ticket
+	tc_169 := t.New_testcase(169, "Abnormal Case") // create test case
+	t.Set_testcase(*tc_169)                        // Add testcase to ticket
 }

@@ -11,22 +11,26 @@ const ERR = 2
 type TestCase struct {
 	id          uint
 	description string
-	logs        []string
-	is_passed   bool
+	logs        *[]string
+	is_passed   *bool
 	function    func() bool
 	auth        *Auth
 }
 
 func New_testcase(testcase_id uint, testcase_description string, auth *Auth) *TestCase {
+	status := false
+	logs := []string{}
 	return &TestCase{
 		id:          testcase_id,
 		description: testcase_description,
 		auth:        auth,
+		is_passed:   &status,
+		logs:        &logs,
 	}
 }
 
 func (t *TestCase) Set_log(log string) {
-	t.logs = append(t.logs, log)
+	*t.logs = append(*t.logs, log)
 }
 
 func (t *TestCase) Get_id() uint {
@@ -38,11 +42,15 @@ func (t *TestCase) Get_dsctn() string {
 }
 
 func (t *TestCase) Get_logs() []string {
-	return t.logs
+	return *t.logs
 }
 
 func (t *TestCase) Set_is_passed(is_passed bool) {
-	t.is_passed = is_passed
+	*t.is_passed = is_passed
+}
+
+func (t *TestCase) Get_is_passed() bool {
+	return *t.is_passed
 }
 
 func (t *TestCase) Set_function(function func() bool) {
