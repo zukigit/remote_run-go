@@ -2,6 +2,7 @@ package dao
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 	"zukigit/remote_run-go/src/lib"
 )
@@ -134,9 +135,19 @@ func (t *TestCase) Jobarg_get_JA_JOBSTATUS(registry_number string) (string, erro
 	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
 }
 
-func (t *TestCase) Jobarg_get_LASTEXITCD(registry_number string) (string, error) {
+func (t *TestCase) Jobarg_get_LASTEXITCD(registry_number string) (int64, error) {
 	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $JA_LASTEXITCD", t.Get_auth().Hostname, registry_number)
-	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	exit_cd, err := lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	if err != nil {
+		return -1, err
+	}
+
+	num, err := strconv.ParseInt(exit_cd, 10, 64) // Base 10, 64-bit integer
+	if err != nil {
+		return -1, err
+	}
+
+	return num, nil
 }
 
 func (t *TestCase) Jobarg_get_LASTSTDOUT(registry_number string) (string, error) {
@@ -151,12 +162,13 @@ func (t *TestCase) Jobarg_get_LASTSTDERR(registry_number string) (string, error)
 
 // Jobarg_get_jobnet_run_info waits util the jobnet is done or get error and returns Jobnet run info.
 func (t *TestCase) Jobarg_get_jobnet_run_info(registry_number string) (*Jobnet_run_info, error) {
-	var status, job_status, exit_cd, std_out, std_error string
+	var jobnet_status, job_status, std_out, std_error string
 	var err error
 	var index int
+	var exit_cd int64
 
 	for {
-		status, err = t.Jobarg_get_JA_JOBNETSTATUS(registry_number)
+		jobnet_status, err = t.Jobarg_get_JA_JOBNETSTATUS(registry_number)
 		if err != nil {
 			lib.Formatted_log(INFO, "Error:%s", err.Error())
 		}
@@ -166,7 +178,7 @@ func (t *TestCase) Jobarg_get_jobnet_run_info(registry_number string) (*Jobnet_r
 			lib.Formatted_log(INFO, "Error:%s", err.Error())
 		}
 
-		if status == "END" || (status == "RUN" && job_status == "ERROR") {
+		if jobnet_status == "END" || (jobnet_status == "RUN" && job_status == "ERROR") {
 			break
 		}
 		lib.Spinner_log(index, lib.Formatted_log(INFO, "Getting jobnet[%s] run info but jobnet is not finished yet", registry_number))
@@ -190,5 +202,5 @@ func (t *TestCase) Jobarg_get_jobnet_run_info(registry_number string) (*Jobnet_r
 	}
 
 	fmt.Println()
-	return New_Jobnet(status, job_status, exit_cd, std_out, std_error), nil
+	return New_Jobnet(jobnet_status, job_status, std_out, std_error, exit_cd), nil
 }

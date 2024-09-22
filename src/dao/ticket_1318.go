@@ -54,28 +54,29 @@ func (t *Ticket_1318) Run() {
 func (t *Ticket_1318) Add_testcases() {
 	// Add your test case here
 	// ticket 168
-	tc_168 := t.New_testcase(168, "Normal Case")
+	tc_170 := t.New_testcase(170, "Default Case Check. Linux AGENT")
 	tc_func := func() Testcase_status {
-		std_out, error := tc_168.Jobarg_exec("JOBNET_1")
+		std_out, error := tc_170.Jobarg_exec("TICEKT_1318_windows")
 		if error != nil {
-			tc_168.Err_log("Error: %s, std_out: %s", error.Error(), std_out)
+			tc_170.Err_log("Error: %s, std_out: %s", error.Error(), std_out)
 			return FAILED
 		}
 
-		jobnet_info, error := tc_168.Jobarg_get_jobnet_run_info(std_out)
+		jobnet_info, error := tc_170.Jobarg_get_jobnet_run_info(std_out)
 		if error != nil {
-			tc_168.Err_log("Error: %s", error.Error())
+			tc_170.Err_log("Error: %s", error.Error())
 			return FAILED
 		}
 
-		if jobnet_info.Jobnet_status == "END" && jobnet_info.Job_status == "NORMAL" {
+		if jobnet_info.Jobnet_status == "END" && jobnet_info.Job_status == "NORMAL" && jobnet_info.Exit_cd == 96 {
 			return PASSED
 		}
 
+		tc_170.Err_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_info.Jobnet_status, jobnet_info.Job_status, jobnet_info.Exit_cd)
 		return FAILED
 	}
-	tc_168.Set_function(tc_func)
-	t.Set_testcase(*tc_168)
+	tc_170.Set_function(tc_func)
+	t.Set_testcase(*tc_170)
 
 	// ticket 169
 	tc_169 := t.New_testcase(169, "Abnormal Case") // create test case
