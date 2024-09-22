@@ -12,8 +12,8 @@ type Ticket_XXX struct {
 }
 
 func (t *Ticket_XXX) Set_values(auth *Auth) {
-	t.no = 000
-	t.description = "Enter Your Ticket Description."
+	t.no = 000                                       // Needs to be changed
+	t.description = "Enter Your Ticket Description." // Needs to be changed
 	t.auth = auth
 }
 

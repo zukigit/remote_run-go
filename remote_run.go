@@ -20,7 +20,7 @@ func set_ticket_values(t []dao.Ticket, auth *dao.Auth) {
 }
 
 func get_logs(t dao.Ticket) string {
-	var pass_count, not_pass_count, must_check_count int
+	var pass_count, not_pass_count, must_check_count, unknown_count int
 	var body, log_str string
 	testcases := t.Get_testcases()
 
@@ -35,6 +35,8 @@ func get_logs(t dao.Ticket) string {
 			not_pass_count++
 		case dao.MUST_CHECK:
 			must_check_count++
+		default:
+			unknown_count++
 		}
 
 		body = fmt.Sprintf("%s\nTestcase_NO: %d\nTestcase_DES: %s\nStatus: %s\nLogs:", body, testcase.Get_id(), testcase.Get_dsctn(), testcase_status)
@@ -49,7 +51,11 @@ func get_logs(t dao.Ticket) string {
 		}
 	}
 
-	log_str = fmt.Sprintf("%sPASSED: %d, FAILED: %d, MUST_CHECK: %d\n\n%s", head, pass_count, not_pass_count, must_check_count, endtestcase)
+	if unknown_count > 0 {
+		log_str = fmt.Sprintf("%sPASSED: %d, FAILED: %d, MUST_CHECK: %d, UNKNOWN: %d\n\n%s", head, pass_count, not_pass_count, must_check_count, unknown_count, endtestcase)
+	} else {
+		log_str = fmt.Sprintf("%sPASSED: %d, FAILED: %d, MUST_CHECK: %d\n\n%s", head, pass_count, not_pass_count, must_check_count, endtestcase)
+	}
 
 	return fmt.Sprintf("%s%s\n\n%s", log_str, body, endticket)
 }

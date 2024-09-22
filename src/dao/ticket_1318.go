@@ -56,7 +56,7 @@ func (t *Ticket_1318) Add_testcases() {
 	// ticket 168
 	tc_170 := t.New_testcase(170, "Default Case Check. Linux AGENT")
 	tc_func := func() Testcase_status {
-		std_out, error := tc_170.Jobarg_exec("TICEKT_1318_windows")
+		std_out, error := tc_170.Jobarg_exec("TICKET_1318_linux")
 		if error != nil {
 			tc_170.Err_log("Error: %s, std_out: %s", error.Error(), std_out)
 			return FAILED
