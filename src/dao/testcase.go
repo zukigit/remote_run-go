@@ -9,6 +9,14 @@ import (
 const INFO = 1
 const ERR = 2
 
+type Testcase_status string
+
+const (
+	PASSED     Testcase_status = "PASSED"
+	FAILED     Testcase_status = "FAILED"
+	MUST_CHECK Testcase_status = "MUST_CHECK"
+)
+
 type TestCase struct {
 	id          uint
 	description string

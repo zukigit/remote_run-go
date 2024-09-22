@@ -6,7 +6,6 @@ import (
 	"strings"
 	"zukigit/remote_run-go/src/dao"
 	"zukigit/remote_run-go/src/lib"
-	"zukigit/remote_run-go/src/tickets"
 )
 
 var left, right, endticket, endtestcase, log_filename string
@@ -14,13 +13,13 @@ var left, right, endticket, endtestcase, log_filename string
 const INFO = 1
 const ERR = 2
 
-func set_ticket_values(t []tickets.Ticket, auth *dao.Auth) {
+func set_ticket_values(t []dao.Ticket, auth *dao.Auth) {
 	for _, ticket := range t {
 		ticket.Set_values(auth)
 	}
 }
 
-func get_logs(t tickets.Ticket) string {
+func get_logs(t dao.Ticket) string {
 	var pass_count, not_pass_count int
 	var body, log_str, status string
 	testcases := t.Get_testcases()
@@ -55,7 +54,7 @@ func get_logs(t tickets.Ticket) string {
 	return fmt.Sprintf("%s%s\n\n%s", log_str, body, endticket)
 }
 
-func run_tc(t []tickets.Ticket) {
+func run_tc(t []dao.Ticket) {
 	for _, ticket := range t {
 		ticket.Add_testcases()
 		ticket.Run()
@@ -63,14 +62,14 @@ func run_tc(t []tickets.Ticket) {
 	}
 }
 
-func add_tickets(t *[]tickets.Ticket) {
+func add_tickets(t *[]dao.Ticket) {
 	// Add your tickets here
-	*t = append(*t, new(tickets.Ticket_1318))
+	*t = append(*t, new(dao.Ticket_1318))
 	// is it rainy day?
 }
 
 func main() {
-	var tickets []tickets.Ticket
+	var tickets []dao.Ticket
 	add_tickets(&tickets)
 	log_filename = lib.Get_log_filename()
 
