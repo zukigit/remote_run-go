@@ -21,19 +21,19 @@ type TestCase struct {
 	id          uint
 	description string
 	logs        *[]string
-	is_passed   *bool
-	function    func() bool
+	status      *Testcase_status
+	function    func() Testcase_status
 	auth        *Auth
 }
 
 func New_testcase(testcase_id uint, testcase_description string, auth *Auth) *TestCase {
-	status := false
+	status := FAILED
 	logs := []string{}
 	return &TestCase{
 		id:          testcase_id,
 		description: testcase_description,
 		auth:        auth,
-		is_passed:   &status,
+		status:      &status,
 		logs:        &logs,
 	}
 }
@@ -58,19 +58,19 @@ func (t *TestCase) Get_logs() []string {
 	return *t.logs
 }
 
-func (t *TestCase) Set_is_passed(is_passed bool) {
-	*t.is_passed = is_passed
+func (t *TestCase) Set_status(status Testcase_status) {
+	*t.status = status
 }
 
-func (t *TestCase) Get_is_passed() bool {
-	return *t.is_passed
+func (t *TestCase) Get_status() Testcase_status {
+	return *t.status
 }
 
-func (t *TestCase) Set_function(function func() bool) {
+func (t *TestCase) Set_function(function func() Testcase_status) {
 	t.function = function
 }
 
-func (t *TestCase) Run_function() bool {
+func (t *TestCase) Run_function() Testcase_status {
 	return t.function()
 }
 
@@ -106,18 +106,19 @@ func (t *TestCase) Ssh_exec_to_str(command string) (string, error) {
 	return lib.Ssh_exec_to_str(command, t.auth.Ssh_client)
 }
 
-func (t *TestCase) Jobarg_exec(jobid string) (string, error) {
-	cmd := fmt.Sprintf("jobarg_exec -z %s -U Admin -P zabbix -j %s &> /tmp/moon_jobarg_exec_result", t.Get_auth().Hostname, jobid)
+func (t *TestCase) Jobarg_exec(jobnet_id string) (string, error) {
+	cmd := fmt.Sprintf("jobarg_exec -z %s -U Admin -P zabbix -j %s &> /tmp/moon_jobarg_exec_result", t.Get_auth().Hostname, jobnet_id)
 
 	_, err := lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
-	if err != nil {
-		return "", err
-	}
 
 	cmd = "cat /tmp/moon_jobarg_exec_result"
-	result, err := lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	result, err1 := lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	if err1 != nil {
+		return result, err1
+	}
+
 	if err != nil {
-		return "", err
+		return result, err
 	}
 
 	return lib.Get_res_no(result)
@@ -149,7 +150,7 @@ func (t *TestCase) Jobarg_get_LASTSTDERR(registry_number string) (string, error)
 }
 
 // Jobarg_get_jobnet_run_info waits util the jobnet is done or get error and returns Jobnet run info.
-func (t *TestCase) Jobarg_get_jobnet_run_info(registry_number string) (*Jobnet, error) {
+func (t *TestCase) Jobarg_get_jobnet_run_info(registry_number string) (*Jobnet_run_info, error) {
 	var status, job_status, exit_cd, std_out, std_error string
 	var err error
 	var index int

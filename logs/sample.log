@@ -1,41 +1,49 @@
-1318 - Fixed for negative JOB_EXT_CD return value.
-Passed: 1, Failed: 1
+Ticket[1318] Fixed for negative JOB_EXT_CD return value.
+PASSED: 1, FAILED: 1, MUST_CHECK: 0
 
 -------------------------><-------------------------
 Testcase_NO: 168
 Testcase_DES: Normal Case
-Status: Passed
+Status: PASSED
 Logs:
-20240922003904, [INFO] Test_case no[168], running...
-20240922003920, [INFO] Test_case no[168], finished!
+20240922125251, [INFO] Test_case no[168], running...
+20240922125300, [INFO] Test_case no[168], finished!
 -------------------------><-------------------------
 Testcase_NO: 169
 Testcase_DES: Abnormal Case
-Status: Failed
+Status: FAILED
 Logs:
-20240922003920, [INFO] Test_case no[169], running...
-20240922003920, [ERROR] Test_case no[169], has no function. SKIPPED!
-20240922003920, [INFO] Test_case no[169], finished!
+20240922125300, [INFO] Test_case no[169], running...
+20240922125300, [ERROR] Test_case no[169], has no function. SKIPPED!
+20240922125300, [INFO] Test_case no[169], finished!
+-------------------------><-------------------------
+Testcase_NO: 170
+Testcase_DES: Abnormal Case
+Status: FAILED
+Logs:
+20240922125300, [INFO] Test_case no[169], running...
+20240922125300, [ERROR] Test_case no[169], has no function. SKIPPED!
+20240922125300, [INFO] Test_case no[169], finished!
 
 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||X||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-1318 - Fixed for negative JOB_EXT_CD return value.
-Passed: 1, Failed: 1
+Ticket[1319] Fixed for negative JOB_EXT_CD return value.
+PASSED: 1, FAILED: 1, MUST_CHECK: 0
 
 -------------------------><-------------------------
-Testcase_NO: 168
+Testcase_NO: 171
 Testcase_DES: Normal Case
-Status: Passed
+Status: PASSED
 Logs:
-20240922003904, [INFO] Test_case no[168], running...
-20240922003920, [INFO] Test_case no[168], finished!
+20240922125251, [INFO] Test_case no[168], running...
+20240922125300, [INFO] Test_case no[168], finished!
 -------------------------><-------------------------
-Testcase_NO: 169
+Testcase_NO: 172
 Testcase_DES: Abnormal Case
-Status: Failed
+Status: FAILED
 Logs:
-20240922003920, [INFO] Test_case no[169], running...
-20240922003920, [ERROR] Test_case no[169], has no function. SKIPPED!
-20240922003920, [INFO] Test_case no[169], finished!
+20240922125300, [INFO] Test_case no[169], running...
+20240922125300, [ERROR] Test_case no[169], has no function. SKIPPED!
+20240922125300, [INFO] Test_case no[169], finished!
 
 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||X||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

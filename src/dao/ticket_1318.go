@@ -41,10 +41,10 @@ func (t *Ticket_1318) Run() {
 	for _, tc := range t.testcases {
 		fmt.Println(tc.Info_log("running..."))
 		if !tc.Is_function_nil() {
-			tc.Set_is_passed(tc.Run_function())
+			tc.Set_status(tc.Run_function())
 		} else {
 			fmt.Println(tc.Err_log("has no function. SKIPPED!"))
-			tc.Set_is_passed(false)
+			tc.Set_status(FAILED)
 		}
 
 		fmt.Println(tc.Info_log("finished!"))
@@ -55,20 +55,24 @@ func (t *Ticket_1318) Add_testcases() {
 	// Add your test case here
 	// ticket 168
 	tc_168 := t.New_testcase(168, "Normal Case")
-	tc_func := func() bool {
-		registry_number, error := tc_168.Jobarg_exec("JOBNET_1")
+	tc_func := func() Testcase_status {
+		std_out, error := tc_168.Jobarg_exec("JOBNET_1")
 		if error != nil {
-			tc_168.Err_log("Error: %s", error.Error())
-			return false
+			tc_168.Err_log("Error: %s, std_out: %s", error.Error(), std_out)
+			return FAILED
 		}
 
-		jobnet_info, error := tc_168.Jobarg_get_jobnet_run_info(registry_number)
+		jobnet_info, error := tc_168.Jobarg_get_jobnet_run_info(std_out)
 		if error != nil {
 			tc_168.Err_log("Error: %s", error.Error())
-			return false
+			return FAILED
 		}
 
-		return jobnet_info.Status == "END" && jobnet_info.Job_status == "NORMAL"
+		if jobnet_info.Jobnet_status == "END" && jobnet_info.Job_status == "NORMAL" {
+			return PASSED
+		}
+
+		return FAILED
 	}
 	tc_168.Set_function(tc_func)
 	t.Set_testcase(*tc_168)

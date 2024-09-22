@@ -20,24 +20,24 @@ func set_ticket_values(t []dao.Ticket, auth *dao.Auth) {
 }
 
 func get_logs(t dao.Ticket) string {
-	var pass_count, not_pass_count int
-	var body, log_str, status string
+	var pass_count, not_pass_count, must_check_count int
+	var body, log_str string
 	testcases := t.Get_testcases()
 
-	head := fmt.Sprintf("%d - %s\n", t.Get_no(), t.Get_dsctn())
+	head := fmt.Sprintf("Ticket[%d] %s\n", t.Get_no(), t.Get_dsctn())
 
 	for index, testcase := range testcases {
-		is_passed := testcase.Get_is_passed()
-		switch is_passed {
-		case true:
-			status = "Passed"
+		testcase_status := testcase.Get_status()
+		switch testcase_status {
+		case dao.PASSED:
 			pass_count++
-		case false:
-			status = "Failed"
+		case dao.FAILED:
 			not_pass_count++
+		case dao.MUST_CHECK:
+			must_check_count++
 		}
 
-		body = fmt.Sprintf("%s\nTestcase_NO: %d\nTestcase_DES: %s\nStatus: %s\nLogs:", body, testcase.Get_id(), testcase.Get_dsctn(), status)
+		body = fmt.Sprintf("%s\nTestcase_NO: %d\nTestcase_DES: %s\nStatus: %s\nLogs:", body, testcase.Get_id(), testcase.Get_dsctn(), testcase_status)
 
 		logs := testcase.Get_logs()
 		for _, log_value := range logs {
@@ -49,7 +49,7 @@ func get_logs(t dao.Ticket) string {
 		}
 	}
 
-	log_str = fmt.Sprintf("%sPassed: %d, Failed: %d\n\n%s", head, pass_count, not_pass_count, endtestcase)
+	log_str = fmt.Sprintf("%sPASSED: %d, FAILED: %d, MUST_CHECK: %d\n\n%s", head, pass_count, not_pass_count, must_check_count, endtestcase)
 
 	return fmt.Sprintf("%s%s\n\n%s", log_str, body, endticket)
 }
