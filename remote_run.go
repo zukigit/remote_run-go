@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"zukigit/remote_run-go/src"
 	"zukigit/remote_run-go/src/dao"
 	"zukigit/remote_run-go/src/lib"
 )
@@ -36,7 +35,6 @@ func main() {
 	auth := dao.Get_auth() // Get login informations from user
 	defer auth.Ssh_client.Close()
 
-	src.Set_common_auth(auth)
 	set_ticket_values(tickets, auth)
 	run_tc(tickets) // run test cases
 	fmt.Println(lib.Formatted_log(1, "Logged Filename: %s", log_filename))
