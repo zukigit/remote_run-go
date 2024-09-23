@@ -6,6 +6,7 @@ import (
 	"strings"
 	"zukigit/remote_run-go/src/dao"
 	"zukigit/remote_run-go/src/lib"
+	"zukigit/remote_run-go/src/tickets"
 )
 
 var left, right, endticket, endtestcase, log_filename string
@@ -70,7 +71,7 @@ func run_tc(t []dao.Ticket) {
 
 func add_tickets(t *[]dao.Ticket) {
 	// Add your tickets here
-	*t = append(*t, new(dao.Ticket_1318))
+	*t = append(*t, new(tickets.Ticket_1318))
 	// is it rainy day?
 }
 

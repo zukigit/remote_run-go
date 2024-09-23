@@ -4,26 +4,16 @@ import (
 	"fmt"
 	"strconv"
 	"time"
+	common "zukigit/remote_run-go/src"
 	"zukigit/remote_run-go/src/lib"
-)
-
-const INFO = 1
-const ERR = 2
-
-type Testcase_status string
-
-const (
-	PASSED     Testcase_status = "PASSED"
-	FAILED     Testcase_status = "FAILED"
-	MUST_CHECK Testcase_status = "MUST_CHECK"
 )
 
 type TestCase struct {
 	id          uint
 	description string
 	logs        *[]string
-	status      *Testcase_status
-	function    func() Testcase_status
+	status      *common.Testcase_status
+	function    func() common.Testcase_status
 	auth        *Auth
 }
 
@@ -59,19 +49,19 @@ func (t *TestCase) Get_logs() []string {
 	return *t.logs
 }
 
-func (t *TestCase) Set_status(status Testcase_status) {
+func (t *TestCase) Set_status(status common.Testcase_status) {
 	*t.status = status
 }
 
-func (t *TestCase) Get_status() Testcase_status {
+func (t *TestCase) Get_status() common.Testcase_status {
 	return *t.status
 }
 
-func (t *TestCase) Set_function(function func() Testcase_status) {
+func (t *TestCase) Set_function(function func() common.Testcase_status) {
 	t.function = function
 }
 
-func (t *TestCase) Run_function() Testcase_status {
+func (t *TestCase) Run_function() common.Testcase_status {
 	return t.function()
 }
 
@@ -91,12 +81,12 @@ func (t *TestCase) Logi(level int, log string) string {
 
 func (t *TestCase) Err_log(unfmt string, arg ...any) string {
 	log := fmt.Sprintf(unfmt, arg...)
-	return t.Logi(ERR, log)
+	return t.Logi(common.ERR, log)
 }
 
 func (t *TestCase) Info_log(unfmt string, arg ...any) string {
 	log := fmt.Sprintf(unfmt, arg...)
-	return t.Logi(INFO, log)
+	return t.Logi(common.INFO, log)
 }
 
 func (t *TestCase) Ssh_exec(command string) ([]byte, error) {
@@ -170,35 +160,35 @@ func (t *TestCase) Jobarg_get_jobnet_run_info(registry_number string) (*Jobnet_r
 	for {
 		jobnet_status, err = t.Jobarg_get_JA_JOBNETSTATUS(registry_number)
 		if err != nil {
-			lib.Formatted_log(INFO, "Error:%s", err.Error())
+			lib.Formatted_log(common.INFO, "Error:%s", err.Error())
 		}
 
 		job_status, err = t.Jobarg_get_JA_JOBSTATUS(registry_number)
 		if err != nil {
-			lib.Formatted_log(INFO, "Error:%s", err.Error())
+			lib.Formatted_log(common.INFO, "Error:%s", err.Error())
 		}
 
 		if jobnet_status == "END" || (jobnet_status == "RUN" && job_status == "ERROR") {
 			break
 		}
-		lib.Spinner_log(index, lib.Formatted_log(INFO, "Getting jobnet[%s] run info but jobnet is not finished yet", registry_number))
+		lib.Spinner_log(index, lib.Formatted_log(common.INFO, "Getting jobnet[%s] run info but jobnet is not finished yet", registry_number))
 		time.Sleep(1 * time.Second)
 		index++
 	}
 
 	exit_cd, err = t.Jobarg_get_LASTEXITCD(registry_number)
 	if err != nil {
-		lib.Formatted_log(INFO, "Error:%s", err.Error())
+		lib.Formatted_log(common.INFO, "Error:%s", err.Error())
 	}
 
 	std_out, err = t.Jobarg_get_LASTSTDOUT(registry_number)
 	if err != nil {
-		lib.Formatted_log(INFO, "Error:%s", err.Error())
+		lib.Formatted_log(common.INFO, "Error:%s", err.Error())
 	}
 
 	std_error, err = t.Jobarg_get_LASTSTDERR(registry_number)
 	if err != nil {
-		lib.Formatted_log(INFO, "Error:%s", err.Error())
+		lib.Formatted_log(common.INFO, "Error:%s", err.Error())
 	}
 
 	fmt.Println()
