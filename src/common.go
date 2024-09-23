@@ -1,6 +1,9 @@
 package src
 
-const INFO = 1
-const ERR = 2
+import "zukigit/remote_run-go/src/dao"
 
-type Testcase_status string
+var Auth *dao.Auth
+
+func Set_common_auth(auth *dao.Auth) {
+	Auth = auth
+}

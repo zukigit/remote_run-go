@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"zukigit/remote_run-go/src/lib"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
@@ -15,6 +16,16 @@ type Auth struct {
 	Username, Password, Hostname string
 	Port                         int
 	Ssh_client                   *ssh.Client
+}
+
+func New_auth(username, password, hostname string, port int, ssh_client *ssh.Client) *Auth {
+	return &Auth{
+		Username:   username,
+		Password:   password,
+		Hostname:   hostname,
+		Port:       port,
+		Ssh_client: ssh_client,
+	}
 }
 
 func Get_auth() *Auth {
@@ -60,10 +71,12 @@ func Get_auth() *Auth {
 	}
 	password := string(bytepw)
 
-	return &Auth{
-		Username: user,
-		Password: password,
-		Hostname: host,
-		Port:     port_int,
+	config := lib.Get_config(user, password)
+	client, err := lib.Get_client(host+":22", config)
+	if err != nil {
+		fmt.Println("Error:", err.Error())
+		os.Exit(1)
 	}
+
+	return New_auth(user, password, host, port_int, client)
 }

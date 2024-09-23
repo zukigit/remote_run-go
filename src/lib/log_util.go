@@ -35,6 +35,7 @@ func Get_log_filename() string {
 	return fmt.Sprintf("%s.log", Get_formatted_time())
 }
 
+// Write logs to the log file
 func Logi(log string, filename string) {
 	currentDir, err := os.Getwd()
 	if err != nil {

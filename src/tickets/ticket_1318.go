@@ -2,7 +2,6 @@ package tickets
 
 import (
 	"fmt"
-	common "zukigit/remote_run-go/src"
 	"zukigit/remote_run-go/src/dao"
 )
 
@@ -57,7 +56,7 @@ func (t *Ticket_1318) Add_testcases() {
 	// Add your test case here
 	// ticket 168
 	tc_170 := t.New_testcase(170, "Default Case Check. Linux AGENT")
-	tc_func := func() common.Testcase_status {
+	tc_func := func() dao.Testcase_status {
 		std_out, error := tc_170.Jobarg_exec("TICKET_1318_linux")
 		if error != nil {
 			tc_170.Err_log("Error: %s, std_out: %s", error.Error(), std_out)
