@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"zukigit/remote_run-go/src/dao"
 	"zukigit/remote_run-go/src/lib"
+	"zukigit/remote_run-go/src/tickets"
 )
 
 var log_filename string
@@ -18,13 +19,13 @@ func run_tc(t []dao.Ticket) {
 	for _, ticket := range t {
 		ticket.Add_testcases()
 		ticket.Run()
-		lib.Logi(dao.Get_ticket_logs(ticket), log_filename)
+		// lib.Logi(dao.Get_ticket_logs(ticket), log_filename)
 	}
 }
 
 func add_tickets(t *[]dao.Ticket) {
 	// Add your tickets here
-	*t = append(*t, new(dao.Ticket_1318))
+	*t = append(*t, new(tickets.Ticket_1318))
 }
 
 func main() {
@@ -35,6 +36,7 @@ func main() {
 	auth := dao.Get_auth() // Get login informations from user
 	defer auth.Ssh_client.Close()
 
+	lib.Set_common_client(auth.Ssh_client)
 	set_ticket_values(tickets, auth)
 	run_tc(tickets) // run test cases
 	fmt.Println(lib.Formatted_log(1, "Logged Filename: %s", log_filename))

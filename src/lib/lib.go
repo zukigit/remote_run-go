@@ -3,7 +3,15 @@ package lib
 import (
 	"errors"
 	"regexp"
+
+	"golang.org/x/crypto/ssh"
 )
+
+var Common_client *ssh.Client
+
+func Set_common_client(c *ssh.Client) {
+	Common_client = c
+}
 
 func Get_res_no(stdout string) (string, error) {
 	regex := regexp.MustCompile(`Registry number\s*:\s*\[\d+\]`)
