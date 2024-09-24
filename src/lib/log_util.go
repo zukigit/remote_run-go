@@ -7,9 +7,6 @@ import (
 	"time"
 )
 
-const INFO = 1
-const ERR = 2
-
 var spinner = []rune{'|', '/', '-', '\\'}
 
 func Get_formatted_time() string {

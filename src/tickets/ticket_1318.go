@@ -86,8 +86,16 @@ func (t *Ticket_1318) Add_testcases() {
 		err := lib.Restart_jaz_agent_windows()
 		if err != nil {
 			tc_169.Err_log("Failed to restart windows service. Error: %s", err.Error())
+			return FAILED
 		}
-		return FAILED
+
+		err = lib.Stop_jaz_agent_windows()
+		if err != nil {
+			tc_169.Err_log("Failed to stop windows service. Error: %s", err.Error())
+			return FAILED
+		}
+
+		return PASSED
 	}
 	tc_169.Set_function(tc_func)
 	t.Set_testcase(*tc_169) // Add testcase to ticket

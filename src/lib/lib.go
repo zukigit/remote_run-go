@@ -9,6 +9,9 @@ import (
 
 var Common_client *ssh.Client
 
+const INFO = 1
+const ERR = 2
+
 func Set_common_client(c *ssh.Client) {
 	Common_client = c
 }

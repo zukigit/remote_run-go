@@ -7,6 +7,9 @@ import (
 	"zukigit/remote_run-go/src/tickets"
 )
 
+const INFO = 1
+const ERR = 2
+
 var log_filename string
 
 func set_ticket_values(t []dao.Ticket, auth *dao.Auth) {
@@ -40,5 +43,5 @@ func main() {
 	dao.Set_ticket_logs_headers()
 	set_ticket_values(tickets, auth)
 	run_tc(tickets) // run test cases
-	fmt.Println(lib.Formatted_log(1, "Logged Filename: %s", log_filename))
+	fmt.Println(lib.Formatted_log(INFO, "Logged Filename: %s", log_filename))
 }
