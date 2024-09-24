@@ -56,11 +56,11 @@ func (t *Ticket_1318) Run() {
 func (t *Ticket_1318) Add_testcases() {
 	// Add your test case here
 	// ticket 168
-	tc_168 := t.New_testcase(169, "Abnormal Case") // create test case
+	tc_168 := t.New_testcase(168, "Normal Case with ExtUnsignedFlag=0, Windows agent") // create test case
 	tc_func := func() dao.Testcase_status {
 
 		// Set joabrg agent config value
-		err := lib.Jaz_set_agent_config_windows("ExtUnsignedFlag", "1")
+		err := lib.Jaz_set_agent_config_windows("ExtUnsignedFlag", "0")
 		if err != nil {
 			tc_168.Err_log("Failed to set joabrg agent config value. Error: %s", err.Error())
 			return FAILED
@@ -74,7 +74,7 @@ func (t *Ticket_1318) Add_testcases() {
 		}
 
 		// Run jobnet
-		run_jobnet_id, error := tc_168.Jobarg_exec("TICKET1318_TESTCASE_169")
+		run_jobnet_id, error := tc_168.Jobarg_exec("TICKET1318_TESTCASE169")
 		if error != nil {
 			tc_168.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id)
 			return FAILED
@@ -88,7 +88,7 @@ func (t *Ticket_1318) Add_testcases() {
 		}
 
 		// Check jobnet run status and exit code.
-		if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Exit_cd == 100000 {
+		if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Exit_cd == -100000 {
 			return PASSED
 		}
 
@@ -99,7 +99,7 @@ func (t *Ticket_1318) Add_testcases() {
 	t.Set_testcase(*tc_168) // Add testcase to ticket
 
 	// ticket 169
-	tc_169 := t.New_testcase(169, "Abnormal Case") // create test case
+	tc_169 := t.New_testcase(169, "Normal Case with ExtUnsignedFlag=1, Windows agent") // create test case
 	tc_func = func() dao.Testcase_status {
 
 		// Set joabrg agent config value
@@ -117,7 +117,7 @@ func (t *Ticket_1318) Add_testcases() {
 		}
 
 		// Run jobnet
-		run_jobnet_id, error := tc_169.Jobarg_exec("TICKET1318_TESTCASE_169")
+		run_jobnet_id, error := tc_169.Jobarg_exec("TICKET1318_TESTCASE169")
 		if error != nil {
 			tc_169.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id)
 			return FAILED
@@ -131,7 +131,7 @@ func (t *Ticket_1318) Add_testcases() {
 		}
 
 		// Check jobnet run status and exit code.
-		if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Exit_cd == 100000 {
+		if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Exit_cd == 4294867296 {
 			return PASSED
 		}
 
@@ -144,7 +144,7 @@ func (t *Ticket_1318) Add_testcases() {
 	// ticket 170
 	tc_170 := t.New_testcase(170, "Default Case Check. Linux AGENT")
 	tc_func = func() dao.Testcase_status {
-		std_out, error := tc_170.Jobarg_exec("TICKET_1318_linux")
+		std_out, error := tc_170.Jobarg_exec("TICKET1318_TESTCASE170")
 		if error != nil {
 			tc_170.Err_log("Error: %s, std_out: %s", error.Error(), std_out)
 			return FAILED

@@ -132,7 +132,6 @@ func Jaz_set_agent_config_windows(key string, value string) error {
 		line = strings.TrimSpace(line)
 
 		if strings.HasPrefix(line, key+"=") {
-			fmt.Println("found key1", key)
 			lines = append(lines, key+"="+value)
 			updated = true
 		} else {
