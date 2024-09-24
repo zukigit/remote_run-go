@@ -3,6 +3,7 @@ package tickets
 import (
 	"fmt"
 	"zukigit/remote_run-go/src/dao"
+	"zukigit/remote_run-go/src/lib"
 )
 
 type Ticket_1318 struct {
@@ -81,5 +82,13 @@ func (t *Ticket_1318) Add_testcases() {
 
 	// ticket 169
 	tc_169 := t.New_testcase(169, "Abnormal Case") // create test case
-	t.Set_testcase(*tc_169)                        // Add testcase to ticket
+	tc_func = func() dao.Testcase_status {
+		err := lib.Restart_jaz_agent_windows()
+		if err != nil {
+			tc_169.Err_log("Failed to restart windows service. Error: %s", err.Error())
+		}
+		return FAILED
+	}
+	tc_169.Set_function(tc_func)
+	t.Set_testcase(*tc_169) // Add testcase to ticket
 }
