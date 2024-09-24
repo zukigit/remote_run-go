@@ -1,0 +1,12 @@
+Ticket[1318] Fixed for negative JOB_EXT_CD return value.
+PASSED: 1, FAILED: 0, MUST_CHECK: 0
+
+-------------------------><-------------------------
+Testcase_NO: 169
+Testcase_DES: Abnormal Case
+Status: PASSED
+Logs:
+20240924220243, [INFO] Test_case no[169], running...
+20240924220244, [INFO] Test_case no[169], finished!
+
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||X||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

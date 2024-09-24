@@ -1,6 +1,11 @@
 package lib
 
 import (
+	"bufio"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"golang.org/x/sys/windows/svc"
@@ -101,4 +106,73 @@ func Restart_jaz_agent_windows() error {
 
 func Stop_jaz_agent_windows() error {
 	return Stop_service_windows("Job Arranger Agent")
+}
+
+// To use this function, you must have jobarg_agentd default filepath.
+// Keys must include the following format.
+//
+// 1) #Javalue=
+//
+// 2) Javalue=
+func Jaz_set_agent_config_windows(key string, value string) error {
+	var lines []string
+	var updated bool
+	file_location := filepath.Join("C:\\", "Program Files", "Job Arranger", "Job Arranger Agent", "conf", "jobarg_agentd.conf")
+
+	file, err := os.OpenFile(file_location, os.O_RDWR, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		line = strings.TrimSpace(line)
+
+		if strings.HasPrefix(line, key+"=") {
+			fmt.Println("found key1", key)
+			lines = append(lines, key+"="+value)
+			updated = true
+		} else {
+			lines = append(lines, line)
+		}
+	}
+
+	if !updated {
+		for index, l := range lines {
+			if strings.HasPrefix(l, "# "+key+"=") {
+				fmt.Println("found key2", key)
+				lines[index] = fmt.Sprintf("%s=%s", key, value)
+				updated = true
+			}
+		}
+	}
+
+	// Check for scanner errors
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+
+	if updated {
+		// Seek to the beginning of the file to overwrite it
+		if _, err := file.Seek(0, 0); err != nil {
+			return err
+		}
+
+		// Truncate the file to remove any leftover content
+		if err := file.Truncate(0); err != nil {
+			return err
+		}
+
+		// Write the updated lines back to the file
+		for _, line := range lines {
+			if _, err := file.WriteString(line + "\n"); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }

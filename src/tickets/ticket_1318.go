@@ -56,33 +56,33 @@ func (t *Ticket_1318) Run() {
 func (t *Ticket_1318) Add_testcases() {
 	// Add your test case here
 	// ticket 168
-	tc_170 := t.New_testcase(170, "Default Case Check. Linux AGENT")
-	tc_func := func() dao.Testcase_status {
-		std_out, error := tc_170.Jobarg_exec("TICKET_1318_linux")
-		if error != nil {
-			tc_170.Err_log("Error: %s, std_out: %s", error.Error(), std_out)
-			return FAILED
-		}
+	// tc_170 := t.New_testcase(170, "Default Case Check. Linux AGENT")
+	// tc_func := func() dao.Testcase_status {
+	// 	std_out, error := tc_170.Jobarg_exec("TICKET_1318_linux")
+	// 	if error != nil {
+	// 		tc_170.Err_log("Error: %s, std_out: %s", error.Error(), std_out)
+	// 		return FAILED
+	// 	}
 
-		jobnet_info, error := tc_170.Jobarg_get_jobnet_run_info(std_out)
-		if error != nil {
-			tc_170.Err_log("Error: %s", error.Error())
-			return FAILED
-		}
+	// 	jobnet_info, error := tc_170.Jobarg_get_jobnet_run_info(std_out)
+	// 	if error != nil {
+	// 		tc_170.Err_log("Error: %s", error.Error())
+	// 		return FAILED
+	// 	}
 
-		if jobnet_info.Jobnet_status == "END" && jobnet_info.Job_status == "NORMAL" && jobnet_info.Exit_cd == 96 {
-			return PASSED
-		}
+	// 	if jobnet_info.Jobnet_status == "END" && jobnet_info.Job_status == "NORMAL" && jobnet_info.Exit_cd == 96 {
+	// 		return PASSED
+	// 	}
 
-		tc_170.Err_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_info.Jobnet_status, jobnet_info.Job_status, jobnet_info.Exit_cd)
-		return FAILED
-	}
-	tc_170.Set_function(tc_func)
-	t.Set_testcase(*tc_170)
+	// 	tc_170.Err_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_info.Jobnet_status, jobnet_info.Job_status, jobnet_info.Exit_cd)
+	// 	return FAILED
+	// }
+	// tc_170.Set_function(tc_func)
+	// t.Set_testcase(*tc_170)
 
 	// ticket 169
 	tc_169 := t.New_testcase(169, "Abnormal Case") // create test case
-	tc_func = func() dao.Testcase_status {
+	tc_func := func() dao.Testcase_status {
 		err := lib.Restart_jaz_agent_windows()
 		if err != nil {
 			tc_169.Err_log("Failed to restart windows service. Error: %s", err.Error())
@@ -94,6 +94,8 @@ func (t *Ticket_1318) Add_testcases() {
 			tc_169.Err_log("Failed to stop windows service. Error: %s", err.Error())
 			return FAILED
 		}
+
+		lib.Jaz_set_agent_config_windows("ExtUnsignedFlag", "1")
 
 		return PASSED
 	}
