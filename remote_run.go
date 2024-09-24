@@ -19,7 +19,7 @@ func run_tc(t []dao.Ticket) {
 	for _, ticket := range t {
 		ticket.Add_testcases()
 		ticket.Run()
-		// lib.Logi(dao.Get_ticket_logs(ticket), log_filename)
+		lib.Logi(dao.Get_ticket_logs(ticket), log_filename)
 	}
 }
 
@@ -37,6 +37,7 @@ func main() {
 	defer auth.Ssh_client.Close()
 
 	lib.Set_common_client(auth.Ssh_client)
+	dao.Set_ticket_logs_headers()
 	set_ticket_values(tickets, auth)
 	run_tc(tickets) // run test cases
 	fmt.Println(lib.Formatted_log(1, "Logged Filename: %s", log_filename))

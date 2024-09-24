@@ -99,21 +99,13 @@ func (t *TestCase) Info_log(unfmt string, arg ...any) string {
 	return t.Logi(INFO, log)
 }
 
-func (t *TestCase) Ssh_exec(command string) ([]byte, error) {
-	return lib.Ssh_exec(command, t.auth.Ssh_client)
-}
-
-func (t *TestCase) Ssh_exec_to_str(command string) (string, error) {
-	return lib.Ssh_exec_to_str(command, t.auth.Ssh_client)
-}
-
 func (t *TestCase) Jobarg_exec(jobnet_id string) (string, error) {
 	cmd := fmt.Sprintf("jobarg_exec -z %s -U Admin -P zabbix -j %s &> /tmp/moon_jobarg_exec_result", t.Get_auth().Hostname, jobnet_id)
 
-	_, err := lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	_, err := lib.Ssh_exec_to_str(cmd)
 
 	cmd = "cat /tmp/moon_jobarg_exec_result"
-	result, err1 := lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	result, err1 := lib.Ssh_exec_to_str(cmd)
 	if err1 != nil {
 		return result, err1
 	}
@@ -127,17 +119,17 @@ func (t *TestCase) Jobarg_exec(jobnet_id string) (string, error) {
 
 func (t *TestCase) Jobarg_get_JA_JOBNETSTATUS(registry_number string) (string, error) {
 	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $JA_JOBNETSTATUS", t.Get_auth().Hostname, registry_number)
-	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	return lib.Ssh_exec_to_str(cmd)
 }
 
 func (t *TestCase) Jobarg_get_JA_JOBSTATUS(registry_number string) (string, error) {
 	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $JA_JOBSTATUS", t.Get_auth().Hostname, registry_number)
-	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	return lib.Ssh_exec_to_str(cmd)
 }
 
 func (t *TestCase) Jobarg_get_LASTEXITCD(registry_number string) (int64, error) {
 	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $JA_LASTEXITCD", t.Get_auth().Hostname, registry_number)
-	exit_cd, err := lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	exit_cd, err := lib.Ssh_exec_to_str(cmd)
 	if err != nil {
 		return -1, err
 	}
@@ -152,12 +144,12 @@ func (t *TestCase) Jobarg_get_LASTEXITCD(registry_number string) (int64, error) 
 
 func (t *TestCase) Jobarg_get_LASTSTDOUT(registry_number string) (string, error) {
 	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $JA_LASTSTDOUT", t.Get_auth().Hostname, registry_number)
-	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	return lib.Ssh_exec_to_str(cmd)
 }
 
 func (t *TestCase) Jobarg_get_LASTSTDERR(registry_number string) (string, error) {
 	cmd := fmt.Sprintf("eval $(jobarg_get -z %s -U Admin -P zabbix -r %s -e) && echo -n $JA_LASTSTDERR", t.Get_auth().Hostname, registry_number)
-	return lib.Ssh_exec_to_str(cmd, t.auth.Ssh_client)
+	return lib.Ssh_exec_to_str(cmd)
 }
 
 // Jobarg_get_jobnet_run_info waits util the jobnet is done or get error and returns Jobnet run info.
