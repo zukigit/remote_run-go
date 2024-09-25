@@ -60,7 +60,7 @@ func (t *Ticket_1318) Add_testcases() {
 	tc_func := func() dao.Testcase_status {
 
 		// Set joabrg agent config value
-		err := lib.Jaz_set_agent_config_windows("ExtUnsignedFlag", "0")
+		err := lib.Ja_set_agent_config_windows("ExtUnsignedFlag", "0")
 		if err != nil {
 			tc_168.Err_log("Failed to set joabrg agent config value. Error: %s", err.Error())
 			return FAILED
@@ -103,7 +103,7 @@ func (t *Ticket_1318) Add_testcases() {
 	tc_func = func() dao.Testcase_status {
 
 		// Set joabrg agent config value
-		err := lib.Jaz_set_agent_config_windows("ExtUnsignedFlag", "1")
+		err := lib.Ja_set_agent_config_windows("ExtUnsignedFlag", "1")
 		if err != nil {
 			tc_169.Err_log("Failed to set joabrg agent config value. Error: %s", err.Error())
 			return FAILED
@@ -144,15 +144,27 @@ func (t *Ticket_1318) Add_testcases() {
 	// ticket 170
 	tc_170 := t.New_testcase(170, "Default Case Check. Linux AGENT")
 	tc_func = func() dao.Testcase_status {
-		std_out, error := tc_170.Jobarg_exec("TICKET1318_TESTCASE170")
-		if error != nil {
-			tc_170.Err_log("Error: %s, std_out: %s", error.Error(), std_out)
+		err := lib.Ja_set_agent_config_linux("ExtUnsignedFlag", "0")
+		if err != nil {
+			tc_170.Err_log("Error: %s", err.Error())
 			return FAILED
 		}
 
-		jobnet_info, error := tc_170.Jobarg_get_jobnet_run_info(std_out)
-		if error != nil {
-			tc_170.Err_log("Error: %s", error.Error())
+		err = lib.Restart_jaz_agent_linux()
+		if err != nil {
+			tc_170.Err_log("Error: %s", err.Error())
+			return FAILED
+		}
+
+		run_jobnet_id, err := tc_170.Jobarg_exec("TICKET1318_TESTCASE170")
+		if err != nil {
+			tc_170.Err_log("Error: %s, std_out: %s", err.Error(), run_jobnet_id)
+			return FAILED
+		}
+
+		jobnet_info, err := tc_170.Jobarg_get_jobnet_run_info(run_jobnet_id)
+		if err != nil {
+			tc_170.Err_log("Error: %s", err.Error())
 			return FAILED
 		}
 

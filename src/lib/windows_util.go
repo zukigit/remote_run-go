@@ -109,12 +109,7 @@ func Stop_jaz_agent_windows() error {
 }
 
 // To use this function, you must have jobarg_agentd default filepath.
-// Keys must include the following format.
-//
-// 1) #Javalue=
-//
-// 2) Javalue=
-func Jaz_set_agent_config_windows(key string, value string) error {
+func Ja_set_agent_config_windows(key string, value string) error {
 	var lines []string
 	var updated bool
 	file_location := filepath.Join("C:\\", "Program Files", "Job Arranger", "Job Arranger Agent", "conf", "jobarg_agentd.conf")
