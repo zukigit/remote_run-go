@@ -26,13 +26,9 @@ func run_tc(t []dao.Ticket) {
 	}
 }
 
-func add_tickets(t *[]dao.Ticket) {
-	// Add your tickets here
-	*t = append(*t, new(tickets.Ticket_1318))
-}
-
 func main() {
 	var tickets []dao.Ticket
+
 	add_tickets(&tickets)
 	log_filename = lib.Get_log_filename()
 
@@ -42,6 +38,12 @@ func main() {
 	lib.Set_common_client(auth.Ssh_client)
 	dao.Set_ticket_logs_headers()
 	set_ticket_values(tickets, auth)
+
 	run_tc(tickets) // run test cases
 	fmt.Println(lib.Formatted_log(INFO, "Logged Filename: %s", log_filename))
+}
+
+func add_tickets(t *[]dao.Ticket) {
+	// Add your tickets here
+	*t = append(*t, new(tickets.Ticket_1318))
 }

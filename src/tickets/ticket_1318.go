@@ -31,7 +31,7 @@ func (t *Ticket_1318) Get_dsctn() string {
 	return t.description
 }
 
-func (t *Ticket_1318) Set_testcase(tc dao.TestCase) {
+func (t *Ticket_1318) Add_testcase(tc dao.TestCase) {
 	t.testcases = append(t.testcases, tc)
 }
 
@@ -96,7 +96,7 @@ func (t *Ticket_1318) Add_testcases() {
 		return FAILED
 	}
 	tc_168.Set_function(tc_func)
-	t.Set_testcase(*tc_168) // Add testcase to ticket
+	t.Add_testcase(*tc_168) // Add testcase to ticket
 
 	// ticket 169
 	tc_169 := t.New_testcase(169, "Normal Case with ExtUnsignedFlag=1, Windows agent") // create test case
@@ -139,7 +139,7 @@ func (t *Ticket_1318) Add_testcases() {
 		return FAILED
 	}
 	tc_169.Set_function(tc_func)
-	t.Set_testcase(*tc_169) // Add testcase to ticket
+	t.Add_testcase(*tc_169) // Add testcase to ticket
 
 	// ticket 170
 	tc_170 := t.New_testcase(170, "Default Case Check. Linux AGENT")
@@ -176,5 +176,5 @@ func (t *Ticket_1318) Add_testcases() {
 		return FAILED
 	}
 	tc_170.Set_function(tc_func)
-	t.Set_testcase(*tc_170)
+	t.Add_testcase(*tc_170)
 }
