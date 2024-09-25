@@ -5,40 +5,40 @@ import (
 	"zukigit/remote_run-go/src/dao"
 )
 
-type Ticket_XXX struct {
+type Ticket_000 struct {
 	no          uint
 	description string
 	auth        *dao.Auth
 	testcases   []dao.TestCase
 }
 
-func (t *Ticket_XXX) Set_values(auth *dao.Auth) {
+func (t *Ticket_000) Set_values(auth *dao.Auth) {
 	t.no = 000 // Enter your ticket id here
 	t.description = "Enter your ticket description here."
 	t.auth = auth
 }
 
-func (t *Ticket_XXX) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
+func (t *Ticket_000) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
 	return dao.New_testcase(testcase_id, testcase_description, t.auth)
 }
 
-func (t *Ticket_XXX) Get_no() uint {
+func (t *Ticket_000) Get_no() uint {
 	return t.no
 }
 
-func (t *Ticket_XXX) Get_dsctn() string {
+func (t *Ticket_000) Get_dsctn() string {
 	return t.description
 }
 
-func (t *Ticket_XXX) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_000) Add_testcase(tc dao.TestCase) {
 	t.testcases = append(t.testcases, tc)
 }
 
-func (t *Ticket_XXX) Get_testcases() []dao.TestCase {
+func (t *Ticket_000) Get_testcases() []dao.TestCase {
 	return t.testcases
 }
 
-func (t *Ticket_XXX) Run() {
+func (t *Ticket_000) Run() {
 	for _, tc := range t.testcases {
 		fmt.Println(tc.Info_log("running..."))
 		if !tc.Is_function_nil() {
@@ -52,7 +52,7 @@ func (t *Ticket_XXX) Run() {
 	}
 }
 
-func (t *Ticket_XXX) Add_testcases() {
+func (t *Ticket_000) Add_testcases() {
 	// Add your test case here
 
 	// ticket 000
