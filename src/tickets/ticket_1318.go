@@ -55,7 +55,7 @@ func (t *Ticket_1318) Run() {
 
 func (t *Ticket_1318) Add_testcases() {
 	// Add your test case here
-	// ticket 168
+	// testcase 168
 	tc_168 := t.New_testcase(168, "Normal Case with ExtUnsignedFlag=0, Windows agent") // create test case
 	tc_func := func() dao.Testcase_status {
 
@@ -98,7 +98,7 @@ func (t *Ticket_1318) Add_testcases() {
 	tc_168.Set_function(tc_func)
 	t.Add_testcase(*tc_168) // Add testcase to ticket
 
-	// ticket 169
+	// testcase 169
 	tc_169 := t.New_testcase(169, "Normal Case with ExtUnsignedFlag=1, Windows agent") // create test case
 	tc_func = func() dao.Testcase_status {
 
@@ -141,7 +141,7 @@ func (t *Ticket_1318) Add_testcases() {
 	tc_169.Set_function(tc_func)
 	t.Add_testcase(*tc_169) // Add testcase to ticket
 
-	// ticket 170
+	// testcase 170
 	tc_170 := t.New_testcase(170, "Default Case Check. Linux AGENT")
 	tc_func = func() dao.Testcase_status {
 		err := lib.Ja_set_agent_config_linux("ExtUnsignedFlag", "0")

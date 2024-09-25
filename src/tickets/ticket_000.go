@@ -12,12 +12,6 @@ type Ticket_000 struct {
 	testcases   []dao.TestCase
 }
 
-func (t *Ticket_000) Set_values(auth *dao.Auth) {
-	t.no = 000 // Enter your ticket id here
-	t.description = "Enter your ticket description here."
-	t.auth = auth
-}
-
 func (t *Ticket_000) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
 	return dao.New_testcase(testcase_id, testcase_description, t.auth)
 }
@@ -52,13 +46,19 @@ func (t *Ticket_000) Run() {
 	}
 }
 
+func (t *Ticket_000) Set_values(auth *dao.Auth) {
+	t.no = 000 // Enter your ticket id here
+	t.description = "Enter your ticket description here."
+	t.auth = auth
+}
+
 func (t *Ticket_000) Add_testcases() {
 	// Add your test case here
 
-	// ticket 000
+	// testcase 000
 	tc_000 := t.New_testcase(000, "Enter your test case description here.")
 	tc_func := func() dao.Testcase_status {
-		// Enter your test case function here
+		// Enter your test case logic here
 		return FAILED
 	}
 	tc_000.Set_function(tc_func)
