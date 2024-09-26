@@ -66,5 +66,5 @@ func Get_ticket_logs(t Ticket) string {
 		log_str = fmt.Sprintf("%sPASSED: %d, FAILED: %d, MUST_CHECK: %d\n\n%s", head, pass_count, not_pass_count, must_check_count, endtestcase)
 	}
 
-	return fmt.Sprintf("%s%s\n\n%s", log_str, body, endticket)
+	return fmt.Sprintf("%s%s\n\n%s\n\n", log_str, body, endticket)
 }

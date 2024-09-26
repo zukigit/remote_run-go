@@ -46,4 +46,5 @@ func main() {
 func add_tickets(t *[]dao.Ticket) {
 	// Add your tickets here
 	*t = append(*t, new(tickets.Ticket_1318))
+	*t = append(*t, new(tickets.Ticket_000))
 }
