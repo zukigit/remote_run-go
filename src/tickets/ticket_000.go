@@ -46,16 +46,16 @@ func (t *Ticket_000) Run() {
 	}
 }
 
+// Enter your ticket information here
 func (t *Ticket_000) Set_values(auth *dao.Auth) {
-	t.no = 000 // Enter your ticket id here
+	t.no = 000 // Enter your ticket id
 	t.description = "Enter your ticket description here."
 	t.auth = auth
 }
 
+// Add your test case here
 func (t *Ticket_000) Add_testcases() {
-	// Add your test case here
-
-	// testcase 000
+	// TESTCASE 000
 	tc_000 := t.New_testcase(000, "Enter your test case description here.")
 	tc_func := func() dao.Testcase_status {
 		// Enter your test case logic here
