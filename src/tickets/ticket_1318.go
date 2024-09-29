@@ -53,9 +53,9 @@ func (t *Ticket_1318) Run() {
 	}
 }
 
+// Add your testcase here
 func (t *Ticket_1318) Add_testcases() {
-	// Add your test case here
-	// testcase 168
+	// TESTCASE 168
 	tc_168 := t.New_testcase(168, "Normal Case with ExtUnsignedFlag=0, Windows agent") // create test case
 	tc_func := func() dao.Testcase_status {
 
@@ -98,7 +98,7 @@ func (t *Ticket_1318) Add_testcases() {
 	tc_168.Set_function(tc_func)
 	t.Add_testcase(*tc_168) // Add testcase to ticket
 
-	// testcase 169
+	// TESTCASE 169
 	tc_169 := t.New_testcase(169, "Normal Case with ExtUnsignedFlag=1, Windows agent") // create test case
 	tc_func = func() dao.Testcase_status {
 
@@ -141,7 +141,7 @@ func (t *Ticket_1318) Add_testcases() {
 	tc_169.Set_function(tc_func)
 	t.Add_testcase(*tc_169) // Add testcase to ticket
 
-	// testcase 170
+	// TESTCASE 170
 	tc_170 := t.New_testcase(170, "Default Case Check. Linux AGENT")
 	tc_func = func() dao.Testcase_status {
 		err := lib.Ja_set_agent_config_linux("ExtUnsignedFlag", "0")
@@ -162,17 +162,17 @@ func (t *Ticket_1318) Add_testcases() {
 			return FAILED
 		}
 
-		jobnet_info, err := tc_170.Jobarg_get_jobnet_run_info(run_jobnet_id)
+		jobnet_run_info, err := tc_170.Jobarg_get_jobnet_run_info(run_jobnet_id)
 		if err != nil {
 			tc_170.Err_log("Error: %s", err.Error())
 			return FAILED
 		}
 
-		if jobnet_info.Jobnet_status == "END" && jobnet_info.Job_status == "NORMAL" && jobnet_info.Exit_cd == 96 {
+		if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Exit_cd == 96 {
 			return PASSED
 		}
 
-		tc_170.Err_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_info.Jobnet_status, jobnet_info.Job_status, jobnet_info.Exit_cd)
+		tc_170.Err_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd)
 		return FAILED
 	}
 	tc_170.Set_function(tc_func)
