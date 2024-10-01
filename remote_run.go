@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"zukigit/remote_run-go/cmd"
 	"zukigit/remote_run-go/src/dao"
 	"zukigit/remote_run-go/src/lib"
 	"zukigit/remote_run-go/src/tickets"
@@ -28,7 +27,7 @@ func run_tc(t []dao.Ticket) {
 }
 
 func main() {
-	cmd.Execute()
+	// cmd.Execute()
 	var tickets []dao.Ticket
 
 	add_tickets(&tickets)
