@@ -2,30 +2,18 @@ package dao
 
 import (
 	"fmt"
-	"strings"
+	"zukigit/remote_run-go/src/common"
 )
-
-var left, right, endticket, endtestcase string
 
 type Ticket interface {
 	Run()
-	Set_values(auth *Auth)
+	Set_values()
 	Get_no() uint
 	Get_dsctn() string
 	Add_testcase(tc TestCase)
 	Add_testcases()
 	Get_testcases() []TestCase
 	New_testcase(testcase_id uint, testcase_description string) *TestCase
-}
-
-func Set_ticket_logs_headers() {
-	left = strings.Repeat("|", 60)
-	right = strings.Repeat("|", 60)
-	endticket = fmt.Sprintf("%sX%s", left, right)
-
-	left = strings.Repeat("-", 25)
-	right = strings.Repeat("-", 25)
-	endtestcase = fmt.Sprintf("%s><%s", left, right)
 }
 
 func Get_ticket_logs(t Ticket) string {
@@ -56,15 +44,15 @@ func Get_ticket_logs(t Ticket) string {
 		}
 
 		if index < len(testcases)-1 {
-			body = fmt.Sprintf("%s\n%s", body, endtestcase)
+			body = fmt.Sprintf("%s\n%s", body, common.Endtestcase_string)
 		}
 	}
 
 	if unknown_count > 0 {
-		log_str = fmt.Sprintf("%sPASSED: %d, FAILED: %d, MUST_CHECK: %d, UNKNOWN: %d\n\n%s", head, pass_count, not_pass_count, must_check_count, unknown_count, endtestcase)
+		log_str = fmt.Sprintf("%sPASSED: %d, FAILED: %d, MUST_CHECK: %d, UNKNOWN: %d\n\n%s", head, pass_count, not_pass_count, must_check_count, unknown_count, common.Endtestcase_string)
 	} else {
-		log_str = fmt.Sprintf("%sPASSED: %d, FAILED: %d, MUST_CHECK: %d\n\n%s", head, pass_count, not_pass_count, must_check_count, endtestcase)
+		log_str = fmt.Sprintf("%sPASSED: %d, FAILED: %d, MUST_CHECK: %d\n\n%s", head, pass_count, not_pass_count, must_check_count, common.Endtestcase_string)
 	}
 
-	return fmt.Sprintf("%s%s\n\n%s\n\n", log_str, body, endticket)
+	return fmt.Sprintf("%s%s\n\n%s\n\n", log_str, body, common.Endticket_string)
 }

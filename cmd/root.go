@@ -5,23 +5,29 @@ package cmd
 
 import (
 	"os"
+	"zukigit/remote_run-go/src/common"
 
 	"github.com/spf13/cobra"
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "remote_run-go",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Use:   "remote_run.exe user@host",
+	Short: "Automated testing",
+	Long:  "Automated testing",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if err := cobra.ExactArgs(1)(cmd, args); err != nil {
+			return err
+		}
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+		return common.Set_usr_hst(args)
+	},
+
+	Run: func(cmd *cobra.Command, args []string) {
+		common.Set_passwd()
+		common.Set_client()
+		common.Set_ticket_logs_headers()
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -42,5 +48,6 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.Flags().StringVarP(&common.Specific_ticket_no, "ticket_no", "t", "", "Ticket number to run")
+	rootCmd.Flags().IntVarP(&common.Login_info.Port, "port", "p", 22, "Port")
 }

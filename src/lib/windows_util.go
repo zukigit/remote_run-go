@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"zukigit/remote_run-go/src/common"
 
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/mgr"
@@ -92,7 +93,7 @@ func Stop_service_windows(service string) error {
 		if err != nil {
 			return err
 		}
-		Spinner_log(index, Formatted_log(INFO, "Jobarg agent service is stopping."))
+		Spinner_log(index, Formatted_log(common.INFO, "Jobarg agent service is stopping."))
 
 		time.Sleep(2 * time.Second)
 	}

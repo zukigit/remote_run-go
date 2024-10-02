@@ -2,18 +2,18 @@ package tickets
 
 import (
 	"fmt"
+	"zukigit/remote_run-go/src/common"
 	"zukigit/remote_run-go/src/dao"
 )
 
 type Ticket_000 struct {
 	no          uint
 	description string
-	auth        *dao.Auth
 	testcases   []dao.TestCase
 }
 
 func (t *Ticket_000) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description, t.auth)
+	return dao.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_000) Get_no() uint {
@@ -47,17 +47,16 @@ func (t *Ticket_000) Run() {
 }
 
 // Enter your ticket information here
-func (t *Ticket_000) Set_values(auth *dao.Auth) {
+func (t *Ticket_000) Set_values() {
 	t.no = 000 // Enter your ticket id
 	t.description = "Enter your ticket description here."
-	t.auth = auth
 }
 
 // Add your test case here
 func (t *Ticket_000) Add_testcases() {
 	// TESTCASE 000
 	tc_000 := t.New_testcase(000, "Enter your test case description here.")
-	tc_func := func() dao.Testcase_status {
+	tc_func := func() common.Testcase_status {
 		// Enter your test case logic here
 		return FAILED
 	}

@@ -2,6 +2,7 @@ package tickets
 
 import (
 	"fmt"
+	"zukigit/remote_run-go/src/common"
 	"zukigit/remote_run-go/src/dao"
 	"zukigit/remote_run-go/src/lib"
 )
@@ -9,18 +10,16 @@ import (
 type Ticket_1318 struct {
 	no          uint
 	description string
-	auth        *dao.Auth
 	testcases   []dao.TestCase
 }
 
-func (t *Ticket_1318) Set_values(auth *dao.Auth) {
+func (t *Ticket_1318) Set_values() {
 	t.no = 1318
 	t.description = "Fixed for negative JOB_EXT_CD return value."
-	t.auth = auth
 }
 
 func (t *Ticket_1318) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description, t.auth)
+	return dao.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_1318) Get_no() uint {
@@ -57,7 +56,7 @@ func (t *Ticket_1318) Run() {
 func (t *Ticket_1318) Add_testcases() {
 	// TESTCASE 168
 	tc_168 := t.New_testcase(168, "Normal Case with ExtUnsignedFlag=0, Windows agent") // create test case
-	tc_func := func() dao.Testcase_status {
+	tc_func := func() common.Testcase_status {
 
 		// Set joabrg agent config value
 		err := lib.Ja_set_agent_config_windows("ExtUnsignedFlag", "0")
@@ -74,14 +73,14 @@ func (t *Ticket_1318) Add_testcases() {
 		}
 
 		// Run jobnet
-		run_jobnet_id, error := tc_168.Jobarg_exec("TICKET1318_TESTCASE169")
+		run_jobnet_id, error := lib.Jobarg_exec("TICKET1318_TESTCASE169")
 		if error != nil {
 			tc_168.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id)
 			return FAILED
 		}
 
 		// Wait jobnet finishes and get jobnet run info.
-		jobnet_run_info, error := tc_168.Jobarg_get_jobnet_run_info(run_jobnet_id)
+		jobnet_run_info, error := lib.Jobarg_get_jobnet_run_info(run_jobnet_id)
 		if error != nil {
 			tc_168.Err_log("Error: %s", error.Error())
 			return FAILED
@@ -100,7 +99,7 @@ func (t *Ticket_1318) Add_testcases() {
 
 	// TESTCASE 169
 	tc_169 := t.New_testcase(169, "Normal Case with ExtUnsignedFlag=1, Windows agent") // create test case
-	tc_func = func() dao.Testcase_status {
+	tc_func = func() common.Testcase_status {
 
 		// Set joabrg agent config value
 		err := lib.Ja_set_agent_config_windows("ExtUnsignedFlag", "1")
@@ -117,14 +116,14 @@ func (t *Ticket_1318) Add_testcases() {
 		}
 
 		// Run jobnet
-		run_jobnet_id, error := tc_169.Jobarg_exec("TICKET1318_TESTCASE169")
+		run_jobnet_id, error := lib.Jobarg_exec("TICKET1318_TESTCASE169")
 		if error != nil {
 			tc_169.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id)
 			return FAILED
 		}
 
 		// Wait jobnet finishes and get jobnet run info.
-		jobnet_run_info, error := tc_169.Jobarg_get_jobnet_run_info(run_jobnet_id)
+		jobnet_run_info, error := lib.Jobarg_get_jobnet_run_info(run_jobnet_id)
 		if error != nil {
 			tc_169.Err_log("Error: %s", error.Error())
 			return FAILED
@@ -143,7 +142,7 @@ func (t *Ticket_1318) Add_testcases() {
 
 	// TESTCASE 170
 	tc_170 := t.New_testcase(170, "Default Case Check. Linux AGENT")
-	tc_func = func() dao.Testcase_status {
+	tc_func = func() common.Testcase_status {
 		err := lib.Ja_set_agent_config_linux("ExtUnsignedFlag", "0")
 		if err != nil {
 			tc_170.Err_log("Error: %s", err.Error())
@@ -156,13 +155,13 @@ func (t *Ticket_1318) Add_testcases() {
 			return FAILED
 		}
 
-		run_jobnet_id, err := tc_170.Jobarg_exec("TICKET1318_TESTCASE170")
+		run_jobnet_id, err := lib.Jobarg_exec("TICKET1318_TESTCASE170")
 		if err != nil {
 			tc_170.Err_log("Error: %s, std_out: %s", err.Error(), run_jobnet_id)
 			return FAILED
 		}
 
-		jobnet_run_info, err := tc_170.Jobarg_get_jobnet_run_info(run_jobnet_id)
+		jobnet_run_info, err := lib.Jobarg_get_jobnet_run_info(run_jobnet_id)
 		if err != nil {
 			tc_170.Err_log("Error: %s", err.Error())
 			return FAILED
