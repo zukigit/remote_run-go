@@ -13,7 +13,9 @@ import (
 const INFO = 1
 const ERR = 2
 
-var Left_string, Right_string, Endticket_string, Endtestcase_string, Specific_ticket_no, Log_filename string
+var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename string
+
+var Specific_ticket_no uint
 
 type Testcase_status string
 

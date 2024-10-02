@@ -10,7 +10,7 @@ import (
 	"zukigit/remote_run-go/src/tickets"
 )
 
-var tkts []dao.Ticket
+var tkts, run_tickets []dao.Ticket
 
 func set_ticket_values(t []dao.Ticket) {
 	for _, ticket := range t {
@@ -26,16 +26,29 @@ func run_tc(t []dao.Ticket) {
 	}
 }
 
-func check_ticket_duplicate() error {
+func check_duplicated_ticket() {
 	seen := make(map[uint]bool)
 
 	for _, tkt := range tkts {
 		if seen[tkt.Get_no()] {
-			return fmt.Errorf("ticket[%d] is duplicated", tkt.Get_no())
+			fmt.Printf("Error: ticket[%d] is duplicated\n", tkt.Get_no())
+			os.Exit(1)
 		}
 		seen[tkt.Get_no()] = true
 	}
-	return nil
+}
+
+func add_run_tickets(ticket_number uint) {
+	if ticket_number == 0 {
+		run_tickets = tkts
+	} else {
+		for _, t := range tkts {
+			if ticket_number == t.Get_no() {
+				run_tickets = append(run_tickets, t)
+				break
+			}
+		}
+	}
 }
 
 func main() {
@@ -46,14 +59,16 @@ func main() {
 
 	add_tickets(&tkts)
 	set_ticket_values(tkts)
+	check_duplicated_ticket()
+	add_run_tickets(common.Specific_ticket_no)
 
-	if err := check_ticket_duplicate(); err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
+	run_tc(run_tickets) // run test cases
+
+	if len(run_tickets) > 0 {
+		fmt.Println(lib.Formatted_log(common.INFO, "Logged Filename: %s", common.Log_filename))
+	} else {
+		fmt.Println("There is no ticket to run.")
 	}
-
-	run_tc(tkts) // run test cases
-	fmt.Println(lib.Formatted_log(common.INFO, "Logged Filename: %s", common.Log_filename))
 }
 
 func add_tickets(t *[]dao.Ticket) {

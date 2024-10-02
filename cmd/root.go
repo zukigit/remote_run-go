@@ -48,6 +48,6 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().StringVarP(&common.Specific_ticket_no, "ticket_no", "t", "", "Ticket number to run")
+	rootCmd.Flags().UintVarP(&common.Specific_ticket_no, "ticket_no", "t", 0, "Ticket number to run")
 	rootCmd.Flags().IntVarP(&common.Login_info.Port, "port", "p", 22, "Port")
 }
