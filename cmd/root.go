@@ -24,6 +24,7 @@ var rootCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
+		common.Continue_flag = true
 		common.Set_passwd()
 		common.Set_client()
 		common.Set_ticket_logs_headers()

@@ -51,10 +51,17 @@ func add_run_tickets(ticket_number uint) {
 	}
 }
 
+func check_continue() {
+	if !common.Continue_flag {
+		os.Exit(0)
+	}
+}
+
 func main() {
 	common.Log_filename = lib.Get_log_filename()
 
 	cmd.Execute()
+	check_continue()
 	defer common.Client.Close()
 
 	add_tickets(&tkts)
