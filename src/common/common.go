@@ -16,7 +16,6 @@ const ERR = 2
 var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename string
 
 var Specific_ticket_no uint
-var Continue_flag bool
 
 type Testcase_status string
 

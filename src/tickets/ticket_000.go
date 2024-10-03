@@ -48,8 +48,10 @@ func (t *Ticket_000) Run() {
 
 // Enter your ticket information here
 func (t *Ticket_000) Set_values() {
-	t.no = 000 // Enter your ticket id
+	t.no = 123 // Enter your ticket id
 	t.description = "Enter your ticket description here."
+
+	fmt.Println("t.no", t.no)
 }
 
 // Add your test case here
