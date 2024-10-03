@@ -57,13 +57,15 @@ func run_tc(t []dao.Ticket) {
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "remote_run.exe user@host",
+	Use:   "remote_run.exe user@host [ticket_number]",
 	Short: "Automated testing",
 	Long:  "Automated testing",
 	Args: func(cmd *cobra.Command, args []string) error {
-		if err := cobra.ExactArgs(1)(cmd, args); err != nil {
+		if err := cobra.ExactArgs(2)(cmd, args); err != nil {
 			return err
 		}
+
+		common.Set_specific_ticket_no(args)
 
 		return common.Set_usr_hst(args)
 	},
@@ -91,6 +93,7 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
@@ -98,7 +101,6 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().UintVarP(&common.Specific_ticket_no, "ticket_no", "t", 0, "Ticket number to run")
 	rootCmd.Flags().IntVarP(&common.Login_info.Port, "port", "p", 22, "Port")
 }
 

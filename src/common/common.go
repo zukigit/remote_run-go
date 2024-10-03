@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"syscall"
 
@@ -22,6 +23,15 @@ type Testcase_status string
 var Client *ssh.Client
 
 var Login_info Auth
+
+func Set_specific_ticket_no(args []string) {
+	num, err := strconv.ParseUint(args[1], 10, 64)
+	if err != nil {
+		Specific_ticket_no = 0
+	} else {
+		Specific_ticket_no = uint(num)
+	}
+}
 
 func Set_usr_hst(args []string) error {
 	parts := strings.Split(args[0], "@")
