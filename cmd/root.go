@@ -77,9 +77,6 @@ var rootCmd = &cobra.Command{
 		defer common.Client.Close()
 
 		common.Set_ticket_logs_headers()
-		add_tickets(&tkts)
-		set_ticket_values(tkts)
-		check_duplicated_ticket()
 		add_run_tickets(common.Specific_ticket_no)
 
 		run_tc(run_tickets) // run test cases
@@ -101,6 +98,10 @@ func Execute() {
 }
 
 func init() {
+	add_tickets(&tkts)
+	set_ticket_values(tkts)
+	check_duplicated_ticket()
+
 	rootCmd.Flags().IntVarP(&common.Login_info.Port, "port", "p", 22, "Port")
 }
 
