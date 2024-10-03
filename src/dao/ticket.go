@@ -50,10 +50,10 @@ func Get_ticket_logs(t Ticket) string {
 	}
 
 	if unknown_count > 0 {
-		log_str = fmt.Sprintf("%sPASSED: %d, FAILED: %d, MUST_CHECK: %d, UNKNOWN: %d\n\n%s", head, pass_count, not_pass_count, must_check_count, unknown_count, common.Endtestcase_string)
+		log_str = fmt.Sprintf("%sPASSED: %d, FAILED: %d, MUST_CHECK: %d, UNKNOWN: %d\n%s", head, pass_count, not_pass_count, must_check_count, unknown_count, common.Endtestcase_string)
 	} else {
-		log_str = fmt.Sprintf("%sPASSED: %d, FAILED: %d, MUST_CHECK: %d\n\n%s", head, pass_count, not_pass_count, must_check_count, common.Endtestcase_string)
+		log_str = fmt.Sprintf("%sPASSED: %d, FAILED: %d, MUST_CHECK: %d\n%s", head, pass_count, not_pass_count, must_check_count, common.Endtestcase_string)
 	}
 
-	return fmt.Sprintf("%s%s\n\n%s\n\n", log_str, body, common.Endticket_string)
+	return fmt.Sprintf("%s%s\n%s\n", log_str, body, common.Endticket_string)
 }

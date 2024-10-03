@@ -1,0 +1,36 @@
+Ticket[1318] Fixed for negative JOB_EXT_CD return value.
+PASSED: 1, FAILED: 2, MUST_CHECK: 0
+--------------------------------------------------
+Testcase_NO: 168
+Testcase_DES: Normal Case with ExtUnsignedFlag=0, Windows agent
+Status: FAILED
+Logs:
+20241004000639, [INFO] Test_case no[168], running...
+20241004000639, [ERROR] Test_case no[168], Failed to restart windows service. Error: Access is denied.
+20241004000639, [INFO] Test_case no[168], finished!
+--------------------------------------------------
+Testcase_NO: 169
+Testcase_DES: Normal Case with ExtUnsignedFlag=1, Windows agent
+Status: FAILED
+Logs:
+20241004000639, [INFO] Test_case no[169], running...
+20241004000639, [ERROR] Test_case no[169], Failed to restart windows service. Error: Access is denied.
+20241004000639, [INFO] Test_case no[169], finished!
+--------------------------------------------------
+Testcase_NO: 170
+Testcase_DES: Default Case Check. Linux AGENT
+Status: PASSED
+Logs:
+20241004000639, [INFO] Test_case no[170], running...
+20241004000649, [INFO] Test_case no[170], finished!
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||X||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Ticket[1] Enter your ticket description here.
+PASSED: 0, FAILED: 1, MUST_CHECK: 0
+--------------------------------------------------
+Testcase_NO: 0
+Testcase_DES: Enter your test case description here.
+Status: FAILED
+Logs:
+20241004000649, [INFO] Test_case no[0], running...
+20241004000649, [INFO] Test_case no[0], finished!
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||X||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

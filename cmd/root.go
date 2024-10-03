@@ -77,12 +77,6 @@ var rootCmd = &cobra.Command{
 		common.Set_client()
 		defer common.Client.Close()
 
-		common.Set_logger(common.Log_filename)
-		defer common.Logger.Sync()
-
-		common.Set_logger_with_stdout(common.Log_filename)
-		defer common.Logger_with_stdout.Sync()
-
 		common.Set_ticket_logs_headers()
 		add_run_tickets(common.Specific_ticket_no)
 
