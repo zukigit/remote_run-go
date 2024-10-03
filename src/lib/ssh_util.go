@@ -1,7 +1,7 @@
 package lib
 
 import (
-	"zukigit/remote_run-go/src/common"
+	"github.com/zukigit/remote_run-go/src/common"
 
 	"golang.org/x/crypto/ssh"
 )

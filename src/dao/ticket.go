@@ -2,7 +2,8 @@ package dao
 
 import (
 	"fmt"
-	"zukigit/remote_run-go/src/common"
+
+	"github.com/zukigit/remote_run-go/src/common"
 )
 
 type Ticket interface {

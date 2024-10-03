@@ -5,7 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-	"zukigit/remote_run-go/src/common"
+
+	"github.com/zukigit/remote_run-go/src/common"
 )
 
 var spinner = []rune{'|', '/', '-', '\\'}

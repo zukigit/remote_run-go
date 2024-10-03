@@ -1,6 +1,6 @@
 package dao
 
-import "zukigit/remote_run-go/src/common"
+import "github.com/zukigit/remote_run-go/src/common"
 
 const (
 	PASSED     common.Testcase_status = "PASSED"

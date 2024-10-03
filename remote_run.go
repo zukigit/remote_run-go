@@ -1,7 +1,7 @@
 package main
 
 import (
-	"zukigit/remote_run-go/cmd"
+	"github.com/zukigit/remote_run-go/cmd"
 )
 
 func main() {

@@ -2,8 +2,9 @@ package dao
 
 import (
 	"fmt"
-	"zukigit/remote_run-go/src/common"
-	"zukigit/remote_run-go/src/lib"
+
+	"github.com/zukigit/remote_run-go/src/common"
+	"github.com/zukigit/remote_run-go/src/lib"
 )
 
 type TestCase struct {
