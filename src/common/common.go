@@ -7,6 +7,8 @@ import (
 	"strings"
 	"syscall"
 
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
 )
@@ -14,15 +16,44 @@ import (
 const INFO = 1
 const ERR = 2
 
-var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename string
-
-var Specific_ticket_no uint
-
 type Testcase_status string
 
+var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename string
+var Specific_ticket_no uint
 var Client *ssh.Client
-
 var Login_info Auth
+var Logger, Logger_with_stdout *zap.Logger
+
+func Set_logger(log_file_path string) {
+	logger_config := zap.NewProductionConfig()
+	logger_config.Encoding = "console"
+	logger_config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("20060102150405")
+	logger_config.OutputPaths = []string{
+		log_file_path,
+	}
+	logger, err := logger_config.Build()
+	if err != nil {
+		fmt.Println("ERROR:", err.Error())
+		os.Exit(1)
+	}
+	Logger = logger
+}
+
+func Set_logger_with_stdout(log_file_path string) {
+	logger_config := zap.NewProductionConfig()
+	logger_config.Encoding = "console"
+	logger_config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("20060102150405")
+	logger_config.OutputPaths = []string{
+		log_file_path,
+		"stdout",
+	}
+	logger, err := logger_config.Build()
+	if err != nil {
+		fmt.Println("ERROR:", err.Error())
+		os.Exit(1)
+	}
+	Logger_with_stdout = logger
+}
 
 func Set_specific_ticket_no(args []string) {
 	if len(args) < 2 {
