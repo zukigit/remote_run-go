@@ -62,7 +62,7 @@ var rootCmd = &cobra.Command{
 	Short: "Automated testing",
 	Long:  "Automated testing",
 	Args: func(cmd *cobra.Command, args []string) error {
-		if err := cobra.ExactArgs(2)(cmd, args); err != nil {
+		if err := cobra.MinimumNArgs(1)(cmd, args); err != nil {
 			return err
 		}
 

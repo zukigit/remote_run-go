@@ -25,11 +25,15 @@ var Client *ssh.Client
 var Login_info Auth
 
 func Set_specific_ticket_no(args []string) {
-	num, err := strconv.ParseUint(args[1], 10, 64)
-	if err != nil {
+	if len(args) < 2 {
 		Specific_ticket_no = 0
 	} else {
-		Specific_ticket_no = uint(num)
+		num, err := strconv.ParseUint(args[1], 10, 64)
+		if err != nil {
+			Specific_ticket_no = 0
+		} else {
+			Specific_ticket_no = uint(num)
+		}
 	}
 }
 
