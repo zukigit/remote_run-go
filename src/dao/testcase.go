@@ -65,7 +65,7 @@ func (t *TestCase) Is_function_nil() bool {
 // From here is test case util functions
 
 func (t *TestCase) Logi(level int, log string) string {
-	log = fmt.Sprintf("Test_case no[%d], %s", t.Get_id(), log)
+	log = fmt.Sprintf("Test_case[%d], %s", t.Get_id(), log)
 	log = lib.Formatted_log(level, log)
 	t.Set_log(log)
 
