@@ -104,3 +104,48 @@ func Jobarg_get_jobnet_run_info(registry_number string) (*common.Jobnet_run_info
 	fmt.Println()
 	return common.New_jobnet_run_info(jobnet_status, job_status, std_out, std_error, exit_cd), nil
 }
+
+// Jobarg_get_jobnet_run_info waits util the jobnet is done or get error and returns Jobnet run info.
+func Jobarg_get_jobnet_info(registry_number string, targetJobnetStatus string, targetJobStatus string) (*common.Jobnet_run_info, error) {
+	var jobnet_status, job_status, std_out, std_error string
+	var err error
+	var index int
+	var exit_cd int64
+
+	for {
+		jobnet_status, err = Jobarg_get_JA_JOBNETSTATUS(registry_number)
+		if err != nil {
+			Formatted_log(common.INFO, "Error:%s", err.Error())
+		}
+
+		job_status, err = Jobarg_get_JA_JOBSTATUS(registry_number)
+		if err != nil {
+			Formatted_log(common.INFO, "Error:%s", err.Error())
+		}
+
+		if jobnet_status == targetJobnetStatus && job_status == targetJobStatus {
+			break
+		}
+		Spinner_log(index, Formatted_log(common.INFO, "Getting jobnet[%s] run info but jobnet is not finished yet", registry_number))
+		time.Sleep(1 * time.Second)
+		index++
+	}
+
+	exit_cd, err = Jobarg_get_LASTEXITCD(registry_number)
+	if err != nil {
+		Formatted_log(common.INFO, "Error:%s", err.Error())
+	}
+
+	std_out, err = Jobarg_get_LASTSTDOUT(registry_number)
+	if err != nil {
+		Formatted_log(common.INFO, "Error:%s", err.Error())
+	}
+
+	std_error, err = Jobarg_get_LASTSTDERR(registry_number)
+	if err != nil {
+		Formatted_log(common.INFO, "Error:%s", err.Error())
+	}
+
+	fmt.Println()
+	return common.New_jobnet_run_info(jobnet_status, job_status, std_out, std_error, exit_cd), nil
+}
