@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
@@ -20,6 +21,33 @@ var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filenam
 var Specific_ticket_no uint
 var Client *ssh.Client
 var Login_info Auth
+var Log_file *os.File
+
+func Set_log_file(file_name string) {
+	currentDir, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error:", err.Error())
+		os.Exit(1)
+	}
+
+	sub_dir := filepath.Join(currentDir, "logs")
+	file_path := filepath.Join(sub_dir, file_name)
+
+	if _, err := os.Stat(sub_dir); os.IsNotExist(err) {
+		err = os.Mkdir(sub_dir, 0755) // Create the directory with read/write permissions
+		if err != nil {
+			fmt.Println("Error:", err.Error())
+			os.Exit(1)
+		}
+	}
+
+	file, err := os.OpenFile(file_path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Println("Error:", err.Error())
+		os.Exit(1)
+	}
+	Log_file = file
+}
 
 func Set_specific_ticket_no(args []string) {
 	if len(args) < 2 {

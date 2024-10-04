@@ -52,7 +52,7 @@ func run_tc(t []dao.Ticket) {
 	for _, ticket := range t {
 		ticket.Add_testcases()
 		ticket.Run()
-		lib.Logi(dao.Get_ticket_logs(ticket), common.Log_filename)
+		lib.Logi(dao.Get_ticket_logs(ticket))
 	}
 }
 
@@ -76,6 +76,9 @@ var rootCmd = &cobra.Command{
 		common.Set_passwd()
 		common.Set_client()
 		defer common.Client.Close()
+
+		common.Set_log_file(common.Log_filename)
+		defer common.Log_file.Close()
 
 		common.Set_ticket_logs_headers()
 		add_run_tickets(common.Specific_ticket_no)
