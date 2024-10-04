@@ -2,8 +2,9 @@ package tickets
 
 import (
 	"fmt"
-	"zukigit/remote_run-go/src/common"
-	"zukigit/remote_run-go/src/dao"
+
+	"github.com/zukigit/remote_run-go/src/common"
+	"github.com/zukigit/remote_run-go/src/dao"
 )
 
 type Ticket_000 struct {
@@ -48,7 +49,7 @@ func (t *Ticket_000) Run() {
 
 // Enter your ticket information here
 func (t *Ticket_000) Set_values() {
-	t.no = 123 // Enter your ticket id
+	t.no = 1 // Enter your ticket id
 	t.description = "Enter your ticket description here."
 }
 

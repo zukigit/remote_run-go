@@ -7,7 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-	"zukigit/remote_run-go/src/common"
+
+	"github.com/zukigit/remote_run-go/src/common"
 
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/mgr"

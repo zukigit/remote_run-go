@@ -1,4 +1,4 @@
-module zukigit/remote_run-go
+module github.com/zukigit/remote_run-go
 
 go 1.23.1
 

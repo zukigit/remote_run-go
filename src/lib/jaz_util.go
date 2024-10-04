@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"time"
-	"zukigit/remote_run-go/src/common"
+
+	"github.com/zukigit/remote_run-go/src/common"
 )
 
 func Jobarg_exec(jobnet_id string) (string, error) {

@@ -5,7 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-	"zukigit/remote_run-go/src/common"
+
+	"github.com/zukigit/remote_run-go/src/common"
 )
 
 var spinner = []rune{'|', '/', '-', '\\'}
@@ -21,9 +22,12 @@ func Formatted_log(level int, unfmt string, arg ...any) string {
 
 	switch level {
 	case common.INFO:
-		log = formattedTime + ", [INFO] " + log
+		log = formattedTime + " [INFO] " + log
 	case common.ERR:
-		log = formattedTime + ", [ERROR] " + log
+		log = formattedTime + " [ERROR] " + log
+	default:
+		log = formattedTime + " [UNKNOWN] " + log
+
 	}
 
 	return log

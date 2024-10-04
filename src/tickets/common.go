@@ -1,7 +1,7 @@
 package tickets
 
 import (
-	"zukigit/remote_run-go/src/common"
+	"github.com/zukigit/remote_run-go/src/common"
 )
 
 const (

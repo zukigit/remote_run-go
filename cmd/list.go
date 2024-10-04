@@ -14,7 +14,11 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all avaliable tickets.",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list called")
+		fmt.Println("Total ticket:", len(tkts))
+		fmt.Println()
+		for index, t := range tkts {
+			fmt.Printf("(%d) %d - %s\n", index+1, t.Get_no(), t.Get_dsctn())
+		}
 	},
 }
 

@@ -14,22 +14,23 @@ import (
 const INFO = 1
 const ERR = 2
 
-var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename string
-
-var Specific_ticket_no uint
-
 type Testcase_status string
 
+var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename string
+var Specific_ticket_no uint
 var Client *ssh.Client
-
 var Login_info Auth
 
 func Set_specific_ticket_no(args []string) {
-	num, err := strconv.ParseUint(args[1], 10, 64)
-	if err != nil {
+	if len(args) < 2 {
 		Specific_ticket_no = 0
 	} else {
-		Specific_ticket_no = uint(num)
+		num, err := strconv.ParseUint(args[1], 10, 64)
+		if err != nil {
+			Specific_ticket_no = 0
+		} else {
+			Specific_ticket_no = uint(num)
+		}
 	}
 }
 
@@ -78,11 +79,11 @@ func Set_client() {
 }
 
 func Set_ticket_logs_headers() {
-	Left_string = strings.Repeat("|", 60)
-	Right_string = strings.Repeat("|", 60)
-	Endticket_string = fmt.Sprintf("%sX%s", Left_string, Right_string)
+	Left_string = strings.Repeat("/", 60)
+	Right_string = strings.Repeat("/", 60)
+	Endticket_string = fmt.Sprintf("%s%s", Left_string, Right_string)
 
 	Left_string = strings.Repeat("-", 25)
 	Right_string = strings.Repeat("-", 25)
-	Endtestcase_string = fmt.Sprintf("%s><%s", Left_string, Right_string)
+	Endtestcase_string = fmt.Sprintf("%s%s", Left_string, Right_string)
 }

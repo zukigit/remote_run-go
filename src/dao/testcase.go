@@ -2,8 +2,9 @@ package dao
 
 import (
 	"fmt"
-	"zukigit/remote_run-go/src/common"
-	"zukigit/remote_run-go/src/lib"
+
+	"github.com/zukigit/remote_run-go/src/common"
+	"github.com/zukigit/remote_run-go/src/lib"
 )
 
 type TestCase struct {
@@ -64,7 +65,7 @@ func (t *TestCase) Is_function_nil() bool {
 // From here is test case util functions
 
 func (t *TestCase) Logi(level int, log string) string {
-	log = fmt.Sprintf("Test_case no[%d], %s", t.Get_id(), log)
+	log = fmt.Sprintf("[%d] %s", t.Get_id(), log)
 	log = lib.Formatted_log(level, log)
 	t.Set_log(log)
 

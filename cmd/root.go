@@ -6,10 +6,11 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"zukigit/remote_run-go/src/common"
-	"zukigit/remote_run-go/src/dao"
-	"zukigit/remote_run-go/src/lib"
-	"zukigit/remote_run-go/src/tickets"
+
+	"github.com/zukigit/remote_run-go/src/common"
+	"github.com/zukigit/remote_run-go/src/dao"
+	"github.com/zukigit/remote_run-go/src/lib"
+	"github.com/zukigit/remote_run-go/src/tickets"
 
 	"github.com/spf13/cobra"
 )
@@ -61,7 +62,7 @@ var rootCmd = &cobra.Command{
 	Short: "Automated testing",
 	Long:  "Automated testing",
 	Args: func(cmd *cobra.Command, args []string) error {
-		if err := cobra.ExactArgs(2)(cmd, args); err != nil {
+		if err := cobra.MinimumNArgs(1)(cmd, args); err != nil {
 			return err
 		}
 
@@ -77,9 +78,6 @@ var rootCmd = &cobra.Command{
 		defer common.Client.Close()
 
 		common.Set_ticket_logs_headers()
-		add_tickets(&tkts)
-		set_ticket_values(tkts)
-		check_duplicated_ticket()
 		add_run_tickets(common.Specific_ticket_no)
 
 		run_tc(run_tickets) // run test cases
@@ -101,6 +99,10 @@ func Execute() {
 }
 
 func init() {
+	add_tickets(&tkts)
+	set_ticket_values(tkts)
+	check_duplicated_ticket()
+
 	rootCmd.Flags().IntVarP(&common.Login_info.Port, "port", "p", 22, "Port")
 }
 
