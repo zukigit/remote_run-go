@@ -2,9 +2,10 @@ package tickets
 
 import (
 	"fmt"
-	"zukigit/remote_run-go/src/common"
-	"zukigit/remote_run-go/src/dao"
-	"zukigit/remote_run-go/src/lib"
+
+	"github.com/zukigit/remote_run-go/src/common"
+	"github.com/zukigit/remote_run-go/src/dao"
+	"github.com/zukigit/remote_run-go/src/lib"
 )
 
 type Ticket_811 struct {
