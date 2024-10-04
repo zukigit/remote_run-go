@@ -74,7 +74,6 @@ var rootCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("db", common.DB_type)
 		common.Log_filename = lib.Get_log_filename()
 		common.Set_passwd()
 		common.Set_client()

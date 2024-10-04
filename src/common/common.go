@@ -32,7 +32,7 @@ var DB_type Database
 
 func Set_db_type() error {
 	if !Is_mysql && !Is_psql {
-		return fmt.Errorf("database type is null. use --with-mysql or --with-mysql or --with-postgresql")
+		return fmt.Errorf("please choose db type using --with-mysql --with-postgresql")
 	}
 
 	if Is_mysql {
