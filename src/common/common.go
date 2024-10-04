@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"syscall"
 
@@ -12,16 +11,38 @@ import (
 	"golang.org/x/term"
 )
 
+type Testcase_status string
+type Database string
+
 const INFO = 1
 const ERR = 2
 
-type Testcase_status string
+const (
+	MYSQL Database = "MYSQL"
+	PSQL  Database = "PSQL"
+)
 
 var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename string
 var Specific_ticket_no uint
 var Client *ssh.Client
 var Login_info Auth
 var Log_file *os.File
+var Is_mysql, Is_psql bool
+var DB_type Database
+
+func Set_db_type() error {
+	if !Is_mysql && !Is_psql {
+		return fmt.Errorf("database type is null. use --with-mysql or --with-mysql or --with-postgresql")
+	}
+
+	if Is_mysql {
+		DB_type = MYSQL
+	} else {
+		DB_type = PSQL
+	}
+
+	return nil
+}
 
 func Set_log_file(file_name string) {
 	currentDir, err := os.Getwd()
@@ -47,19 +68,6 @@ func Set_log_file(file_name string) {
 		os.Exit(1)
 	}
 	Log_file = file
-}
-
-func Set_specific_ticket_no(args []string) {
-	if len(args) < 2 {
-		Specific_ticket_no = 0
-	} else {
-		num, err := strconv.ParseUint(args[1], 10, 64)
-		if err != nil {
-			Specific_ticket_no = 0
-		} else {
-			Specific_ticket_no = uint(num)
-		}
-	}
 }
 
 func Set_usr_hst(args []string) error {
