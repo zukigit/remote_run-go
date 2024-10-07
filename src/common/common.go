@@ -3,7 +3,7 @@ package common
 import (
 	"fmt"
 	"os"
-	"strconv"
+	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -11,27 +11,63 @@ import (
 	"golang.org/x/term"
 )
 
+type Testcase_status string
+type Database string
+
 const INFO = 1
 const ERR = 2
 
-type Testcase_status string
+const (
+	MYSQL Database = "MYSQL"
+	PSQL  Database = "PSQL"
+)
 
 var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename string
 var Specific_ticket_no uint
 var Client *ssh.Client
 var Login_info Auth
+var Log_file *os.File
+var Is_mysql, Is_psql bool
+var DB_type Database
 
-func Set_specific_ticket_no(args []string) {
-	if len(args) < 2 {
-		Specific_ticket_no = 0
+func Set_db_type() error {
+	if !Is_mysql && !Is_psql {
+		return fmt.Errorf("please choose db type using --with-mysql --with-postgresql")
+	}
+
+	if Is_mysql {
+		DB_type = MYSQL
 	} else {
-		num, err := strconv.ParseUint(args[1], 10, 64)
+		DB_type = PSQL
+	}
+
+	return nil
+}
+
+func Set_log_file(file_name string) {
+	currentDir, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error:", err.Error())
+		os.Exit(1)
+	}
+
+	sub_dir := filepath.Join(currentDir, "logs")
+	file_path := filepath.Join(sub_dir, file_name)
+
+	if _, err := os.Stat(sub_dir); os.IsNotExist(err) {
+		err = os.Mkdir(sub_dir, 0755) // Create the directory with read/write permissions
 		if err != nil {
-			Specific_ticket_no = 0
-		} else {
-			Specific_ticket_no = uint(num)
+			fmt.Println("Error:", err.Error())
+			os.Exit(1)
 		}
 	}
+
+	file, err := os.OpenFile(file_path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Println("Error:", err.Error())
+		os.Exit(1)
+	}
+	Log_file = file
 }
 
 func Set_usr_hst(args []string) error {

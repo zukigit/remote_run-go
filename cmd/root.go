@@ -52,13 +52,13 @@ func run_tc(t []dao.Ticket) {
 	for _, ticket := range t {
 		ticket.Add_testcases()
 		ticket.Run()
-		lib.Logi(dao.Get_ticket_logs(ticket), common.Log_filename)
+		lib.Logi(dao.Get_ticket_logs(ticket))
 	}
 }
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "remote_run.exe user@host [ticket_number]",
+	Use:   "remote_run.exe user@host --with-mysql (or) --with-postgresql",
 	Short: "Automated testing",
 	Long:  "Automated testing",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -66,7 +66,9 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		common.Set_specific_ticket_no(args)
+		if err := common.Set_db_type(); err != nil {
+			return err
+		}
 
 		return common.Set_usr_hst(args)
 	},
@@ -76,6 +78,9 @@ var rootCmd = &cobra.Command{
 		common.Set_passwd()
 		common.Set_client()
 		defer common.Client.Close()
+
+		common.Set_log_file(common.Log_filename)
+		defer common.Log_file.Close()
 
 		common.Set_ticket_logs_headers()
 		add_run_tickets(common.Specific_ticket_no)
@@ -104,6 +109,9 @@ func init() {
 	check_duplicated_ticket()
 
 	rootCmd.Flags().IntVarP(&common.Login_info.Port, "port", "p", 22, "Port")
+	rootCmd.Flags().BoolVar(&common.Is_mysql, "with-mysql", false, "Use MySQL database")
+	rootCmd.Flags().BoolVar(&common.Is_psql, "with-postgresql", false, "Use PostgreSQL database")
+	rootCmd.Flags().UintVar(&common.Specific_ticket_no, "ticket", 0, "Ticket number to run specific ticket")
 }
 
 // Add your tickets here

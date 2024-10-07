@@ -3,7 +3,6 @@ package lib
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
@@ -38,32 +37,12 @@ func Get_log_filename() string {
 }
 
 // Write logs to the log file
-func Logi(log string, filename string) {
-	currentDir, err := os.Getwd()
-	if err != nil {
-		fmt.Println("Error:", err.Error())
+func Logi(log string) {
+	if common.Log_file == nil {
+		fmt.Println("Error: Log_file is nil.")
 		os.Exit(1)
 	}
-
-	sub_dir := filepath.Join(currentDir, "logs")
-	file_path := filepath.Join(sub_dir, filename)
-
-	if _, err := os.Stat(sub_dir); os.IsNotExist(err) {
-		err = os.Mkdir(sub_dir, 0755) // Create the directory with read/write permissions
-		if err != nil {
-			fmt.Println("Error:", err.Error())
-			os.Exit(1)
-		}
-	}
-
-	file, err := os.OpenFile(file_path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Println("Error:", err.Error())
-		os.Exit(1)
-	}
-	defer file.Close()
-
-	if _, err := file.WriteString(log); err != nil {
+	if _, err := common.Log_file.WriteString(log); err != nil {
 		fmt.Println("Error:", err.Error())
 		os.Exit(1)
 	}

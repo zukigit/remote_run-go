@@ -71,12 +71,12 @@ func Jobarg_get_jobnet_run_info(registry_number string) (*common.Jobnet_run_info
 	for {
 		jobnet_status, err = Jobarg_get_JA_JOBNETSTATUS(registry_number)
 		if err != nil {
-			Formatted_log(common.INFO, "Error:%s", err.Error())
+			return nil, err
 		}
 
 		job_status, err = Jobarg_get_JA_JOBSTATUS(registry_number)
 		if err != nil {
-			Formatted_log(common.INFO, "Error:%s", err.Error())
+			return nil, err
 		}
 
 		if jobnet_status == "END" || (jobnet_status == "RUN" && job_status == "ERROR") {
@@ -89,17 +89,17 @@ func Jobarg_get_jobnet_run_info(registry_number string) (*common.Jobnet_run_info
 
 	exit_cd, err = Jobarg_get_LASTEXITCD(registry_number)
 	if err != nil {
-		Formatted_log(common.INFO, "Error:%s", err.Error())
+		return nil, err
 	}
 
 	std_out, err = Jobarg_get_LASTSTDOUT(registry_number)
 	if err != nil {
-		Formatted_log(common.INFO, "Error:%s", err.Error())
+		return nil, err
 	}
 
 	std_error, err = Jobarg_get_LASTSTDERR(registry_number)
 	if err != nil {
-		Formatted_log(common.INFO, "Error:%s", err.Error())
+		return nil, err
 	}
 
 	fmt.Println()
