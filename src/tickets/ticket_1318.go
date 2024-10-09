@@ -12,11 +12,6 @@ type Ticket_1318 struct {
 	testcases   []dao.TestCase
 }
 
-func (t *Ticket_1318) Set_values() {
-	t.no = 1318
-	t.description = "Fixed for negative JOB_EXT_CD return value."
-}
-
 func (t *Ticket_1318) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
 	return dao.New_testcase(testcase_id, testcase_description)
 }
@@ -35,6 +30,11 @@ func (t *Ticket_1318) Add_testcase(tc dao.TestCase) {
 
 func (t *Ticket_1318) Get_testcases() []dao.TestCase {
 	return t.testcases
+}
+
+func (t *Ticket_1318) Set_values() {
+	t.no = 1318
+	t.description = "Fixed for negative JOB_EXT_CD return value."
 }
 
 // Add your testcase here
