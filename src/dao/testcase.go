@@ -81,3 +81,15 @@ func (t *TestCase) Info_log(unfmt string, arg ...any) string {
 	log := fmt.Sprintf(unfmt, arg...)
 	return t.Logi(common.INFO, log)
 }
+
+func (t *TestCase) Write_log() {
+	lib.Logi(fmt.Sprintf("Testcase_NO: %d\n", t.Get_id()))
+	lib.Logi(fmt.Sprintf("Testcase_DES: %s\n", t.Get_dsctn()))
+	lib.Logi(fmt.Sprintf("Status: %s\n", t.Get_status()))
+	lib.Logi("Logs:\n")
+
+	for _, l := range t.Get_logs() {
+		lib.Logi(fmt.Sprintf("%s\n", l))
+	}
+	lib.Logi(fmt.Sprintf("%s\n", common.Endtestcase_string))
+}

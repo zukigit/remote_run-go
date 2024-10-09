@@ -51,8 +51,20 @@ func add_run_tickets(ticket_number uint) {
 func run_tc(t []dao.Ticket) {
 	for _, ticket := range t {
 		ticket.Add_testcases()
+
+		lib.Logi(fmt.Sprintf("Ticket[%d] %s\n", ticket.Get_no(), ticket.Get_dsctn()))
+		lib.Logi("\nTest_cases:\n")
+		lib.Logi(fmt.Sprintf("%s\n", common.Endtestcase_string))
 		ticket.Run()
-		lib.Logi(dao.Get_ticket_logs(ticket))
+		// lib.Logi(dao.Get_ticket_logs(ticket))
+		dao.Set_total_tc_results(ticket)
+		lib.Logi("\nTotal_result:\n")
+		if dao.Tc_unkown_cnt > 0 {
+			lib.Logi(fmt.Sprintf("PASSED: %d, FAILED: %d, MUST_CHECK: %d, UNKNOWN: %d\n", dao.Tc_passed_cnt, dao.Tc_failed_cnt, dao.Tc_chk_cnt, dao.Tc_unkown_cnt))
+		} else {
+			lib.Logi(fmt.Sprintf("PASSED: %d, FAILED: %d, MUST_CHECK: %d\n", dao.Tc_passed_cnt, dao.Tc_failed_cnt, dao.Tc_chk_cnt))
+		}
+		lib.Logi(fmt.Sprintf("%s\n", common.Endticket_string))
 	}
 }
 
@@ -84,6 +96,8 @@ var rootCmd = &cobra.Command{
 
 		common.Set_ticket_logs_headers()
 		add_run_tickets(common.Specific_ticket_no)
+
+		fmt.Println("run_tickets", run_tickets)
 
 		run_tc(run_tickets) // run test cases
 

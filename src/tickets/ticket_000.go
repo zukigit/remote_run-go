@@ -42,8 +42,9 @@ func (t *Ticket_000) Run() {
 			fmt.Println(tc.Err_log("has no function. SKIPPED!"))
 			tc.Set_status(FAILED)
 		}
-
 		fmt.Println(tc.Info_log("finished!"))
+
+		tc.Write_log()
 	}
 }
 
@@ -56,11 +57,20 @@ func (t *Ticket_000) Set_values() {
 // Add your test case here
 func (t *Ticket_000) Add_testcases() {
 	// TESTCASE 000
-	tc_000 := t.New_testcase(000, "Enter your test case description here.")
+	tc_000 := t.New_testcase(1, "Enter your test case description here.")
 	tc_func := func() common.Testcase_status {
 		// Enter your test case logic here
 		return FAILED
 	}
 	tc_000.Set_function(tc_func)
 	t.Add_testcase(*tc_000)
+
+	// TESTCASE 000
+	tc_2 := t.New_testcase(2, "Enter your test case description here.")
+	tc_func = func() common.Testcase_status {
+		// Enter your test case logic here
+		return PASSED
+	}
+	tc_2.Set_function(tc_func)
+	t.Add_testcase(*tc_2)
 }

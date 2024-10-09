@@ -48,8 +48,9 @@ func (t *Ticket_1318) Run() {
 			fmt.Println(tc.Err_log("has no function. SKIPPED!"))
 			tc.Set_status(FAILED)
 		}
-
 		fmt.Println(tc.Info_log("finished!"))
+
+		tc.Write_log()
 	}
 }
 
