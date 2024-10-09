@@ -69,20 +69,32 @@ func add_testcases() {
 	}
 }
 
+func run_tc_(t dao.Ticket) {
+	lib.Logi(fmt.Sprintf("Ticket[%d] %s\n", t.Get_no(), t.Get_dsctn()))
+	lib.Logi("\nTest_cases:\n")
+	lib.Logi(fmt.Sprintf("%s\n", common.Endtestcase_string))
+	dao.Run_testcase(t)
+	dao.Set_total_tc_results(t)
+	lib.Logi("\nTotal_result:\n")
+	if dao.Tc_unkown_cnt > 0 {
+		lib.Logi(fmt.Sprintf("PASSED: %d, FAILED: %d, MUST_CHECK: %d, UNKNOWN: %d\n", dao.Tc_passed_cnt, dao.Tc_failed_cnt, dao.Tc_chk_cnt, dao.Tc_unkown_cnt))
+	} else {
+		lib.Logi(fmt.Sprintf("PASSED: %d, FAILED: %d, MUST_CHECK: %d\n", dao.Tc_passed_cnt, dao.Tc_failed_cnt, dao.Tc_chk_cnt))
+	}
+	lib.Logi(fmt.Sprintf("%s\n", common.Endticket_string))
+}
+
 func run_tc(t []dao.Ticket) {
 	for _, ticket := range t {
-		lib.Logi(fmt.Sprintf("Ticket[%d] %s\n", ticket.Get_no(), ticket.Get_dsctn()))
-		lib.Logi("\nTest_cases:\n")
-		lib.Logi(fmt.Sprintf("%s\n", common.Endtestcase_string))
-		dao.Run_testcase(ticket)
-		dao.Set_total_tc_results(ticket)
-		lib.Logi("\nTotal_result:\n")
-		if dao.Tc_unkown_cnt > 0 {
-			lib.Logi(fmt.Sprintf("PASSED: %d, FAILED: %d, MUST_CHECK: %d, UNKNOWN: %d\n", dao.Tc_passed_cnt, dao.Tc_failed_cnt, dao.Tc_chk_cnt, dao.Tc_unkown_cnt))
+		if common.Specific_testcase_no == 0 {
+			run_tc_(ticket)
 		} else {
-			lib.Logi(fmt.Sprintf("PASSED: %d, FAILED: %d, MUST_CHECK: %d\n", dao.Tc_passed_cnt, dao.Tc_failed_cnt, dao.Tc_chk_cnt))
+			for _, tc := range ticket.Get_testcases() {
+				if tc.Get_id() == common.Specific_testcase_no {
+					run_tc_(ticket)
+				}
+			}
 		}
-		lib.Logi(fmt.Sprintf("%s\n", common.Endticket_string))
 	}
 }
 
@@ -146,6 +158,7 @@ func init() {
 	rootCmd.Flags().BoolVar(&common.Is_mysql, "with-mysql", false, "Use MySQL database")
 	rootCmd.Flags().BoolVar(&common.Is_psql, "with-postgresql", false, "Use PostgreSQL database")
 	rootCmd.Flags().UintVar(&common.Specific_ticket_no, "ticket", 0, "Ticket number to run specific ticket")
+	rootCmd.Flags().UintVar(&common.Specific_testcase_no, "testcase", 0, "Testcase number to run specific testcase")
 }
 
 // Add your tickets here

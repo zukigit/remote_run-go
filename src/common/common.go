@@ -23,7 +23,7 @@ const (
 )
 
 var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename string
-var Specific_ticket_no uint
+var Specific_ticket_no, Specific_testcase_no uint
 var Client *ssh.Client
 var Login_info Auth
 var Log_file *os.File

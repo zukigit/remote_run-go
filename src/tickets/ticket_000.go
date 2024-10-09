@@ -49,7 +49,7 @@ func (t *Ticket_000) Add_testcases() {
 	t.Add_testcase(*tc_000)
 
 	// TESTCASE 000
-	tc_2 := t.New_testcase(2, "Enter your test case description here.")
+	tc_2 := t.New_testcase(2, "2 Enter your test case description here.")
 	tc_func = func() common.Testcase_status {
 		// Enter your test case logic here
 		return PASSED
