@@ -124,6 +124,9 @@ var rootCmd = &cobra.Command{
 		common.Set_client()
 		defer common.Client.Close()
 
+		common.Set_db_hostname()
+		common.Set_default_db_port()
+
 		common.Set_log_file(common.Log_filename)
 		defer common.Log_file.Close()
 
@@ -134,6 +137,8 @@ var rootCmd = &cobra.Command{
 
 		if len(run_tickets) > 0 {
 			fmt.Println(lib.Formatted_log(common.INFO, "Logged Filename: %s", common.Log_filename))
+			fmt.Println("db hostname", common.DB_hostname)
+			fmt.Println("db port", common.DB_port)
 		} else {
 			fmt.Println("There is no ticket to run.")
 		}
@@ -159,6 +164,8 @@ func init() {
 	rootCmd.Flags().BoolVar(&common.Is_psql, "with-postgresql", false, "Use PostgreSQL database")
 	rootCmd.Flags().UintVar(&common.Specific_ticket_no, "ticket", 0, "Ticket number to run specific ticket")
 	rootCmd.Flags().UintVar(&common.Specific_testcase_no, "testcase", 0, "Testcase number to run specific testcase")
+	rootCmd.Flags().StringVar(&common.DB_hostname, "db-hostname", "", "Database specific hostname to connect.")
+	rootCmd.Flags().UintVar(&common.DB_port, "db-port", 0, "Database specific port to connect.")
 }
 
 // Add your tickets here
