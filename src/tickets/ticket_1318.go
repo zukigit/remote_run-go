@@ -1,8 +1,6 @@
 package tickets
 
 import (
-	"fmt"
-
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
@@ -37,21 +35,6 @@ func (t *Ticket_1318) Add_testcase(tc dao.TestCase) {
 
 func (t *Ticket_1318) Get_testcases() []dao.TestCase {
 	return t.testcases
-}
-
-func (t *Ticket_1318) Run() {
-	for _, tc := range t.testcases {
-		fmt.Println(tc.Info_log("running..."))
-		if !tc.Is_function_nil() {
-			tc.Set_status(tc.Run_function())
-		} else {
-			fmt.Println(tc.Err_log("has no function. SKIPPED!"))
-			tc.Set_status(FAILED)
-		}
-		fmt.Println(tc.Info_log("finished!"))
-
-		tc.Write_log()
-	}
 }
 
 // Add your testcase here

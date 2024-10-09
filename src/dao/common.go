@@ -1,6 +1,10 @@
 package dao
 
-import "github.com/zukigit/remote_run-go/src/common"
+import (
+	"fmt"
+
+	"github.com/zukigit/remote_run-go/src/common"
+)
 
 const (
 	PASSED     common.Testcase_status = "PASSED"
@@ -27,5 +31,20 @@ func Set_total_tc_results(t Ticket) {
 		default:
 			Tc_unkown_cnt++
 		}
+	}
+}
+
+func Run_testcase(t Ticket) {
+	for _, tc := range t.Get_testcases() {
+		fmt.Println(tc.Info_log("running..."))
+		if !tc.Is_function_nil() {
+			tc.Set_status(tc.Run_function())
+		} else {
+			fmt.Println(tc.Err_log("has no function. SKIPPED!"))
+			tc.Set_status(FAILED)
+		}
+		fmt.Println(tc.Info_log("finished!"))
+
+		tc.Write_log()
 	}
 }

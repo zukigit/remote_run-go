@@ -35,6 +35,20 @@ func check_duplicated_ticket() {
 	}
 }
 
+func check_duplicated_testcases() {
+	seen := make(map[uint]bool)
+
+	for _, tkt := range tkts {
+		for _, tc := range tkt.Get_testcases() {
+			if seen[tc.Get_id()] {
+				fmt.Printf("Error: testcase[%d] is duplicated\n", tc.Get_id())
+				os.Exit(1)
+			}
+			seen[tc.Get_id()] = true
+		}
+	}
+}
+
 func add_run_tickets(ticket_number uint) {
 	if ticket_number == 0 {
 		run_tickets = tkts
@@ -48,15 +62,19 @@ func add_run_tickets(ticket_number uint) {
 	}
 }
 
+// Add your tickets here
+func add_testcases() {
+	for _, tkt := range tkts {
+		tkt.Add_testcases()
+	}
+}
+
 func run_tc(t []dao.Ticket) {
 	for _, ticket := range t {
-		ticket.Add_testcases()
-
 		lib.Logi(fmt.Sprintf("Ticket[%d] %s\n", ticket.Get_no(), ticket.Get_dsctn()))
 		lib.Logi("\nTest_cases:\n")
 		lib.Logi(fmt.Sprintf("%s\n", common.Endtestcase_string))
-		ticket.Run()
-		// lib.Logi(dao.Get_ticket_logs(ticket))
+		dao.Run_testcase(ticket)
 		dao.Set_total_tc_results(ticket)
 		lib.Logi("\nTotal_result:\n")
 		if dao.Tc_unkown_cnt > 0 {
@@ -86,6 +104,9 @@ var rootCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
+		check_duplicated_ticket()
+		check_duplicated_testcases()
+
 		common.Log_filename = lib.Get_log_filename()
 		common.Set_passwd()
 		common.Set_client()
@@ -96,8 +117,6 @@ var rootCmd = &cobra.Command{
 
 		common.Set_ticket_logs_headers()
 		add_run_tickets(common.Specific_ticket_no)
-
-		fmt.Println("run_tickets", run_tickets)
 
 		run_tc(run_tickets) // run test cases
 
@@ -120,7 +139,8 @@ func Execute() {
 func init() {
 	add_tickets(&tkts)
 	set_ticket_values(tkts)
-	check_duplicated_ticket()
+
+	add_testcases()
 
 	rootCmd.Flags().IntVarP(&common.Login_info.Port, "port", "p", 22, "Port")
 	rootCmd.Flags().BoolVar(&common.Is_mysql, "with-mysql", false, "Use MySQL database")
