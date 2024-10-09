@@ -39,7 +39,7 @@ func (t *Ticket_000) Set_values() {
 
 // Add your test case here
 func (t *Ticket_000) Add_testcases() {
-	// TESTCASE 000
+	// TESTCASE 001
 	tc_1 := t.New_testcase(1, "Enter your test case description here.")
 	tc_func := func() common.Testcase_status {
 		// Enter your test case logic here
