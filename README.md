@@ -1,7 +1,8 @@
-# Automated testing for my lovely team!
+# Automated Testing for My Lovely Team!
 
 ## Hostname Formats
-- Linux agnet: oss.linux
-- Linux agent1: oss.linux1
-- Windows agent: oss.windows
-- Windows agent1: oss.windows1
+- **Linux agent host** (same host as the `jobarg-server`): `oss.linux`
+- **Linux agent host** (different host from the `jobarg-server`): `oss.linux1`
+- **Windows agent host** (runs the `remote_run.exe` program): `oss.windows`
+- **Windows agent host** (with `shiftjs` environment): `oss.windows1`
+
