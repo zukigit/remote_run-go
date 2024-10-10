@@ -8,13 +8,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
-)
-
-type DBType string
-
-const (
-	Postgres DBType = "postgres"
-	MySQL    DBType = "mysql"
+	"github.com/zukigit/remote_run-go/src/common"
 )
 
 type DBQuery string
@@ -32,14 +26,14 @@ type DBUtil struct {
 }
 
 // ConnectDB initializes the database connection
-func ConnectDB(dbType DBType, host, port, user, password, dbname string) (*DBUtil, error) {
+func ConnectDB(dbType common.Database, host string, port uint, user, password, dbname string) (*DBUtil, error) {
 	var dsn string
 	switch dbType {
-	case Postgres:
-		dsn = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+	case common.PSQL:
+		dsn = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 			host, port, user, password, dbname)
-	case MySQL:
-		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, dbname)
+	case common.MYSQL:
+		dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, password, host, port, dbname)
 	default:
 		return nil, fmt.Errorf("unsupported db type: %s", dbType)
 	}
