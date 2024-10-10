@@ -16,6 +16,19 @@
     <jobnet_timeout>0</jobnet_timeout>
     <timeout_run_type>0</timeout_run_type>
   </ja_jobnet_control_table>
+  <ja_jobnet_control_table>
+    <jobnet_id>TICKET1318_TESTCASE170</jobnet_id>
+    <update_date>20240924232318</update_date>
+    <created_date>2024-09-24T16:02:11+07:00</created_date>
+    <valid_flag>1</valid_flag>
+    <public_flag>0</public_flag>
+    <multiple_start_up>0</multiple_start_up>
+    <user_name>Admin</user_name>
+    <jobnet_name>TICKET1318_TESTCASE170</jobnet_name>
+    <memo/>
+    <jobnet_timeout>0</jobnet_timeout>
+    <timeout_run_type>0</timeout_run_type>
+  </ja_jobnet_control_table>
   <ja_job_control_table>
     <jobnet_id>TICKET1318_TESTCASE169</jobnet_id>
     <job_id>END-1</job_id>
@@ -55,6 +68,45 @@
     <force_flag>0</force_flag>
     <continue_flag>0</continue_flag>
   </ja_job_control_table>
+  <ja_job_control_table>
+    <jobnet_id>TICKET1318_TESTCASE170</jobnet_id>
+    <job_id>END-1</job_id>
+    <update_date>20240924232318</update_date>
+    <created_date>2024-09-24T16:02:11+07:00</created_date>
+    <job_type>1</job_type>
+    <point_x>420</point_x>
+    <point_y>150</point_y>
+    <job_name/>
+    <method_flag>0</method_flag>
+    <force_flag>0</force_flag>
+    <continue_flag>0</continue_flag>
+  </ja_job_control_table>
+  <ja_job_control_table>
+    <jobnet_id>TICKET1318_TESTCASE170</jobnet_id>
+    <job_id>JOB-1</job_id>
+    <update_date>20240924232318</update_date>
+    <created_date>2024-09-24T16:02:11+07:00</created_date>
+    <job_type>4</job_type>
+    <point_x>580</point_x>
+    <point_y>200</point_y>
+    <job_name/>
+    <method_flag>0</method_flag>
+    <force_flag>0</force_flag>
+    <continue_flag>0</continue_flag>
+  </ja_job_control_table>
+  <ja_job_control_table>
+    <jobnet_id>TICKET1318_TESTCASE170</jobnet_id>
+    <job_id>START</job_id>
+    <update_date>20240924232318</update_date>
+    <created_date>2024-09-24T16:02:11+07:00</created_date>
+    <job_type>0</job_type>
+    <point_x>510</point_x>
+    <point_y>70</point_y>
+    <job_name/>
+    <method_flag>0</method_flag>
+    <force_flag>0</force_flag>
+    <continue_flag>0</continue_flag>
+  </ja_job_control_table>
   <ja_flow_control_table>
     <jobnet_id>TICKET1318_TESTCASE169</jobnet_id>
     <start_job_id>JOB-1</start_job_id>
@@ -75,11 +127,39 @@
     <flow_width>0</flow_width>
     <flow_style>{"style":"edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;","points":null}</flow_style>
   </ja_flow_control_table>
+  <ja_flow_control_table>
+    <jobnet_id>TICKET1318_TESTCASE170</jobnet_id>
+    <start_job_id>JOB-1</start_job_id>
+    <end_job_id>END-1</end_job_id>
+    <update_date>20240924232318</update_date>
+    <created_date>2024-09-24T16:02:11+07:00</created_date>
+    <flow_type>0</flow_type>
+    <flow_width>0</flow_width>
+    <flow_style>{"style":"edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;","points":null}</flow_style>
+  </ja_flow_control_table>
+  <ja_flow_control_table>
+    <jobnet_id>TICKET1318_TESTCASE170</jobnet_id>
+    <start_job_id>START</start_job_id>
+    <end_job_id>JOB-1</end_job_id>
+    <update_date>20240924232318</update_date>
+    <created_date>2024-09-24T16:02:11+07:00</created_date>
+    <flow_type>0</flow_type>
+    <flow_width>0</flow_width>
+    <flow_style>{"style":"edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;","points":null}</flow_style>
+  </ja_flow_control_table>
   <ja_icon_end_table>
     <jobnet_id>TICKET1318_TESTCASE169</jobnet_id>
     <job_id>END-1</job_id>
     <update_date>20241002230643</update_date>
     <created_date>2024-10-02T16:06:43+07:00</created_date>
+    <jobnet_stop_flag>0</jobnet_stop_flag>
+    <jobnet_stop_code>0</jobnet_stop_code>
+  </ja_icon_end_table>
+  <ja_icon_end_table>
+    <jobnet_id>TICKET1318_TESTCASE170</jobnet_id>
+    <job_id>END-1</job_id>
+    <update_date>20240924232318</update_date>
+    <created_date>2024-09-24T16:02:11+07:00</created_date>
     <jobnet_stop_flag>0</jobnet_stop_flag>
     <jobnet_stop_code>0</jobnet_stop_code>
   </ja_icon_end_table>
@@ -96,12 +176,33 @@
     <stop_code/>
     <timeout_run_type>0</timeout_run_type>
   </ja_icon_job_table>
+  <ja_icon_job_table>
+    <jobnet_id>TICKET1318_TESTCASE170</jobnet_id>
+    <job_id>JOB-1</job_id>
+    <update_date>20240924232318</update_date>
+    <created_date>2024-09-24T16:02:11+07:00</created_date>
+    <host_flag>0</host_flag>
+    <stop_flag>0</stop_flag>
+    <command_type>0</command_type>
+    <timeout>0</timeout>
+    <host_name>oss.linux</host_name>
+    <stop_code/>
+    <timeout_run_type>0</timeout_run_type>
+  </ja_icon_job_table>
   <ja_job_command_table>
     <jobnet_id>TICKET1318_TESTCASE169</jobnet_id>
     <job_id>JOB-1</job_id>
     <update_date>20241002230643</update_date>
     <command_cls>0</command_cls>
     <created_date>2024-10-02T16:06:43+07:00</created_date>
+    <command>exit -100000;</command>
+  </ja_job_command_table>
+  <ja_job_command_table>
+    <jobnet_id>TICKET1318_TESTCASE170</jobnet_id>
+    <job_id>JOB-1</job_id>
+    <update_date>20240924232318</update_date>
+    <command_cls>0</command_cls>
+    <created_date>2024-09-24T16:02:11+07:00</created_date>
     <command>exit -100000;</command>
   </ja_job_command_table>
 </Jobnet>
