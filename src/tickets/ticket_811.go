@@ -35,20 +35,6 @@ func (t *Ticket_811) Get_testcases() []dao.TestCase {
 	return t.testcases
 }
 
-func (t *Ticket_811) Run() {
-	for _, tc := range t.testcases {
-		fmt.Println(tc.Info_log("running..."))
-		if !tc.Is_function_nil() {
-			tc.Set_status(tc.Run_function())
-		} else {
-			fmt.Println(tc.Err_log("has no function. SKIPPED!"))
-			tc.Set_status(FAILED)
-		}
-
-		fmt.Println(tc.Info_log("finished!"))
-	}
-}
-
 // Enter your ticket information here
 func (t *Ticket_811) Set_values() {
 	t.no = 811 // Enter your ticket id
