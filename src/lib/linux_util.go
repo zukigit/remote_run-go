@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/ssh"
 )
 
 func Ja_set_config_linux(key string, value string, config_file_path string) error {
@@ -38,53 +40,94 @@ func Restart_jaz_server() error {
 }
 
 // Wait until it reaches a specified process count
-func Job_process_count_check(targetProcessCount int) (int, error) {
+//
+// Parameters:
+//   - targetProcessCount: target process count to be reached
+//   - timeoutDuration: timeout (minutes) for the process count checking
+//   - client: ssh client
+//
+// Returns:
+//
+//	error message when the process does not reach the target count
+func JobProcessCountCheck(targetProcessCount int, timeoutDuration int, client *ssh.Client) error {
+	// set timeout
+	timeout := time.After(time.Duration(timeoutDuration) * time.Minute)
+
 	for {
-		currentProcessCountStr, err := Ssh_exec_to_str("ps -aux | grep /etc/jobarranger/extendedjob/ | grep -v grep | wc -l")
+		select {
+		case <-timeout:
+			return fmt.Errorf("timeout after %d minutes", timeoutDuration)
+		default:
+			currentProcessCountStr, err := GetOutputStrFromSSHCommand(client, "ps -aux | grep /etc/jobarranger/extendedjob/ | grep -v grep | wc -l")
 
-		if err != nil {
-			fmt.Println("Failed to obtain the process count.")
-			return -1, err
+			if err != nil {
+				return fmt.Errorf("failed to obtain process count: %s", err.Error())
+			}
+
+			// Check the current job process count if it reaches the specified count
+			currentProcessCountStr = strings.TrimSpace(currentProcessCountStr)
+
+			currentProcessCount, err := strconv.Atoi(currentProcessCountStr)
+
+			if err != nil {
+				return fmt.Errorf("failed to convert the process count from string to int: %s", err.Error())
+			}
+
+			if currentProcessCount == targetProcessCount {
+				return nil
+			}
+
+			time.Sleep(1 * time.Second)
 		}
 
-		// Check the current job process count if it reaches the specified count
-		currentProcessCountStr = strings.TrimSpace(currentProcessCountStr)
-
-		currentProcessCount, err := strconv.Atoi(currentProcessCountStr)
-
-		if err != nil {
-			fmt.Println("Failed to convert the process count from string to int (maybe due to invalid process count value).")
-			return -2, err
-		}
-
-		if currentProcessCount == targetProcessCount {
-			return currentProcessCount, nil
-		}
-
-		time.Sleep(1 * time.Second)
 	}
 
 }
 
-// check for zombie process by finding defunct process
-func CheckZombieProcess() (int, error) {
-	currentProcessCountStr, err := Ssh_exec_to_str("ps -aux | grep defunct | grep -v grep | wc -l")
+// Check for zombie process by finding defunct process
+// Parameters:
+//   - timeoutDuration: timeout (minutes) for the process count checking
+//   - client: ssh client
+//
+// Returns:
+//
+//	0 if there is no zombie process
+//	zombie process count if timeout occurred
+//	-1 if it times out
+//	-2 if it fails to convert process count from string to int
+func CheckZombieProcess(timeoutDuration int, client *ssh.Client) (int, error) {
 
-	if err != nil {
-		fmt.Println("Failed to obtain the process count.")
-		return -1, err
+	// set timeout
+	timeout := time.After(time.Duration(timeoutDuration) * time.Minute)
+	currentProcessCount := -1
+
+	for {
+		select {
+		case <-timeout:
+			return currentProcessCount, fmt.Errorf("timeout after %d minutes", timeoutDuration)
+		default:
+			currentProcessCountStr, err := GetOutputStrFromSSHCommand(client, "ps -aux | grep defunct | wc -l")
+
+			if err != nil {
+				return -1, fmt.Errorf("failed to obtain the process count: %s", err.Error())
+			}
+
+			// Check the current job process count if it reaches the specified count
+			currentProcessCountStr = strings.TrimSpace(currentProcessCountStr)
+
+			currentProcessCount, err := strconv.Atoi(currentProcessCountStr)
+
+			if err != nil {
+				return -2, fmt.Errorf("failed to convert the process count from string to int: %s", err.Error())
+			}
+
+			if currentProcessCount == 0 {
+				return currentProcessCount, nil
+			}
+
+			time.Sleep(1 * time.Second)
+
+		}
 	}
-
-	// Check the current job process count if it reaches the specified count
-	currentProcessCountStr = strings.TrimSpace(currentProcessCountStr)
-
-	currentProcessCount, err := strconv.Atoi(currentProcessCountStr)
-
-	if err != nil {
-		fmt.Println("Failed to convert the process count from string to int (maybe due to invalid process count value).")
-		return -2, err
-	}
-
-	return currentProcessCount, nil
 
 }
