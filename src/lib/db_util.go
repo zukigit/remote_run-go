@@ -3,7 +3,7 @@ package lib
 import (
 	"database/sql"
 	"fmt"
-	"log"
+	"os"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -21,26 +21,24 @@ const (
 	AbortJobnetQuery DBQuery = "UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = $1"
 )
 
-type DBUtil struct {
-	DB *sql.DB
-}
-
 // ConnectDB initializes the database connection
-func ConnectDB(dbType common.Database, host string, port uint, user, password, dbname string) (*DBUtil, error) {
+func ConnectDB(user, password, dbname string) {
 	var dsn string
-	switch dbType {
+	switch common.DB_type {
 	case common.PSQL:
 		dsn = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-			host, port, user, password, dbname)
+			common.DB_hostname, common.DB_port, user, password, dbname)
 	case common.MYSQL:
-		dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, password, host, port, dbname)
+		dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, password, common.DB_hostname, common.DB_port, dbname)
 	default:
-		return nil, fmt.Errorf("unsupported db type: %s", dbType)
+		fmt.Println("Err: unsupported db type: %s", common.DB_type)
+		os.Exit(1)
 	}
 
-	db, err := sql.Open(string(dbType), dsn)
+	db, err := sql.Open(string(common.DB_type), dsn)
 	if err != nil {
-		return nil, err
+		fmt.Println("Could not connect to database, Err: ", err.Error())
+		os.Exit(1)
 	}
 
 	// Set maximum number of open connections
@@ -51,25 +49,16 @@ func ConnectDB(dbType common.Database, host string, port uint, user, password, d
 	// Check the connection
 	err = db.Ping()
 	if err != nil {
-		return nil, err
+		fmt.Println("Could not connect to database, Err: ", err.Error())
+		os.Exit(1)
 	}
 
-	fmt.Printf("Successfully connected to the %s database!\n", dbType)
-	return &DBUtil{DB: db}, nil
-}
-
-// CloseDB closes the database connection
-func (dbu *DBUtil) CloseDB() {
-	err := dbu.DB.Close()
-	if err != nil {
-		log.Fatal("Failed to close the database:", err)
-	}
-	fmt.Println("Database connection closed.")
+	common.DB = db
 }
 
 // InsertData inserts data into a table
-func (dbu *DBUtil) InsertData(query DBQuery, args ...interface{}) (sql.Result, error) {
-	stmt, err := dbu.DB.Prepare(string(query))
+func InsertData(query DBQuery, args ...interface{}) (sql.Result, error) {
+	stmt, err := common.DB.Prepare(string(query))
 	if err != nil {
 		return nil, err
 	}
@@ -79,8 +68,8 @@ func (dbu *DBUtil) InsertData(query DBQuery, args ...interface{}) (sql.Result, e
 }
 
 // GetData fetches rows based on a query
-func (dbu *DBUtil) GetData(query DBQuery, args ...interface{}) (*sql.Rows, error) {
-	rows, err := dbu.DB.Query(string(query), args...)
+func GetData(query DBQuery, args ...interface{}) (*sql.Rows, error) {
+	rows, err := common.DB.Query(string(query), args...)
 	if err != nil {
 		return nil, err
 	}
@@ -88,11 +77,11 @@ func (dbu *DBUtil) GetData(query DBQuery, args ...interface{}) (*sql.Rows, error
 }
 
 // UpdateData updates records in a table
-func (dbu *DBUtil) UpdateData(query DBQuery, args ...interface{}) (sql.Result, error) {
-	return dbu.InsertData(query, args...)
+func UpdateData(query DBQuery, args ...interface{}) (sql.Result, error) {
+	return InsertData(query, args...)
 }
 
 // DeleteData deletes records from a table
-func (dbu *DBUtil) DeleteData(query DBQuery, args ...interface{}) (sql.Result, error) {
-	return dbu.InsertData(query, args...)
+func DeleteData(query DBQuery, args ...interface{}) (sql.Result, error) {
+	return InsertData(query, args...)
 }

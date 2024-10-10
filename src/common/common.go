@@ -1,6 +1,7 @@
 package common
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -29,6 +30,7 @@ var Login_info Auth
 var Log_file *os.File
 var Is_mysql, Is_psql bool
 var DB_type Database
+var DB *sql.DB
 
 func Set_db_hostname() {
 	if DB_hostname == "" {

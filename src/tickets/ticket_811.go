@@ -89,17 +89,8 @@ func (t *Ticket_811) Add_testcases() {
 
 // Run the jobnet, abort it after all jobs are in running state, and confirm ENDERR status of the jobnet
 func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
-	// Get DB Connection as testcases inside this ticket require DB operation
-	db, err := lib.ConnectDB(common.DB_type, common.DB_hostname, common.DB_port, "zabbix", "zabbix", "zabbix")
-
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error connecting to the database."))
-	}
-
-	defer db.CloseDB()
-
 	// Clean the ja_run_jobnet_table
-	_, err = db.UpdateData(lib.DeleteRunJobnetQuery)
+	_, err := lib.UpdateData(lib.DeleteRunJobnetQuery)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, Failed to clean the ja_run_jobnet_table.", err.Error()))
 		return FAILED
@@ -124,7 +115,7 @@ func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout in
 	fmt.Println(testcase.Info_log("Process count has reached %d", processCount))
 
 	// Abort the jobnet
-	_, err = db.UpdateData(lib.AbortJobnetQuery, run_jobnet_id)
+	_, err = lib.UpdateData(lib.AbortJobnetQuery, run_jobnet_id)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, Failed to abort the jobnet.", err.Error()))
 		return FAILED
@@ -179,15 +170,8 @@ func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout in
 
 // Run the jobnet, abort the fwait job icon after all jobs are in running state, and confirm ENDERR status of the jobnet
 func RunJobnetAndAbortFwaitJobIcon(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
-	// Get DB Connection as testcases inside this ticket require DB operation
-	db, err := lib.ConnectDB(common.DB_type, common.DB_hostname, common.DB_port, "zabbix", "zabbix", "zabbix")
-
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error connecting to the database."))
-	}
-
 	// Clean the ja_run_jobnet_table
-	_, err = db.UpdateData(lib.DeleteRunJobnetQuery)
+	_, err := lib.UpdateData(lib.DeleteRunJobnetQuery)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, Failed to clean the ja_run_jobnet_table.", err.Error()))
 		return FAILED
@@ -212,7 +196,7 @@ func RunJobnetAndAbortFwaitJobIcon(jobnetId string, processCount int, processChe
 	fmt.Println(testcase.Info_log("Process count has reached %d", processCount))
 
 	// Abort the jobnet
-	_, err = db.UpdateData(lib.AbortSingleFWaitJobQuery, run_jobnet_id)
+	_, err = lib.UpdateData(lib.AbortSingleFWaitJobQuery, run_jobnet_id)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, Failed to abort the fwait job icon.", err.Error()))
 		return FAILED

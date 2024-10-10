@@ -124,6 +124,9 @@ var rootCmd = &cobra.Command{
 		common.Set_client()
 		defer common.Client.Close()
 
+		lib.ConnectDB("zabbix", "zabbix", "zabbix")
+		defer common.DB.Close()
+
 		common.Set_db_hostname()
 		common.Set_default_db_port()
 
