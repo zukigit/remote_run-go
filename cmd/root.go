@@ -141,8 +141,6 @@ var rootCmd = &cobra.Command{
 
 		if len(run_tickets) > 0 {
 			fmt.Println(lib.Formatted_log(common.INFO, "Logged Filename: %s", common.Log_filename))
-			fmt.Println("db hostname", common.DB_hostname)
-			fmt.Println("db port", common.DB_port)
 		} else {
 			fmt.Println("There is no ticket to run.")
 		}
