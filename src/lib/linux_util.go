@@ -106,7 +106,7 @@ func CheckZombieProcess(timeoutDuration int, client *ssh.Client) (int, error) {
 		case <-timeout:
 			return currentProcessCount, fmt.Errorf("timeout after %d minutes", timeoutDuration)
 		default:
-			currentProcessCountStr, err := GetOutputStrFromSSHCommand(client, "ps -aux | grep defunct | wc -l")
+			currentProcessCountStr, err := GetOutputStrFromSSHCommand(client, "ps -aux | grep defunct | grep -v grep | wc -l")
 
 			if err != nil {
 				return -1, fmt.Errorf("failed to obtain the process count: %s", err.Error())
