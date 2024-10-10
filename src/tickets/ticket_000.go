@@ -1,8 +1,6 @@
 package tickets
 
 import (
-	"fmt"
-
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
 )
@@ -33,20 +31,6 @@ func (t *Ticket_000) Get_testcases() []dao.TestCase {
 	return t.testcases
 }
 
-func (t *Ticket_000) Run() {
-	for _, tc := range t.testcases {
-		fmt.Println(tc.Info_log("running..."))
-		if !tc.Is_function_nil() {
-			tc.Set_status(tc.Run_function())
-		} else {
-			fmt.Println(tc.Err_log("has no function. SKIPPED!"))
-			tc.Set_status(FAILED)
-		}
-
-		fmt.Println(tc.Info_log("finished!"))
-	}
-}
-
 // Enter your ticket information here
 func (t *Ticket_000) Set_values() {
 	t.no = 1 // Enter your ticket id
@@ -55,12 +39,12 @@ func (t *Ticket_000) Set_values() {
 
 // Add your test case here
 func (t *Ticket_000) Add_testcases() {
-	// TESTCASE 000
-	tc_000 := t.New_testcase(000, "Enter your test case description here.")
+	// TESTCASE 001
+	tc_1 := t.New_testcase(1, "Enter your test case description here.")
 	tc_func := func() common.Testcase_status {
 		// Enter your test case logic here
 		return FAILED
 	}
-	tc_000.Set_function(tc_func)
-	t.Add_testcase(*tc_000)
+	tc_1.Set_function(tc_func)
+	t.Add_testcase(*tc_1)
 }

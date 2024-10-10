@@ -1,8 +1,6 @@
 package tickets
 
 import (
-	"fmt"
-
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
@@ -12,11 +10,6 @@ type Ticket_1318 struct {
 	no          uint
 	description string
 	testcases   []dao.TestCase
-}
-
-func (t *Ticket_1318) Set_values() {
-	t.no = 1318
-	t.description = "Fixed for negative JOB_EXT_CD return value."
 }
 
 func (t *Ticket_1318) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -39,18 +32,9 @@ func (t *Ticket_1318) Get_testcases() []dao.TestCase {
 	return t.testcases
 }
 
-func (t *Ticket_1318) Run() {
-	for _, tc := range t.testcases {
-		fmt.Println(tc.Info_log("running..."))
-		if !tc.Is_function_nil() {
-			tc.Set_status(tc.Run_function())
-		} else {
-			fmt.Println(tc.Err_log("has no function. SKIPPED!"))
-			tc.Set_status(FAILED)
-		}
-
-		fmt.Println(tc.Info_log("finished!"))
-	}
+func (t *Ticket_1318) Set_values() {
+	t.no = 1318
+	t.description = "Fixed for negative JOB_EXT_CD return value."
 }
 
 // Add your testcase here

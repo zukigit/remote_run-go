@@ -22,13 +22,27 @@ const (
 	PSQL  Database = "PSQL"
 )
 
-var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename string
-var Specific_ticket_no uint
+var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename, DB_hostname string
+var Specific_ticket_no, Specific_testcase_no, DB_port uint
 var Client *ssh.Client
 var Login_info Auth
 var Log_file *os.File
 var Is_mysql, Is_psql bool
 var DB_type Database
+
+func Set_db_hostname() {
+	if DB_hostname == "" {
+		DB_hostname = Login_info.Hostname
+	}
+}
+
+func Set_default_db_port() {
+	if Is_mysql && DB_port == 0 {
+		DB_port = 3306
+	} else if Is_psql && DB_port == 0 {
+		DB_port = 5432
+	}
+}
 
 func Set_db_type() error {
 	if !Is_mysql && !Is_psql {

@@ -7,7 +7,6 @@ import (
 )
 
 type Ticket interface {
-	Run()
 	Set_values()
 	Get_no() uint
 	Get_dsctn() string
