@@ -57,13 +57,12 @@ func (t *Ticket_811) Set_values() {
 
 // Add your test case here
 func (t *Ticket_811) Add_testcases() {
-	serverIP := common.Login_info.Hostname
 	agentSSHClient := lib.GetSSHClient("10.1.9.212", 22, "root", "000@dirace")
 
 	// TESTCASE 69 (Force stop FWait job icon)
 	tc_69 := t.New_testcase(69, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
 	tc_func := func() common.Testcase_status {
-		return RunJobnetAndAbortFwaitJobIcon(serverIP, "FileWaitJob1", 2, 5, tc_69, common.Client)
+		return RunJobnetAndAbortFwaitJobIcon("FileWaitJob1", 2, 5, tc_69, common.Client)
 	}
 	tc_69.Set_function(tc_func)
 	t.Add_testcase(*tc_69)
@@ -71,7 +70,7 @@ func (t *Ticket_811) Add_testcases() {
 	// TESTCASE 70 (Force stop FWait job icon on other agent)
 	tc_70 := t.New_testcase(70, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort(serverIP, "FileWaitJobOtherAgent1", 2, 5, tc_70, agentSSHClient)
+		return RunJobnetAndAbort("FileWaitJobOtherAgent1", 2, 5, tc_70, agentSSHClient)
 	}
 	tc_70.Set_function(tc_func)
 	t.Add_testcase(*tc_70)
@@ -79,7 +78,7 @@ func (t *Ticket_811) Add_testcases() {
 	// TESTCASE 71 (Force stop FWait jobnet with icon count of 1)
 	tc_71 := t.New_testcase(71, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort(serverIP, "FileWaitJob1", 2, 5, tc_71, common.Client)
+		return RunJobnetAndAbort("FileWaitJob1", 2, 5, tc_71, common.Client)
 	}
 	tc_71.Set_function(tc_func)
 	t.Add_testcase(*tc_71)
@@ -87,15 +86,15 @@ func (t *Ticket_811) Add_testcases() {
 	// TESTCASE 72 (Force stop FWait jobnet with icon count of 100)
 	tc_72 := t.New_testcase(72, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort(serverIP, "FileWaitJob100", 200, 15, tc_72, common.Client)
+		return RunJobnetAndAbort("FileWaitJob100", 200, 15, tc_72, common.Client)
 	}
 	tc_72.Set_function(tc_func)
-	// t.Add_testcase(*tc_72)
+	t.Add_testcase(*tc_72)
 
 	// TESTCASE 73 (Force stop FWait jobnet with icon count of 800)
 	tc_73 := t.New_testcase(73, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort(serverIP, "FileWaitJob800", 1600, 30, tc_73, common.Client)
+		return RunJobnetAndAbort("FileWaitJob800", 1600, 30, tc_73, common.Client)
 	}
 	tc_73.Set_function(tc_func)
 	// t.Add_testcase(*tc_73)
@@ -103,9 +102,9 @@ func (t *Ticket_811) Add_testcases() {
 }
 
 // Run the jobnet, abort it after all jobs are in running state, and confirm ENDERR status of the jobnet
-func RunJobnetAndAbort(agentIP string, jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
 	// Get DB Connection as testcases inside this ticket require DB operation
-	db, err := lib.ConnectDB(lib.Postgres, agentIP, "5432", "zabbix", "zabbix", "zabbix")
+	db, err := lib.ConnectDB(common.DB_type, common.DB_hostname, common.DB_port, "zabbix", "zabbix", "zabbix")
 
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error connecting to the database."))
@@ -193,9 +192,9 @@ func RunJobnetAndAbort(agentIP string, jobnetId string, processCount int, proces
 }
 
 // Run the jobnet, abort the fwait job icon after all jobs are in running state, and confirm ENDERR status of the jobnet
-func RunJobnetAndAbortFwaitJobIcon(agentIP string, jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func RunJobnetAndAbortFwaitJobIcon(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
 	// Get DB Connection as testcases inside this ticket require DB operation
-	db, err := lib.ConnectDB(lib.Postgres, agentIP, "5432", "zabbix", "zabbix", "zabbix")
+	db, err := lib.ConnectDB(common.DB_type, common.DB_hostname, common.DB_port, "zabbix", "zabbix", "zabbix")
 
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error connecting to the database."))
