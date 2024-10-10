@@ -31,7 +31,7 @@ func ConnectDB(user, password, dbname string) {
 	case common.MYSQL:
 		dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, password, common.DB_hostname, common.DB_port, dbname)
 	default:
-		fmt.Println("Err: unsupported db type: %s", common.DB_type)
+		fmt.Printf("Err: unsupported db type: %s\n", common.DB_type)
 		os.Exit(1)
 	}
 
