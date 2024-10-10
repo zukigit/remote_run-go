@@ -92,7 +92,7 @@
     <stop_flag>0</stop_flag>
     <command_type>0</command_type>
     <timeout>0</timeout>
-    <host_name>moon.windows</host_name>
+    <host_name>oss.windows</host_name>
     <stop_code/>
     <timeout_run_type>0</timeout_run_type>
   </ja_icon_job_table>
