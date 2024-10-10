@@ -48,7 +48,7 @@ func (t *Ticket_811) Add_testcases() {
 	// TESTCASE 69 (Force stop FWait job icon)
 	tc_69 := t.New_testcase(69, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
 	tc_func := func() common.Testcase_status {
-		return RunJobnetAndAbortFwaitJobIcon("FileWaitJob1", 2, 5, tc_69, common.Client)
+		return RunJobnetAndAbortFwaitJobIcon("TICKET811_FileWaitJob1", 2, 5, tc_69, common.Client)
 	}
 	tc_69.Set_function(tc_func)
 	t.Add_testcase(*tc_69)
@@ -56,7 +56,7 @@ func (t *Ticket_811) Add_testcases() {
 	// TESTCASE 70 (Force stop FWait job icon on other agent)
 	tc_70 := t.New_testcase(70, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("FileWaitJobOtherAgent1", 2, 5, tc_70, agentSSHClient)
+		return RunJobnetAndAbort("TICKET811_FileWaitJobOtherAgent1", 2, 5, tc_70, agentSSHClient)
 	}
 	tc_70.Set_function(tc_func)
 	t.Add_testcase(*tc_70)
@@ -64,7 +64,7 @@ func (t *Ticket_811) Add_testcases() {
 	// TESTCASE 71 (Force stop FWait jobnet with icon count of 1)
 	tc_71 := t.New_testcase(71, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("FileWaitJob1", 2, 5, tc_71, common.Client)
+		return RunJobnetAndAbort("TICKET811_FileWaitJob1", 2, 5, tc_71, common.Client)
 	}
 	tc_71.Set_function(tc_func)
 	t.Add_testcase(*tc_71)
@@ -72,7 +72,7 @@ func (t *Ticket_811) Add_testcases() {
 	// TESTCASE 72 (Force stop FWait jobnet with icon count of 100)
 	tc_72 := t.New_testcase(72, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("FileWaitJob100", 200, 15, tc_72, common.Client)
+		return RunJobnetAndAbort("TICKET811_FileWaitJob100", 200, 15, tc_72, common.Client)
 	}
 	tc_72.Set_function(tc_func)
 	t.Add_testcase(*tc_72)
@@ -80,10 +80,10 @@ func (t *Ticket_811) Add_testcases() {
 	// TESTCASE 73 (Force stop FWait jobnet with icon count of 800)
 	tc_73 := t.New_testcase(73, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("FileWaitJob800", 1600, 30, tc_73, common.Client)
+		return RunJobnetAndAbort("TICKET811_FileWaitJob800", 1600, 30, tc_73, common.Client)
 	}
 	tc_73.Set_function(tc_func)
-	// t.Add_testcase(*tc_73)
+	t.Add_testcase(*tc_73)
 
 }
 
