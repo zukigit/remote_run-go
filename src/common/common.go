@@ -18,8 +18,8 @@ const INFO = 1
 const ERR = 2
 
 const (
-	MYSQL Database = "MYSQL"
-	PSQL  Database = "PSQL"
+	MYSQL Database = "mysql"
+	PSQL  Database = "postgres"
 )
 
 var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename, DB_hostname string
