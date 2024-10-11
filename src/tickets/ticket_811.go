@@ -43,7 +43,6 @@ func (t *Ticket_811) Set_values() {
 
 // Add your test case here
 func (t *Ticket_811) Add_testcases() {
-	agentSSHClient := lib.GetSSHClient("10.1.9.212", 22, "root", "000@dirace")
 
 	// TESTCASE 69 (Force stop FWait job icon)
 	tc_69 := t.New_testcase(69, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
@@ -56,6 +55,7 @@ func (t *Ticket_811) Add_testcases() {
 	// TESTCASE 70 (Force stop FWait job icon on other agent)
 	tc_70 := t.New_testcase(70, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
 	tc_func = func() common.Testcase_status {
+		agentSSHClient := lib.GetSSHClient("10.1.9.212", 22, "root", "000@dirace") // remote agent
 		return RunJobnetAndAbort("TICKET811_FileWaitJobOtherAgent1", 2, 5, tc_70, agentSSHClient)
 	}
 	tc_70.Set_function(tc_func)
