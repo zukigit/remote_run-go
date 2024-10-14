@@ -167,7 +167,7 @@ func init() {
 	rootCmd.Flags().UintVar(&common.Specific_testcase_no, "testcase", 0, "Testcase number to run specific testcase")
 	rootCmd.Flags().StringVar(&common.DB_hostname, "db-hostname", "", "Database specific hostname to connect.")
 	rootCmd.Flags().UintVar(&common.DB_port, "db-port", 0, "Database specific port to connect.")
-	rootCmd.Flags().UintVar(&common.Timeout, "timeout", 300, "Common timeout in seconds.")
+	rootCmd.Flags().UintVar(&common.Timeout, "timeout", 300, "Common timeout in seconds. ")
 }
 
 // Add your tickets here
