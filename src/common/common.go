@@ -24,7 +24,7 @@ const (
 )
 
 var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename, DB_hostname string
-var Specific_ticket_no, Specific_testcase_no, DB_port uint
+var Specific_ticket_no, Specific_testcase_no, DB_port, Timeout uint
 var Client *ssh.Client
 var Login_info Auth
 var Log_file *os.File
