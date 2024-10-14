@@ -172,7 +172,9 @@ func init() {
 
 // Add your tickets here
 func add_tickets(t *[]dao.Ticket) {
+	//*t = append(*t, new(tickets.Ticket_000))
+	*t = append(*t, new(tickets.Ticket_6969))
 	*t = append(*t, new(tickets.Ticket_1318))
-	*t = append(*t, new(tickets.Ticket_000))
-	//*t = append(*t, new(tickets.Ticket_811))
+	//*t = append(*t, new(tickets.Ticket_811)) This testcase is commented out because Testcase 73 in Ticket 811 is duplicate with Testcase 73 in Ticket 811
+	*t = append(*t, new(tickets.Ticket_844))
 }
