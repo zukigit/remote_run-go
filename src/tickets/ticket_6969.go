@@ -42,15 +42,27 @@ func (t *Ticket_6969) Set_values() {
 
 // Add your test case here
 func (t *Ticket_6969) Add_testcases() {
+
 	// TESTCASE 6969
 	tc_6999 := t.New_testcase(6969, "Sample testcase 1")
 	tc_func := func() common.Testcase_status {
+
+		// Restarting Jobarranger agent service
+		err := lib.Restart_jaz_agent_linux()
+
+		if err != nil {
+			fmt.Println(tc_6999.Err_log("Error: Failted at restarting Jobarranger Agent. %s", err.Error()))
+			return FAILED
+		}
+
+		//Jobnet Execution
 		jobnet_run_manage_id, err := lib.Jobarg_exec("SIMPLE_JOB")
 		if err != nil {
 			fmt.Println(tc_6999.Err_log("Error: %s for Test Case: %s.", err.Error(), jobnet_run_manage_id))
 			return FAILED
 		}
 
+		//Getting jobnet info
 		jobnet_run_info, err := lib.Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
 
 		if err != nil {
