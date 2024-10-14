@@ -150,3 +150,36 @@ func Jobarg_get_jobnet_info(registry_number string, targetJobnetStatus string, t
 	fmt.Println()
 	return common.New_jobnet_run_info(jobnet_status, job_status, std_out, std_error, exit_cd), nil
 }
+
+// To use this function, your jobarranger agent's TmpDir must be default(TmpDir=/var/lib/jobarranger/tmp and TmpDir=C:\Program Files\Job Arranger\Job Arranger Agent\temp).
+//
+// Jobarg_cleanup() cleans jobarg-server and jobarg-agentd(linux and windows) data.
+// Since this is testcase utility funtion, you must use it in testcase function.
+func Jobarg_cleanup() error {
+	if err := Stop_jaz_server(); err != nil {
+		return fmt.Errorf("failed to stop JAZ server: %w", err)
+	}
+	if err := Stop_jaz_agent_windows(); err != nil {
+		return fmt.Errorf("failed to stop JAZ agent: %w", err)
+	}
+	if err := Stop_jaz_agent_linux(); err != nil {
+		return fmt.Errorf("failed to stop JAZ agent: %w", err)
+	}
+	if _, err := DBexec("delete from ja_run_jobnet_table;"); err != nil {
+		return fmt.Errorf("failed to execute DB command: %w", err)
+	}
+	if err := Cleanup_agent_windows(); err != nil {
+		return fmt.Errorf("failed to clean up agent: %w", err)
+	}
+	if err := Cleanup_agent_linux(); err != nil {
+		return fmt.Errorf("failed to clean up agent: %w", err)
+	}
+	if err := Restart_jaz_server(); err != nil {
+		return fmt.Errorf("failed to stop JAZ server: %w", err)
+	}
+	if err := Restart_jaz_agent_windows(); err != nil {
+		return fmt.Errorf("failed to stop JAZ server: %w", err)
+	}
+
+	return nil
+}
