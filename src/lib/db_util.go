@@ -89,3 +89,9 @@ func GetData(query DBQuery, args ...interface{}) (*sql.Rows, error) {
 	}
 	return rows, nil
 }
+
+func DBexec(unfmt string, arg ...any) (sql.Result, error) {
+	query := fmt.Sprintf(unfmt, arg...)
+
+	return common.DB.Exec(query)
+}

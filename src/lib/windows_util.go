@@ -171,3 +171,32 @@ func Ja_set_agent_config_windows(key string, value string) error {
 
 	return nil
 }
+
+func Cleanup_agent_windows() error {
+	_, err := Ssh_exec_to_str("")
+
+	return err
+}
+
+func Jobarg_cleanup_windows() error {
+	if err := Stop_jaz_server(); err != nil {
+		return fmt.Errorf("failed to stop JAZ server: %w", err)
+	}
+	if err := Stop_jaz_agent_windows(); err != nil {
+		return fmt.Errorf("failed to stop JAZ agent: %w", err)
+	}
+	if _, err := DBexec("delete from ja_run_jobnet_table;"); err != nil {
+		return fmt.Errorf("failed to execute DB command: %w", err)
+	}
+	if err := Cleanup_agent_windows(); err != nil {
+		return fmt.Errorf("failed to clean up agent: %w", err)
+	}
+	if err := Restart_jaz_server(); err != nil {
+		return fmt.Errorf("failed to stop JAZ server: %w", err)
+	}
+	if err := Restart_jaz_agent_windows(); err != nil {
+		return fmt.Errorf("failed to stop JAZ server: %w", err)
+	}
+
+	return nil
+}
