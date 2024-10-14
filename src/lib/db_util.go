@@ -23,8 +23,8 @@ const (
 )
 
 // Converts the parameter in postgresql query to a compatible version for mysql
-func convertParamPostgresToMysql(query string) string {
-	if common.Is_mysql {
+func ConvertParamPostgresToMysql(query string) string {
+	if common.DB_type == common.MYSQL {
 		for i := 1; strings.Contains(query, fmt.Sprintf("$%d", i)); i++ {
 			query = strings.ReplaceAll(query, fmt.Sprintf("$%d", i), "?")
 		}
@@ -70,7 +70,7 @@ func ConnectDB(user, password, dbname string) {
 
 // ExecuteQuery that changes the state of the database
 func ExecuteQuery(query DBQuery, args ...interface{}) (sql.Result, error) {
-	queryStr := convertParamPostgresToMysql(string(query))
+	queryStr := ConvertParamPostgresToMysql(string(query))
 	stmt, err := common.DB.Prepare(queryStr)
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ func ExecuteQuery(query DBQuery, args ...interface{}) (sql.Result, error) {
 
 // GetData fetches rows based on a query
 func GetData(query DBQuery, args ...interface{}) (*sql.Rows, error) {
-	queryStr := convertParamPostgresToMysql(string(query))
+	queryStr := ConvertParamPostgresToMysql(string(query))
 	rows, err := common.DB.Query(queryStr, args...)
 	if err != nil {
 		return nil, err
