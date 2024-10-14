@@ -151,7 +151,10 @@ func Cleanup_agent_linux() error {
 	return err
 }
 
-// To use this function, your jobarranger agent's TmpDir must be default(TmpDir=/var/lib/jobarranger/tmp)
+// To use this function, your jobarranger agent's TmpDir must be default(TmpDir=/var/lib/jobarranger/tmp).
+//
+// Jobarg_cleanup() cleans jobarg-server and jobarg-agentd(linux) data.
+// Since this is testcase utility funtion, you must use it in testcase function.
 func Jobarg_cleanup_linux() error {
 	if err := Stop_jaz_server(); err != nil {
 		return fmt.Errorf("failed to stop JAZ server: %w", err)

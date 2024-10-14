@@ -173,11 +173,32 @@ func Ja_set_agent_config_windows(key string, value string) error {
 }
 
 func Cleanup_agent_windows() error {
-	_, err := Ssh_exec_to_str("")
+	dir := "C:\\Program Files\\Job Arranger\\Job Arranger Agent\\temp"
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		return err
+	}
 
-	return err
+	for _, file := range files {
+		path := filepath.Join(dir, file.Name())
+		if file.IsDir() {
+			// Recursively delete subdirectory
+			err = os.RemoveAll(path)
+		} else {
+			// Delete file
+			err = os.Remove(path)
+		}
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
+// To use this function, your jobarranger agent's TmpDir must be default(TmpDir=C:\Program Files\Job Arranger\Job Arranger Agent\temp).
+//
+// Jobarg_cleanup() cleans jobarg-server and jobarg-agentd(windows) data.
+// Since this is testcase utility funtion, you must use it in testcase function.
 func Jobarg_cleanup_windows() error {
 	if err := Stop_jaz_server(); err != nil {
 		return fmt.Errorf("failed to stop JAZ server: %w", err)
