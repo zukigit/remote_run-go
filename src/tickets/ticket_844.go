@@ -2,6 +2,7 @@ package tickets
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
@@ -47,60 +48,60 @@ func (t *Ticket_844) Add_testcases() {
 	tc_73 := t.New_testcase(73, "Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]")
 	tc_func := func() common.Testcase_status {
 
-		// Executing Test Case for 100 Job Icons
+		// Executing Test Case for 800 Job Icons
 		jobnet_run_manage_id, err := lib.Jobarg_exec("Icon_100")
 		if err != nil {
 			fmt.Println(tc_73.Err_log("Error: Failed when trying to run the job. %s. Jobnet Management Id: %s", err.Error(), jobnet_run_manage_id))
 			fmt.Println(tc_73.Err_log("Error: Did you imported the necessary xml files?(TICKET844_TESTCASE73-75)"))
 			return FAILED
+		} else {
+			fmt.Println(tc_73.Info_log("Info: Job has start running."))
 		}
 
+		//jobnetstatus := lib.Jobarg_get_JA_JOBNETSTATUS(jobnet_run_manage_id)
+
 		// Counting Job Process Count
+		fmt.Println(tc_73.Info_log("Info: Counting Job processes."))
 		err = lib.JobProcessCountCheck(100, 10, common.Client)
 		if err != nil {
 			fmt.Println(tc_73.Err_log("Error: Failed at counting required process count. %s Jobnet Management Id: %s ", err.Error(), jobnet_run_manage_id))
 			return FAILED
 		} else {
-			fmt.Print(tc_73.Info_log("Info: Counts Successful. Reached desired process count."))
+			fmt.Println(tc_73.Info_log("Info: Job process count met."))
 		}
 
-		// In case if getting jobnet info failed
-		jobnet_run_info, err := lib.Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
+		// Restartng Jobarranger linux Agent.
+		fmt.Println(tc_73.Info_log("Info: Restarting Jobarranger Agent now."))
+		err = lib.Restart_jaz_agent_linux()
 		if err != nil {
-			fmt.Println(tc_73.Err_log("Error: Failted at getting jobnet run info. Jobnet Management Id: %s ", jobnet_run_manage_id))
-			fmt.Println(tc_73.Err_log(err.Error()))
+			fmt.Println(tc_73.Err_log("Error: Failted at restarting Jobarranger Agent. %s", err.Error()))
 			return FAILED
+		} else {
+			fmt.Println(tc_73.Info_log("Info: Jobarranger Agent has successfully restarted."))
 		}
 
-		// Restarting Jobarranger agent service
-		// err = lib.Restart_jaz_agent_linux()
+		// Counting Job Process Count again.
+		fmt.Println(tc_73.Info_log("Info: Counting Job processes again..."))
+		err = lib.JobProcessCountCheck(0, 1, common.Client)
+		if err != nil {
+			fmt.Println(tc_73.Err_log("Error: Failed at counting required process count. %s", err.Error()))
 
-		// if err != nil {
-		// 	fmt.Println(tc_73.Err_log("Error: Failted at restarting Jobarranger Agent. %s", err.Error()))
-		// }
+		} else {
 
-		// Checking whether Jobnet is finished or not
-		if jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Exit_cd == 0 {
-
-			// Checking whether "checking at zombie process" process failed or not.
-			zombieProcessCount, err := lib.CheckZombieProcess(1, common.Client)
-			if err != nil {
-				fmt.Println(tc_73.Err_log("Error: Failed at checking zombie Process."))
-				fmt.Println(tc_73.Err_log(err.Error()))
-				// Checking whether zombie process exist or not.
-				if zombieProcessCount > 0 {
-					fmt.Println(tc_73.Err_log("Error: There is zombie Process left."))
-					fmt.Println(tc_73.Err_log(err.Error()))
+			// Checking 'Job_Status' to get the value 'Error' with 'Jobarg_get' command."
+			fmt.Println(tc_73.Info_log("Info: Total 0 Job process count met. Waiting for Jobnet to end with RUNERR.(Running Error)"))
+			timeoutDuration := 10 * time.Minute
+			timeout := time.Now().Add(timeoutDuration)
+			for time.Now().Before(timeout) {
+				jobstatus, err := lib.Jobarg_get_JA_JOBSTATUS(jobnet_run_manage_id)
+				if err == nil && jobstatus == "ERROR" {
+					fmt.Println(tc_73.Info_log("Info: The job returns with Error. Success."))
+					return PASSED
 				}
-
-				return FAILED
+				time.Sleep(1 * time.Second)
 			}
-
-			return PASSED
 		}
 
-		// Checking in case Abnormal Fail.
-		fmt.Println(tc_73.Err_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
 		return FAILED
 	}
 

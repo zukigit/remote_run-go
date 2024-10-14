@@ -74,6 +74,35 @@ func (t *Ticket_6969) Add_testcases() {
 			return PASSED
 		}
 
+		// Checking whether Jobnet is finished or not
+		// if jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Exit_cd == 0 {
+
+		// 	// Checking whether "checking at zombie process" process failed or not.
+		// 	zombieProcessCount, err := lib.CheckZombieProcess(1, common.Client)
+		// 	if err != nil {
+		// 		fmt.Println(tc_73.Err_log("Error: Failed at checking zombie Process."))
+		// 		fmt.Println(tc_73.Err_log(err.Error()))
+		// 		// Checking whether zombie process exist or not.
+		// 		if zombieProcessCount > 0 {
+		// 			fmt.Println(tc_73.Err_log("Error: There is zombie Process left."))
+		// 			fmt.Println(tc_73.Err_log(err.Error()))
+		// 		}
+
+		// 		return FAILED
+		// 	}
+
+		// 	return PASSED
+		// }
+
+		// In case if getting jobnet info failed
+		// jobnet_run_info, err := lib.Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
+		// if err != nil {
+		// 	fmt.Println(tc_73.Err_log("Error: Failted at getting jobnet run info. Jobnet Management Id: %s ", jobnet_run_manage_id))
+		// 	fmt.Println(tc_73.Err_log(err.Error()))
+		// 	return FAILED
+		// }
+
+		// Checking in case Abnormal Fail.
 		fmt.Println(tc_6999.Err_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
 		return FAILED
 	}

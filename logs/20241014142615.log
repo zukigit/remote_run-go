@@ -1,0 +1,23 @@
+Ticket[844] Others
+
+Test_cases:
+--------------------------------------------------
+Testcase_NO: 73
+Testcase_DES: Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]
+Status: PASSED
+Logs:
+20241014142619 [INFO] [73] running...
+20241014142620 [INFO] [73] Info: Job has started running.
+20241014142620 [INFO] [73] Info: Counting Job processes.
+20241014142653 [INFO] [73] Info: Job process count met.
+20241014142653 [INFO] [73] Info: Restarting Jobarranger Agent now.
+20241014142655 [INFO] [73] Info: Jobarranger Agent has successfully restarted.
+20241014142655 [INFO] [73] Info: Counting Job processes again...
+20241014142655 [INFO] [73] Info: Total 0 Job process count met. Checking Jobarg_get Job_Status to Error.
+20241014143203 [INFO] [73] Info: The job returns with Error. Success.
+20241014143203 [INFO] [73] finished!
+--------------------------------------------------
+
+Total_result:
+PASSED: 1, FAILED: 0, MUST_CHECK: 0
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
