@@ -20,6 +20,7 @@ const (
 		SELECT inner_job_id FROM ja_run_icon_fwait_table WHERE inner_jobnet_id = $1 limit 1
 	)`
 	AbortJobnetQuery DBQuery = "UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = $1"
+	// AbortJobnetQuery DBQuery = "UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id IN (SELECT inner_jobnet_id FROM ja_run_jobnet_summary_table WHERE inner_jobnet_id = $1);"
 )
 
 // Converts the parameter in postgresql query to a compatible version for mysql

@@ -1,0 +1,25 @@
+Ticket[811] cannot stop jobnet
+
+Test_cases:
+--------------------------------------------------
+Testcase_NO: 1
+Testcase_DES: Check abort process for job icon with count 10
+Status: FAILED
+Logs:
+20241015154817 [INFO] [1] running...
+20241015154846 [INFO] [1] `ja_run_jobnet_table` is cleaned.
+20241015154850 [ERROR] [1] Error: Process exited with status 1, Failed to clean up agent on Linux.
+20241015154850 [INFO] [1] finished!
+--------------------------------------------------
+Testcase_NO: 2
+Testcase_DES: Check abort process for job icon with count 100
+Status: FAILED
+Logs:
+20241015154850 [INFO] [2] running...
+20241015154850 [INFO] [2] `ja_run_jobnet_table` is cleaned.
+20241015154850 [INFO] [2] Agent cleanup on Linux is completed.
+20241015154856 [INFO] [2] jobarg-server and jobarg-agentd have been successfully restarted.
+20241015154858 [ERROR] [2] Error: Process exited with status 255, std_out: jobarg_exec [2698]: Error: Cannnot send data: message [Authentication failure.]
+
+20241015154858 [INFO] [2] finished!
+--------------------------------------------------

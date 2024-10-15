@@ -1,0 +1,88 @@
+Ticket[811] cannot stop jobnet
+
+Test_cases:
+--------------------------------------------------
+Testcase_NO: 46
+Testcase_DES: Check Abort process abort the Job icon or not
+Status: PASSED
+Logs:
+20241015134237 [INFO] [46] running...
+20241015134237 [INFO] [46] `ja_run_jobnet_table` is cleaned.
+20241015134237 [INFO] [46] Agent cleanup on Linux is completed.
+20241015134245 [INFO] [46] jobarg-server and jobarg-agentd have been successfully restarted.
+20241015134245 [INFO] [46] TICKET811_Jobnet has been successfully run with registry number: 1600000000000000070
+20241015134251 [INFO] [46] Process count has reached 1
+20241015134251 [INFO] [46] Jobnet is being aborted...
+20241015134257 [INFO] [46] Process count has reached 0
+20241015134303 [INFO] [46] TICKET811_Jobnet with registry number 1600000000000000070 is completed.
+20241015134303 [INFO] [46] There is no zombie process.
+20241015134303 [INFO] [46] Jobnet_status: ENDERR, Job_status: ERROR, Exit_cd: -1
+20241015134303 [INFO] [46] finished!
+--------------------------------------------------
+Testcase_NO: 47
+Testcase_DES: Check Abort process abort the job icon or not
+Status: PASSED
+Logs:
+20241015134303 [INFO] [47] running...
+20241015134303 [INFO] [47] `ja_run_jobnet_table` is cleaned.
+20241015134303 [INFO] [47] Agent cleanup on Linux is completed.
+20241015134308 [INFO] [47] jobarg-server and jobarg-agentd have been successfully restarted.
+20241015134310 [INFO] [47] TICKET811_Jobnet_10 has been successfully run with registry number: 1600000000000000071
+20241015134316 [INFO] [47] Process count has reached 10
+20241015134316 [INFO] [47] Jobnet is being aborted...
+20241015134323 [INFO] [47] Process count has reached 0
+20241015134328 [INFO] [47] TICKET811_Jobnet_10 with registry number 1600000000000000071 is completed.
+20241015134329 [INFO] [47] There is no zombie process.
+20241015134329 [INFO] [47] Jobnet_status: ENDERR, Job_status: ERROR, Exit_cd: -1
+20241015134329 [INFO] [47] finished!
+--------------------------------------------------
+Testcase_NO: 48
+Testcase_DES: Check Abort process abort the job icon or not
+Status: FAILED
+Logs:
+20241015134329 [INFO] [48] running...
+20241015134329 [INFO] [48] `ja_run_jobnet_table` is cleaned.
+20241015134329 [INFO] [48] Agent cleanup on Linux is completed.
+20241015134334 [INFO] [48] jobarg-server and jobarg-agentd have been successfully restarted.
+20241015134335 [INFO] [48] TICKET811_Jobnet_100 has been successfully run with registry number: 1600000000000000072
+20241015135537 [ERROR] [48] Error: timeout after 12 minutes, Failed to get process count.
+20241015135537 [INFO] [48] finished!
+--------------------------------------------------
+Testcase_NO: 49
+Testcase_DES: Check Abort process abort the job icon or not
+Status: PASSED
+Logs:
+20241015135537 [INFO] [49] running...
+20241015135537 [INFO] [49] `ja_run_jobnet_table` is cleaned.
+20241015135537 [INFO] [49] Agent cleanup on Linux is completed.
+20241015135544 [INFO] [49] jobarg-server and jobarg-agentd have been successfully restarted.
+20241015135544 [INFO] [49] TICKET811_Jobnet_400 has been successfully run with registry number: 1600000000000000073
+20241015135835 [INFO] [49] Process count has reached 400
+20241015135835 [INFO] [49] Jobnet is being aborted...
+20241015140133 [INFO] [49] Process count has reached 0
+20241015140240 [INFO] [49] TICKET811_Jobnet_400 with registry number 1600000000000000073 is completed.
+20241015140240 [INFO] [49] There is no zombie process.
+20241015140240 [INFO] [49] Jobnet_status: ENDERR, Job_status: ERROR, Exit_cd: -1
+20241015140240 [INFO] [49] finished!
+--------------------------------------------------
+Testcase_NO: 50
+Testcase_DES: Check Abort process abort the job icon or not
+Status: PASSED
+Logs:
+20241015140240 [INFO] [50] running...
+20241015140245 [INFO] [50] `ja_run_jobnet_table` is cleaned.
+20241015140246 [INFO] [50] Agent cleanup on Linux is completed.
+20241015140251 [INFO] [50] jobarg-server and jobarg-agentd have been successfully restarted.
+20241015140253 [INFO] [50] TICKET811_Jobnet_800 has been successfully run with registry number: 1600000000000000074
+20241015140931 [INFO] [50] Process count has reached 800
+20241015140931 [INFO] [50] Jobnet is being aborted...
+20241015141447 [INFO] [50] Process count has reached 0
+20241015141557 [INFO] [50] TICKET811_Jobnet_800 with registry number 1600000000000000074 is completed.
+20241015141558 [INFO] [50] There is no zombie process.
+20241015141558 [INFO] [50] Jobnet_status: ENDERR, Job_status: ERROR, Exit_cd: -1
+20241015141558 [INFO] [50] finished!
+--------------------------------------------------
+
+Total_result:
+PASSED: 4, FAILED: 1, MUST_CHECK: 0
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
