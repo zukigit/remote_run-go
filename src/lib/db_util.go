@@ -19,12 +19,15 @@ const (
 	AbortSingleFWaitJobQuery DBQuery = `UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_job_id = (
 		SELECT inner_job_id FROM ja_run_icon_fwait_table WHERE inner_jobnet_id = $1 limit 1
 	)`
-	AbortJobnetQuery DBQuery = "UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = $1"
+	AbortExtJobQuery        DBQuery = `UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = ?`
+	AbortJobnetQuery        DBQuery = "UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = $1"
+	AbortSingleJOBIconQuery DBQuery = "UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_jobnet_id = $1"
+	CheckJobnetDoneWithRed  DBQuery = "select * from ja_run_jobnet_table where status = 2 or status = 6"
 )
 
 // Converts the parameter in postgresql query to a compatible version for mysql
-func convertParamPostgresToMysql(query string) string {
-	if common.Is_mysql {
+func ConvertParamPostgresToMysql(query string) string {
+	if common.DB_type == common.MYSQL {
 		for i := 1; strings.Contains(query, fmt.Sprintf("$%d", i)); i++ {
 			query = strings.ReplaceAll(query, fmt.Sprintf("$%d", i), "?")
 		}
@@ -70,7 +73,7 @@ func ConnectDB(user, password, dbname string) {
 
 // ExecuteQuery that changes the state of the database
 func ExecuteQuery(query DBQuery, args ...interface{}) (sql.Result, error) {
-	queryStr := convertParamPostgresToMysql(string(query))
+	queryStr := ConvertParamPostgresToMysql(string(query))
 	stmt, err := common.DB.Prepare(queryStr)
 	if err != nil {
 		return nil, err
@@ -82,7 +85,7 @@ func ExecuteQuery(query DBQuery, args ...interface{}) (sql.Result, error) {
 
 // GetData fetches rows based on a query
 func GetData(query DBQuery, args ...interface{}) (*sql.Rows, error) {
-	queryStr := convertParamPostgresToMysql(string(query))
+	queryStr := ConvertParamPostgresToMysql(string(query))
 	rows, err := common.DB.Query(queryStr, args...)
 	if err != nil {
 		return nil, err
