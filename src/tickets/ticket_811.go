@@ -81,12 +81,18 @@ func (t *Ticket_811) Add_testcases() {
 func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
 	// Clean the ja_run_jobnet_table
 	// _, err := lib.ExecuteQuery(lib.DeleteRunJobnetQuery)
-	err := lib.Jobarg_cleanup_linux()
-	if err != nil{
-		fmt.Println(testcase.Err_log("Error: %s, Failed to clean the ja_run_jobnet_table.", err.Error()))
+	err := lib.Cleanup_agent_linux()
+	if err != nil {
+		fmt.Print(testcase.Err_log("Error: %s, Cleanup_agent_linux() failed.", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("`ja_run_jobnet_table` is cleaned."))
+	
+	err = lib.Jobarg_cleanup_linux()
+	if err != nil{
+		fmt.Println(testcase.Err_log("Error: %s, Jobarg_cleanup_linux() failed.", err.Error()))
+		return FAILED
+	}
+	fmt.Println(testcase.Info_log("Agent and table is cleaned."))
 
 	// Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
