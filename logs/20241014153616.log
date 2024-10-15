@@ -1,0 +1,28 @@
+Ticket[844] Others
+
+Test_cases:
+--------------------------------------------------
+Testcase_NO: 73
+Testcase_DES: Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]
+Status: FAILED
+Logs:
+20241014153619 [INFO] [73] running...
+20241014153620 [ERROR] [73] Error: Failed when trying to run the job. Process exited with status 255. Jobnet Management Id: jobarg_exec [338434]: Error: Cannnot send data: message [Authentication failure.]
+
+20241014153620 [ERROR] [73] Error: Did you imported the necessary xml files?(TICKET844_TESTCASE73-75)
+20241014153620 [INFO] [73] finished!
+--------------------------------------------------
+Testcase_NO: 75
+Testcase_DES: Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]
+Status: FAILED
+Logs:
+20241014153620 [INFO] [75] running...
+20241014153621 [ERROR] [75] Error: Failed when trying to run the job. Process exited with status 255. Jobnet Management Id: jobarg_exec [338446]: Error: Cannnot send data: message [Authentication failure.]
+
+20241014153621 [ERROR] [75] Error: Did you imported the necessary xml files?(TICKET844_TESTCASE73-75)
+20241014153621 [INFO] [75] finished!
+--------------------------------------------------
+
+Total_result:
+PASSED: 0, FAILED: 2, MUST_CHECK: 0
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

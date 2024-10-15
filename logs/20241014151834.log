@@ -1,0 +1,37 @@
+Ticket[844] Others
+
+Test_cases:
+--------------------------------------------------
+Testcase_NO: 73
+Testcase_DES: Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]
+Status: PASSED
+Logs:
+20241014151838 [INFO] [73] running...
+20241014151839 [INFO] [73] Info: Job has start running.
+20241014151839 [INFO] [73] Info: Counting Job processes.
+20241014151907 [INFO] [73] Info: Job process count met.
+20241014151907 [INFO] [73] Info: Restarting Jobarranger Agent now.
+20241014151909 [INFO] [73] Info: Jobarranger Agent has successfully restarted.
+20241014151909 [INFO] [73] Info: Counting Job processes again...
+20241014151909 [INFO] [73] Info: Total 0 Job process count met. Waiting for Jobnet to end with RUNERR.(Running Error)
+20241014152415 [INFO] [73] Info: The job returns with Error. Success.
+20241014152415 [INFO] [73] finished!
+--------------------------------------------------
+Testcase_NO: 75
+Testcase_DES: Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]
+Status: PASSED
+Logs:
+20241014152415 [INFO] [75] running...
+20241014152416 [INFO] [75] Info: Job has start running.
+20241014152416 [INFO] [75] Info: Getting Jobnet Info.
+20241014152805 [INFO] [75] Info: Successfully received getting Jobnet Info.
+20241014152805 [INFO] [75] Info: Checking Jobnet Info for Job Status, Jobnet Status and Exit CD.
+20241014152805 [INFO] [75] Info: Success. Jobnet Info = NORMAL, Jobnet Status = END, Exit_CD = 0
+20241014152805 [INFO] [75] Info: Checking for Zombie Process.
+20241014152805 [INFO] [75] Info: There's no Zombie Processes. Success.
+20241014152805 [INFO] [75] finished!
+--------------------------------------------------
+
+Total_result:
+PASSED: 2, FAILED: 0, MUST_CHECK: 0
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

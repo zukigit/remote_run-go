@@ -47,19 +47,15 @@ func (t *Ticket_6969) Add_testcases() {
 	tc_6999 := t.New_testcase(6969, "Sample testcase 1")
 	tc_func := func() common.Testcase_status {
 
-		// Restarting Jobarranger agent service
-		err := lib.Restart_jaz_agent_linux()
-
-		if err != nil {
-			fmt.Println(tc_6999.Err_log("Error: Failted at restarting Jobarranger Agent. %s", err.Error()))
-			return FAILED
-		}
-
 		//Jobnet Execution
+
 		jobnet_run_manage_id, err := lib.Jobarg_exec("SIMPLE_JOB")
 		if err != nil {
-			fmt.Println(tc_6999.Err_log("Error: %s for Test Case: %s.", err.Error(), jobnet_run_manage_id))
+			fmt.Println(tc_6999.Err_log("Error: Failed when trying to run the job. %s.", err.Error()))
+			fmt.Println(tc_6999.Err_log("Error: Did you imported the necessary xml files or forgot to enable jobnet?(TICKET844_TESTCASE73-75)"))
 			return FAILED
+		} else {
+			fmt.Println(tc_6999.Info_log("Info: Job has start running."))
 		}
 
 		//Getting jobnet info

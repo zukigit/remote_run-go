@@ -48,11 +48,16 @@ func (t *Ticket_844) Add_testcases() {
 	tc_73 := t.New_testcase(73, "Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]")
 	tc_func := func() common.Testcase_status {
 
-		// Executing Test Case for 800 Job Icons
-		jobnet_run_manage_id, err := lib.Jobarg_exec("Icon_100")
+		// Test Case: "Execute 800 jobnets simutaneously."
+		//
+		// Task:      "Restart the Agent"
+		//
+		// Result:    "The JOB returns with an error"
+
+		jobnet_run_manage_id, err := lib.Jobarg_exec("Icon_400")
 		if err != nil {
-			fmt.Println(tc_73.Err_log("Error: Failed when trying to run the job. %s. Jobnet Management Id: %s", err.Error(), jobnet_run_manage_id))
-			fmt.Println(tc_73.Err_log("Error: Did you imported the necessary xml files?(TICKET844_TESTCASE73-75)"))
+			fmt.Println(tc_73.Err_log("Error: Failed when trying to run the job. %s.", err.Error()))
+			fmt.Println(tc_73.Err_log("Error: Did you imported the necessary xml files or forgot to enable jobnet?(TICKET844_TESTCASE73-75)"))
 			return FAILED
 		} else {
 			fmt.Println(tc_73.Info_log("Info: Job has start running."))
@@ -64,7 +69,7 @@ func (t *Ticket_844) Add_testcases() {
 		fmt.Println(tc_73.Info_log("Info: Counting Job processes."))
 		err = lib.JobProcessCountCheck(100, 10, common.Client)
 		if err != nil {
-			fmt.Println(tc_73.Err_log("Error: Failed at counting required process count. %s Jobnet Management Id: %s ", err.Error(), jobnet_run_manage_id))
+			fmt.Println(tc_73.Err_log("Error: Failed at counting required process count. %s", err.Error()))
 			return FAILED
 		} else {
 			fmt.Println(tc_73.Info_log("Info: Job process count met."))
@@ -107,4 +112,66 @@ func (t *Ticket_844) Add_testcases() {
 
 	tc_73.Set_function(tc_func)
 	t.Add_testcase(*tc_73)
+
+	//TESTCASE 75
+	tc_75 := t.New_testcase(75, "Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]")
+	tc_func = func() common.Testcase_status {
+
+		// Test Case: "Parallel 800 jobs with loop (8hr)."
+		//
+		// Task:      "Execute jobnet"
+		//
+		// Result:    make sure that no zombies occur and there are no JOBICONs that do not end
+		//             - JOB only has exit 0
+		//             For linux => ps -aux | grep defunct
+		//             For window=> tasklist /FI "STATUS eq NOT RESPONDING"
+		jobnet_run_manage_id, err := lib.Jobarg_exec("TICKET844_TESTCASE75")
+		if err != nil {
+			fmt.Println(tc_75.Err_log("Error: Failed when trying to run the job. %s", err.Error()))
+			fmt.Println(tc_75.Err_log("Error: Did you imported the necessary xml files?(TICKET844_TESTCASE73-75)"))
+			return FAILED
+		} else {
+			fmt.Println(tc_75.Info_log("Info: Job has start running."))
+		}
+
+		//In case if getting jobnet info failed
+		fmt.Println(tc_75.Info_log("Info: Getting Jobnet Info."))
+		jobnet_run_info, err := lib.Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
+		if err != nil {
+			fmt.Println(tc_75.Err_log("Error: Failted at getting jobnet run info. %s. Jobnet Management Id: %s ", err.Error(), jobnet_run_manage_id))
+			return FAILED
+		} else {
+			fmt.Println(tc_75.Info_log("Info: Successfully received getting Jobnet Info."))
+		}
+
+		//Checking whether Jobnet is finished or not
+		fmt.Println(tc_75.Info_log("Info: Checking Jobnet Info for Job Status, Jobnet Status and Exit CD."))
+		if jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Exit_cd == 0 {
+
+			// Checking whether "checking at zombie process" process failed or not.
+			fmt.Println(tc_75.Info_log("Info: Success. Jobnet Info = NORMAL, Jobnet Status = END, Exit_CD = 0"))
+			fmt.Println(tc_75.Info_log("Info: Checking for Zombie Process."))
+			zombieProcessCount, err := lib.CheckZombieProcess(1, common.Client)
+			if err != nil {
+				fmt.Println(tc_75.Err_log("Error: Failed at checking zombie Process."))
+				fmt.Println(tc_75.Err_log(err.Error()))
+				// Checking whether zombie process exist or not.
+				if zombieProcessCount > 0 {
+					fmt.Println(tc_75.Err_log("Error: There is zombie Process left."))
+					fmt.Println(tc_75.Err_log(err.Error()))
+				}
+
+				return FAILED
+			}
+			fmt.Println(tc_75.Info_log("Info: There's no Zombie Processes. Success."))
+			return PASSED
+		}
+
+		fmt.Println(tc_75.Err_log("Error: Either Jobnet Info or Jobnet Status or Exit CD doesn't meet required contidions.(Normal, End, 0)"))
+		fmt.Println(tc_75.Err_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
+		return FAILED
+	}
+
+	tc_75.Set_function(tc_func)
+	t.Add_testcase(*tc_75)
 }
