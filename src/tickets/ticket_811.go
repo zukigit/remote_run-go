@@ -47,31 +47,31 @@ func (t *Ticket_811) Add_testcases() {
 	//Normal jobnet with 100 agent less icon in running state.
 	tc_5 := t.New_testcase(5, "Check Abort process abort the Agent Less icon or not")
 	tc_func := func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_AgentLess1000", 1000, 20, tc_5, common.Client)
+		return RunJobnetAndAbort("TICKET811_AgentLess100", 1000, 20, tc_5, common.Client)
 	}
 	tc_5.Set_function(tc_func)
 	t.Add_testcase(*tc_5)
 
-	//Normal jobnet with 1200 agent less icon in running state.
+	//Normal jobnet with 200 agent less icon in running state.
 	tc_6 := t.New_testcase(6, "Check Abort process abort the Agent Less icon or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_AgentLess1200", 1200, 25, tc_6, common.Client)
+		return RunJobnetAndAbort("TICKET811_AgentLess200", 1200, 25, tc_6, common.Client)
 	}
 	tc_6.Set_function(tc_func)
 	t.Add_testcase(*tc_6)
 
-	//Normal jobnet with 1400 agent less icon in running state.
+	//Normal jobnet with 400 agent less icon in running state.
 	tc_7 := t.New_testcase(7, "Check Abort process abort the Agent Less icon or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_AgentLess1400", 1400, 30, tc_7, common.Client)
+		return RunJobnetAndAbort("TICKET811_AgentLess400", 1400, 30, tc_7, common.Client)
 	}
 	tc_7.Set_function(tc_func)
 	t.Add_testcase(*tc_7)
 
-	//Normal jobnet with 1600 agent less icon in running state.
+	//Normal jobnet with 800 agent less icon in running state.
 	tc_8 := t.New_testcase(8, "Check Abort process abort the Agent Less icon or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_AgentLess1600", 1600, 35, tc_8, common.Client)
+		return RunJobnetAndAbort("TICKET811_AgentLess800", 1600, 35, tc_8, common.Client)
 	}
 	tc_8.Set_function(tc_func)
 	t.Add_testcase(*tc_8)
