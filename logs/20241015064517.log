@@ -1,0 +1,18 @@
+Ticket[794] Process Check
+
+Test_cases:
+--------------------------------------------------
+Testcase_NO: 38
+Testcase_DES: Process Check
+Status: PASSED
+Logs:
+20241015064522 [INFO] [38] running...
+20241015065230 [INFO] [38] TICKET794_Sleep60_Job510 completed successfully.
+20241015071615 [INFO] [38] TICKET794_Sleep60_Job1020 completed successfully.
+20241015085047 [INFO] [38] TICKET794_Sleep60_Job2040 completed successfully.
+20241015085047 [INFO] [38] finished!
+--------------------------------------------------
+
+Total_result:
+PASSED: 1, FAILED: 0, MUST_CHECK: 0
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
