@@ -88,7 +88,6 @@ func JobProcessCountCheck(targetProcessCount int, timeoutDuration int, client *s
 			if currentProcessCount == targetProcessCount {
 				return nil
 			}
-			fmt.Printf("Process Count: %d\n", currentProcessCount)
 			time.Sleep(1 * time.Second)
 		}
 
