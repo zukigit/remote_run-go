@@ -169,10 +169,10 @@ func Jobarg_cleanup_linux() error {
 		return fmt.Errorf("failed to clean up agent: %w", err)
 	}
 	if err := Restart_jaz_server(); err != nil {
-		return fmt.Errorf("failed to stop JAZ server: %w", err)
+		return fmt.Errorf("failed to start JAZ server: %w", err)
 	}
 	if err := Restart_jaz_agent_linux(); err != nil {
-		return fmt.Errorf("failed to stop JAZ server: %w", err)
+		return fmt.Errorf("failed to start JAZ server: %w", err)
 	}
 
 	return nil
