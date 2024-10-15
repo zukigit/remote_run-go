@@ -33,8 +33,20 @@ func Restart_jaz_agent_linux() error {
 	return err
 }
 
+func Stop_jaz_agent_linux() error {
+	_, err := Ssh_exec_to_str("systemctl stop jobarg-agentd")
+
+	return err
+}
+
 func Restart_jaz_server() error {
 	_, err := Ssh_exec_to_str("systemctl restart jobarg-server")
+
+	return err
+}
+
+func Stop_jaz_server() error {
+	_, err := Ssh_exec_to_str("systemctl stop jobarg-server")
 
 	return err
 }
@@ -130,4 +142,38 @@ func CheckZombieProcess(timeoutDuration int, client *ssh.Client) (int, error) {
 		}
 	}
 
+}
+
+// To use this function, your jobarranger agent's TmpDir must be default(TmpDir=/var/lib/jobarranger/tmp)
+func Cleanup_agent_linux() error {
+	_, err := Ssh_exec_to_str("rm -rf /var/lib/jobarranger/tmp/*")
+
+	return err
+}
+
+// To use this function, your jobarranger agent's TmpDir must be default(TmpDir=/var/lib/jobarranger/tmp).
+//
+// Jobarg_cleanup() cleans jobarg-server and jobarg-agentd(linux) data.
+// Since this is testcase utility funtion, you must use it in testcase function.
+func Jobarg_cleanup_linux() error {
+	if err := Stop_jaz_server(); err != nil {
+		return fmt.Errorf("failed to stop JAZ server: %w", err)
+	}
+	if err := Stop_jaz_agent_linux(); err != nil {
+		return fmt.Errorf("failed to stop JAZ agent: %w", err)
+	}
+	if _, err := DBexec("delete from ja_run_jobnet_table;"); err != nil {
+		return fmt.Errorf("failed to execute DB command: %w", err)
+	}
+	if err := Cleanup_agent_linux(); err != nil {
+		return fmt.Errorf("failed to clean up agent: %w", err)
+	}
+	if err := Restart_jaz_server(); err != nil {
+		return fmt.Errorf("failed to stop JAZ server: %w", err)
+	}
+	if err := Restart_jaz_agent_linux(); err != nil {
+		return fmt.Errorf("failed to stop JAZ server: %w", err)
+	}
+
+	return nil
 }
