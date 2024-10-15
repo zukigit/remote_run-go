@@ -90,7 +90,7 @@ func (t *Ticket_811) Add_testcases() {
 // Run the jobnet, abort it after all jobs are in running state, and confirm ENDERR status of the jobnet
 func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
 	// Clean the ja_run_jobnet_table
-	_, err := lib.UpdateData(lib.DeleteRunJobnetQuery)
+	_, err := lib.ExecuteQuery(lib.DeleteRunJobnetQuery)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, Failed to clean the ja_run_jobnet_table.", err.Error()))
 		return FAILED
@@ -115,7 +115,7 @@ func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout in
 	fmt.Println(testcase.Info_log("Process count has reached %d", processCount))
 
 	// Abort the jobnet
-	_, err = lib.UpdateData(lib.AbortJobnetQuery, run_jobnet_id)
+	_, err = lib.ExecuteQuery(lib.AbortJobnetQuery, run_jobnet_id)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, Failed to abort the jobnet.", err.Error()))
 		return FAILED
@@ -171,7 +171,7 @@ func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout in
 // Run the jobnet, abort the fwait job icon after all jobs are in running state, and confirm ENDERR status of the jobnet
 func RunJobnetAndAbortFwaitJobIcon(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
 	// Clean the ja_run_jobnet_table
-	_, err := lib.UpdateData(lib.DeleteRunJobnetQuery)
+	_, err := lib.ExecuteQuery(lib.DeleteRunJobnetQuery)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, Failed to clean the ja_run_jobnet_table.", err.Error()))
 		return FAILED
@@ -196,7 +196,7 @@ func RunJobnetAndAbortFwaitJobIcon(jobnetId string, processCount int, processChe
 	fmt.Println(testcase.Info_log("Process count has reached %d", processCount))
 
 	// Abort the jobnet
-	_, err = lib.UpdateData(lib.AbortSingleFWaitJobQuery, run_jobnet_id)
+	_, err = lib.ExecuteQuery(lib.AbortSingleFWaitJobQuery, run_jobnet_id)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, Failed to abort the fwait job icon.", err.Error()))
 		return FAILED

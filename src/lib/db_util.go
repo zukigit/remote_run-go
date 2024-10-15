@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -20,6 +21,17 @@ const (
 	)`
 	AbortJobnetQuery DBQuery = "UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = $1"
 )
+
+// Converts the parameter in postgresql query to a compatible version for mysql
+func ConvertParamPostgresToMysql(query string) string {
+	if common.DB_type == common.MYSQL {
+		for i := 1; strings.Contains(query, fmt.Sprintf("$%d", i)); i++ {
+			query = strings.ReplaceAll(query, fmt.Sprintf("$%d", i), "?")
+		}
+	}
+
+	return query
+}
 
 // ConnectDB initializes the database connection
 func ConnectDB(user, password, dbname string) {
@@ -44,7 +56,7 @@ func ConnectDB(user, password, dbname string) {
 	// Set maximum number of open connections
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(25)
-	db.SetConnMaxLifetime(5 * time.Minute)
+	db.SetConnMaxLifetime(0 * time.Minute)
 
 	// Check the connection
 	err = db.Ping()
@@ -56,9 +68,10 @@ func ConnectDB(user, password, dbname string) {
 	common.DB = db
 }
 
-// InsertData inserts data into a table
-func InsertData(query DBQuery, args ...interface{}) (sql.Result, error) {
-	stmt, err := common.DB.Prepare(string(query))
+// ExecuteQuery that changes the state of the database
+func ExecuteQuery(query DBQuery, args ...interface{}) (sql.Result, error) {
+	queryStr := ConvertParamPostgresToMysql(string(query))
+	stmt, err := common.DB.Prepare(queryStr)
 	if err != nil {
 		return nil, err
 	}
@@ -69,19 +82,16 @@ func InsertData(query DBQuery, args ...interface{}) (sql.Result, error) {
 
 // GetData fetches rows based on a query
 func GetData(query DBQuery, args ...interface{}) (*sql.Rows, error) {
-	rows, err := common.DB.Query(string(query), args...)
+	queryStr := ConvertParamPostgresToMysql(string(query))
+	rows, err := common.DB.Query(queryStr, args...)
 	if err != nil {
 		return nil, err
 	}
 	return rows, nil
 }
 
-// UpdateData updates records in a table
-func UpdateData(query DBQuery, args ...interface{}) (sql.Result, error) {
-	return InsertData(query, args...)
-}
+func DBexec(unfmt string, arg ...any) (sql.Result, error) {
+	query := fmt.Sprintf(unfmt, arg...)
 
-// DeleteData deletes records from a table
-func DeleteData(query DBQuery, args ...interface{}) (sql.Result, error) {
-	return InsertData(query, args...)
+	return common.DB.Exec(query)
 }

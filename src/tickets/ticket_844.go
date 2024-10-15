@@ -48,6 +48,14 @@ func (t *Ticket_844) Add_testcases() {
 	tc_73 := t.New_testcase(73, "Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]")
 	tc_func := func() common.Testcase_status {
 
+		fmt.Println(tc_73.Info_log("Info: Starting Jobarg_cleanup"))
+		err := lib.Jobarg_cleanup()
+		if err != nil {
+			fmt.Println(tc_73.Err_log("Error: %s", err.Error()))
+			return FAILED
+		}
+		fmt.Println(tc_73.Info_log("Info: Jobarg_cleanup Success."))
+
 		// Test Case: "Execute 800 jobnets simutaneously."
 		//
 		// Task:      "Restart the Agent"
@@ -101,6 +109,7 @@ func (t *Ticket_844) Add_testcases() {
 				jobstatus, err := lib.Jobarg_get_JA_JOBSTATUS(jobnet_run_manage_id)
 				if err == nil && jobstatus == "ERROR" {
 					fmt.Println(tc_73.Info_log("Info: The job returns with Error. Success."))
+
 					return PASSED
 				}
 				time.Sleep(1 * time.Second)
@@ -125,6 +134,16 @@ func (t *Ticket_844) Add_testcases() {
 		//             - JOB only has exit 0
 		//             For linux => ps -aux | grep defunct
 		//             For window=> tasklist /FI "STATUS eq NOT RESPONDING"
+
+		// Initiating Jobarg_cleanup
+		fmt.Println(tc_73.Info_log("Info: Starting Jobarg_cleanup"))
+		err := lib.Jobarg_cleanup()
+		if err != nil {
+			fmt.Println(tc_73.Err_log("Error: %s", err.Error()))
+			return FAILED
+		}
+		fmt.Println(tc_73.Info_log("Info: Jobarg_cleanup Success."))
+
 		jobnet_run_manage_id, err := lib.Jobarg_exec("TICKET844_TESTCASE75")
 		if err != nil {
 			fmt.Println(tc_75.Err_log("Error: Failed when trying to run the job. %s", err.Error()))
