@@ -44,46 +44,46 @@ func (t *Ticket_811) Set_values() {
 // Add your test case here
 func (t *Ticket_811) Add_testcases() {
 
-	// TESTCASE 69 (Force stop FWait job icon)
-	tc_69 := t.New_testcase(69, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
+	// TESTCASE 46 (Force stop Job job icon)
+	tc_46 := t.New_testcase(46, "Check Abort process abort the Job icon (with waiting for file creation option ON) or not")
 	tc_func := func() common.Testcase_status {
-		return RunJobnetAndAbortFwaitJobIcon("TICKET811_FileWaitJob1", 2, 5, tc_69, common.Client)
+		return RunJobnetAndAbort("TICKET811_Jobnet", 1, 2, tc_46, common.Client)
 	}
-	tc_69.Set_function(tc_func)
-	t.Add_testcase(*tc_69)
+	tc_46.Set_function(tc_func)
+	t.Add_testcase(*tc_46)
 
-	// TESTCASE 70 (Force stop FWait job icon on other agent)
-	tc_70 := t.New_testcase(70, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
-	tc_func = func() common.Testcase_status {
-		agentSSHClient := lib.GetSSHClient("10.1.9.212", 22, "root", "000@dirace") // remote agent
-		return RunJobnetAndAbort("TICKET811_FileWaitJobOtherAgent1", 2, 5, tc_70, agentSSHClient)
-	}
-	tc_70.Set_function(tc_func)
-	t.Add_testcase(*tc_70)
+	//TESTCASE 70 (Force stop job icon on other agent)
+	// tc_70 := t.New_testcase(70, "Check Abort process abort the job icon or not")
+	// tc_func = func() common.Testcase_status {
+	// 	agentSSHClient := lib.GetSSHClient("10.1.9.80", 22, "root", "123@dirace") // remote agent
+	// 	return RunJobnetAndAbort("TICKET811_FileWaitJobOtherAgent1", 2, 5, tc_70, agentSSHClient)
+	// }
+	// tc_70.Set_function(tc_func)
+	// t.Add_testcase(*tc_70)
 
-	// TESTCASE 71 (Force stop FWait jobnet with icon count of 1)
-	tc_71 := t.New_testcase(71, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
+	// // TESTCASE 47 (Force stop jobnet with icon count of 1)
+	tc_47 := t.New_testcase(47, "Check Abort process abort the job icon or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_FileWaitJob1", 2, 5, tc_71, common.Client)
+		return RunJobnetAndAbort("TICKET811_Jobnet_10", 10, 5, tc_47, common.Client)
 	}
-	tc_71.Set_function(tc_func)
-	t.Add_testcase(*tc_71)
+	tc_47.Set_function(tc_func)
+	t.Add_testcase(*tc_47)
 
-	// TESTCASE 72 (Force stop FWait jobnet with icon count of 100)
-	tc_72 := t.New_testcase(72, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
+	// // TESTCASE 48 (Force stop jobnet with icon count of 100)
+	tc_48 := t.New_testcase(48, "Check Abort process abort the job icon or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_FileWaitJob100", 200, 15, tc_72, common.Client)
+		return RunJobnetAndAbort("TICKET811_Jobnet_100", 120, 15, tc_48, common.Client)
 	}
-	tc_72.Set_function(tc_func)
-	t.Add_testcase(*tc_72)
+	tc_48.Set_function(tc_func)
+	t.Add_testcase(*tc_48)
 
-	// TESTCASE 73 (Force stop FWait jobnet with icon count of 800)
-	tc_73 := t.New_testcase(73, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
-	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_FileWaitJob800", 1600, 30, tc_73, common.Client)
-	}
-	tc_73.Set_function(tc_func)
-	t.Add_testcase(*tc_73)
+	// TESTCASE 49 (Force stop jobnet with icon count of 800)
+	// tc_49 := t.New_testcase(49, "Check Abort process abort the job icon or not")
+	// tc_func = func() common.Testcase_status {
+	// 	return RunJobnetAndAbort("TICKET811_Jobnet_400", 400, 20, tc_49, common.Client)
+	// }
+	// tc_49.Set_function(tc_func)
+	// t.Add_testcase(*tc_49)
 
 }
 
@@ -169,7 +169,7 @@ func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout in
 }
 
 // Run the jobnet, abort the fwait job icon after all jobs are in running state, and confirm ENDERR status of the jobnet
-func RunJobnetAndAbortFwaitJobIcon(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func RunJobnetAndAbortJobIcon(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
 	// Clean the ja_run_jobnet_table
 	_, err := lib.UpdateData(lib.DeleteRunJobnetQuery)
 	if err != nil {
@@ -196,12 +196,12 @@ func RunJobnetAndAbortFwaitJobIcon(jobnetId string, processCount int, processChe
 	fmt.Println(testcase.Info_log("Process count has reached %d", processCount))
 
 	// Abort the jobnet
-	_, err = lib.UpdateData(lib.AbortSingleFWaitJobQuery, run_jobnet_id)
+	_, err = lib.UpdateData(lib.AbortJobnetQuery, run_jobnet_id)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, Failed to abort the fwait job icon.", err.Error()))
+		fmt.Println(testcase.Err_log("Error: %s, Failed to abort the Jobnet.", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Fwait job icon is being aborted..."))
+	fmt.Println(testcase.Info_log("Jobnet is being aborted..."))
 
 	// Wait for all jobs to be purged
 	processCount = 0

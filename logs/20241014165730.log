@@ -1,0 +1,58 @@
+Ticket[811] cannot stop jobnet
+
+Test_cases:
+--------------------------------------------------
+Testcase_NO: 46
+Testcase_DES: Check Abort process abort the Job icon (with waiting for file creation option ON) or not
+Status: PASSED
+Logs:
+20241014165734 [INFO] [46] running...
+20241014165734 [INFO] [46] `ja_run_jobnet_table` is cleaned.
+20241014165734 [INFO] [46] TICKET811_Jobnet has been successfully run with registry number: 1600000000000000037
+20241014165739 [INFO] [46] Process count has reached 1
+20241014165739 [INFO] [46] Jobnet is being aborted...
+20241014165744 [INFO] [46] Process count has reached 0
+20241014165751 [INFO] [46] TICKET811_Jobnet with registry number 1600000000000000037 is completed.
+20241014165751 [INFO] [46] There is no zombie process.
+20241014165751 [INFO] [46] Jobnet_status: ENDERR, Job_status: ERROR, Exit_cd: -1
+20241014165751 [INFO] [46] finished!
+--------------------------------------------------
+Testcase_NO: 47
+Testcase_DES: Check Abort process abort the job icon or not
+Status: PASSED
+Logs:
+20241014165751 [INFO] [47] running...
+20241014165751 [INFO] [47] `ja_run_jobnet_table` is cleaned.
+20241014165751 [INFO] [47] TICKET811_Jobnet_10 has been successfully run with registry number: 1600000000000000038
+20241014165759 [INFO] [47] Process count has reached 10
+20241014165759 [INFO] [47] Jobnet is being aborted...
+20241014165805 [INFO] [47] Process count has reached 0
+20241014165816 [INFO] [47] TICKET811_Jobnet_10 with registry number 1600000000000000038 is completed.
+20241014165817 [INFO] [47] There is no zombie process.
+20241014165817 [INFO] [47] Jobnet_status: ENDERR, Job_status: ERROR, Exit_cd: -1
+20241014165817 [INFO] [47] finished!
+--------------------------------------------------
+Testcase_NO: 48
+Testcase_DES: Check Abort process abort the job icon or not
+Status: FAILED
+Logs:
+20241014165817 [INFO] [48] running...
+20241014165817 [INFO] [48] `ja_run_jobnet_table` is cleaned.
+20241014165818 [INFO] [48] TICKET811_Jobnet_100 has been successfully run with registry number: 1600000000000000039
+20241014171318 [ERROR] [48] Error: timeout after 15 minutes, Failed to get process count.
+20241014171318 [INFO] [48] finished!
+--------------------------------------------------
+Testcase_NO: 49
+Testcase_DES: Check Abort process abort the job icon or not
+Status: FAILED
+Logs:
+20241014171318 [INFO] [49] running...
+20241014171319 [INFO] [49] `ja_run_jobnet_table` is cleaned.
+20241014171320 [ERROR] [49] Error: Process exited with status 255, std_out: jobarg_exec [297129]: Error: Cannnot send data: message [Authentication failure.]
+
+20241014171320 [INFO] [49] finished!
+--------------------------------------------------
+
+Total_result:
+PASSED: 2, FAILED: 2, MUST_CHECK: 0
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
