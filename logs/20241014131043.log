@@ -1,0 +1,18 @@
+Ticket[811] cannot stop jobnet
+
+Test_cases:
+--------------------------------------------------
+Testcase_NO: 100
+Testcase_DES: Check Abort process abort the ext icon with value 100
+Status: PASSED
+Logs:
+20241014131051 [INFO] [100] running...
+20241014131051 [INFO] [100] `ja_run_jobnet_table` is cleaned.
+20241014131051 [INFO] [100] Icon_100 has been successfully run with registry number: 1600000000000000101
+20241014131145 [INFO] [100] Ext job icon is being aborted...
+20241014131219 [INFO] [100] finished!
+--------------------------------------------------
+
+Total_result:
+PASSED: 1, FAILED: 0, MUST_CHECK: 0
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

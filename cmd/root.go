@@ -35,6 +35,19 @@ func check_duplicated_ticket() {
 	}
 }
 
+func check_duplicated_testcases() {
+	seen := make(map[uint]bool)
+	for _, tkt := range tkts {
+		for _, tc := range tkt.Get_testcases() {
+			if seen[tc.Get_id()] {
+				fmt.Printf("Error: testcase[%d] is duplicated\n", tc.Get_id())
+				os.Exit(1)
+			}
+			seen[tc.Get_id()] = true
+		}
+	}
+}
+
 func add_run_tickets(ticket_number uint) {
 	if ticket_number == 0 {
 		run_tickets = tkts
@@ -103,6 +116,7 @@ var rootCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		check_duplicated_ticket()
+		check_duplicated_testcases()
 
 		common.Log_filename = lib.Get_log_filename()
 		common.Set_passwd()
@@ -153,13 +167,20 @@ func init() {
 	rootCmd.Flags().UintVar(&common.Specific_testcase_no, "testcase", 0, "Testcase number to run specific testcase")
 	rootCmd.Flags().StringVar(&common.DB_hostname, "db-hostname", "", "Database specific hostname to connect.")
 	rootCmd.Flags().UintVar(&common.DB_port, "db-port", 0, "Database specific port to connect.")
-	rootCmd.Flags().UintVar(&common.Timeout, "timeout", 300, "Common timeout in seconds.")
+	rootCmd.Flags().UintVar(&common.Timeout, "timeout", 300, "Common timeout in seconds. ")
 }
 
 // Add your tickets here
 func add_tickets(t *[]dao.Ticket) {
+
 	// *t = append(*t, new(tickets.Ticket_1318))
 	// *t = append(*t, new(tickets.Ticket_000))
 	// *t = append(*t, new(tickets.Ticket_811))
 	*t = append(*t, new(tickets.Ticket_800))
+	*t = append(*t, new(tickets.Ticket_1318))
+	*t = append(*t, new(tickets.Ticket_000))
+	*t = append(*t, new(tickets.Ticket_811))
+	*t = append(*t, new(tickets.Ticket_1225))
+	*t = append(*t, new(tickets.Ticket_844))
+	*t = append(*t, new(tickets.Ticket_794))
 }
