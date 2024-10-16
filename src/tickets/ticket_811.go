@@ -52,95 +52,55 @@ func (t *Ticket_811) Set_values() {
 
 // Add your test case here
 func (t *Ticket_811) Add_testcases() {
-
-	// // TESTCASE 69 (Force stop FWait job icon)
-	tc_69 := t.New_testcase(69, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
+//Normal jobnet with 100 agent less icon in running state.
+	tc_5 := t.New_testcase(5, "Check Abort process abort the Agent Less icon or not")
 	tc_func := func() common.Testcase_status {
-		return RunJobnetAndAbortFwaitJobIcon("TICKET811_FileWaitJob1", 2, 5, tc_69, common.Client)
+		return RunJobnetAndAbort("TICKET811_AgentLess100", 100, 5, tc_5, common.Client)
 	}
-	tc_69.Set_function(tc_func)
-	t.Add_testcase(*tc_69)
+	tc_5.Set_function(tc_func)
+	t.Add_testcase(*tc_5)
 
-	// // TESTCASE 70 (Force stop FWait job icon on other agent)
-	tc_70 := t.New_testcase(70, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
+	//Normal jobnet with 200 agent less icon in running state.
+	tc_6 := t.New_testcase(6, "Check Abort process abort the Agent Less icon or not")
 	tc_func = func() common.Testcase_status {
-		agentSSHClient := lib.GetSSHClient("10.1.9.212", 22, "root", "000@dirace") // remote agent
-		return RunJobnetAndAbort("TICKET811_FileWaitJobOtherAgent1", 2, 5, tc_70, agentSSHClient)
+		return RunJobnetAndAbort("TICKET811_AgentLess200", 200, 5, tc_6, common.Client)
 	}
-	tc_70.Set_function(tc_func)
-	t.Add_testcase(*tc_70)
+	tc_6.Set_function(tc_func)
+	t.Add_testcase(*tc_6)
 
-	// // TESTCASE 71 (Force stop FWait jobnet with icon count of 1)
-	tc_71 := t.New_testcase(71, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
+	//Normal jobnet with 400 agent less icon in running state.
+	tc_7 := t.New_testcase(7, "Check Abort process abort the Agent Less icon or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_FileWaitJob1", 2, 5, tc_71, common.Client)
+		return RunJobnetAndAbort("TICKET811_AgentLess400", 400, 10, tc_7, common.Client)
 	}
-	tc_71.Set_function(tc_func)
-	t.Add_testcase(*tc_71)
+	tc_7.Set_function(tc_func)
+	t.Add_testcase(*tc_7)
 
-	// // TESTCASE 72 (Force stop FWait jobnet with icon count of 100)
-	tc_72 := t.New_testcase(72, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
+	//Normal jobnet with 800 agent less icon in running state.
+	tc_8 := t.New_testcase(8, "Check Abort process abort the Agent Less icon or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_FileWaitJob100", 200, 15, tc_72, common.Client)
+		return RunJobnetAndAbort("TICKET811_AgentLess800", 800, 15, tc_8, common.Client)
 	}
-	tc_72.Set_function(tc_func)
-	t.Add_testcase(*tc_72)
-
-	// // TESTCASE 73 (Force stop FWait jobnet with icon count of 800)
-	tc_73 := t.New_testcase(73, "Check Abort process abort the fwait icon (with waiting for file creation option ON) or not")
-	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_FileWaitJob800", 1600, 30, tc_73, common.Client)
-	}
-	tc_73.Set_function(tc_func)
-	t.Add_testcase(*tc_73)
-
-	// // TESTCASE 74 (Force stop Ext jobnet with icon count of 100)
-	tc_49_100 := t.New_testcase(5, "Check Abort process abort the ext icon 100")
-	tc_func_100 := func() common.Testcase_status {
-		return RunJobnetAndAbortExtJobIcon("TICKET811_TESTCASE49_JOB100", 30, tc_49_100, common.Client, 100)
-	}
-
-	tc_49_100.Set_function(tc_func_100)
-	t.Add_testcase(*tc_49_100)
-
-	// // TESTCASE 74 (Force stop Ext jobnet with icon count of 200)
-	tc_49_200 := t.New_testcase(6, "Check Abort process abort the ext icon 200")
-	tc_func_200 := func() common.Testcase_status {
-		return RunJobnetAndAbortExtJobIcon("TICKET811_TESTCASE49_JOB200", 30, tc_49_200, common.Client, 200)
-	}
-
-	tc_49_200.Set_function(tc_func_200)
-	t.Add_testcase(*tc_49_200)
-
-	// // TESTCASE 74 (Force stop Ext jobnet with icon count of 400)
-	tc_49_400 := t.New_testcase(7, "Check Abort process abort the ext icon 400")
-	tc_func_400 := func() common.Testcase_status {
-		return RunJobnetAndAbortExtJobIcon("TICKET811_TESTCASE49_JOB400", 50, tc_49_400, common.Client, 400)
-	}
-
-	tc_49_400.Set_function(tc_func_400)
-	t.Add_testcase(*tc_49_400)
-
-	// // TESTCASE 74 (Force stop Ext jobnet with icon count of 800)
-	tc_49_800 := t.New_testcase(8, "Check Abort process abort the ext icon 800")
-	tc_func_800 := func() common.Testcase_status {
-		return RunJobnetAndAbortExtJobIcon("TICKET811_TESTCASE49_JOB800", 200, tc_49_800, common.Client, 800)
-	}
-
-	tc_49_800.Set_function(tc_func_800)
-	t.Add_testcase(*tc_49_800)
-
+	tc_8.Set_function(tc_func)
+	t.Add_testcase(*tc_8)
 }
 
 // Run the jobnet, abort it after all jobs are in running state, and confirm ENDERR status of the jobnet
 func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
 	// Clean the ja_run_jobnet_table
-	_, err := lib.ExecuteQuery(lib.DeleteRunJobnetQuery)
+	// _, err := lib.ExecuteQuery(lib.DeleteRunJobnetQuery)
+	err := lib.Cleanup_agent_linux()
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, Failed to clean the ja_run_jobnet_table.", err.Error()))
+		fmt.Print(testcase.Err_log("Error: %s, Cleanup_agent_linux() failed.", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("`ja_run_jobnet_table` is cleaned."))
+	
+	err = lib.Jobarg_cleanup_linux()
+	if err != nil{
+		fmt.Println(testcase.Err_log("Error: %s, Jobarg_cleanup_linux() failed.", err.Error()))
+		return FAILED
+	}
+	fmt.Println(testcase.Info_log("Agent and table is cleaned."))
 
 	// Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
