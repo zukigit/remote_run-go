@@ -21,10 +21,10 @@ const (
 	)`
 
 	CheckJobStatusCountQuery DBQuery = "SELECT count(*) FROM ja_run_job_table where status = 4 and job_type = 4 and inner_jobnet_main_id = $1"
-	AbortExtJobQuery        DBQuery = `UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = ?`
-	AbortJobnetQuery        DBQuery = "UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = $1"
-	AbortSingleJOBIconQuery DBQuery = "UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_jobnet_id = $1"
-	CheckJobnetDoneWithRed  DBQuery = "select * from ja_run_jobnet_table where status = 2 or status = 6"
+	AbortExtJobQuery         DBQuery = `UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = ?`
+	AbortJobnetQuery         DBQuery = "UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = $1"
+	AbortSingleJOBIconQuery  DBQuery = "UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_jobnet_id = $1"
+	CheckJobnetDoneWithRed   DBQuery = "select * from ja_run_jobnet_table where status = 2 or status = 6"
 )
 
 // Converts the parameter in postgresql query to a compatible version for mysql
@@ -113,7 +113,7 @@ func JobProcessDBCountCheck(targetProcessCount int, timeoutDuration int, inner_j
 			return fmt.Errorf("timeout after %d minutes", timeoutDuration)
 		default:
 			// Convert query parameters (assuming convertParamPostgresToMysql is a valid function)
-			queryStr := convertParamPostgresToMysql(string(query))
+			queryStr := ConvertParamPostgresToMysql(string(query))
 
 			// Execute query
 			rows, err := common.DB.Query(queryStr, inner_jobnet_main_id)

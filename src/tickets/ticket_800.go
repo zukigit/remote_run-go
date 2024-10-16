@@ -71,9 +71,9 @@ func RunJobnetAndStopTheAgentAndDeleteTransactionFileAndRestartTheAgent(jobnetId
 	fmt.Println(testcase.Info_log("Clean up agent service success."))
 
 	// Run jobnet
-	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
+	run_jobnet_id, err := lib.Jobarg_exec(jobnetId)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", err.Error(), run_jobnet_id))
 		return FAILED
 	}
 	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
@@ -119,7 +119,7 @@ func RunJobnetAndStopTheAgentAndDeleteTransactionFileAndRestartTheAgent(jobnetId
 	fmt.Println(testcase.Info_log("In Db count has reach the limit %d", processCount))
 
 	// check zombie process
-	zombieProcessCount, err := lib.CheckZombieProcess(1, sshClient)
+	zombieProcessCount, err := lib.CheckZombieProcess(5, sshClient)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error checking zombie process: %s", err.Error()))
 		return FAILED
@@ -147,9 +147,9 @@ func RunJobnetAndForceStopTheAgent(jobnetId string, processCount int, processChe
 	fmt.Println(testcase.Info_log("Clean up agent service success."))
 
 	// Run jobnet
-	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
+	run_jobnet_id, err := lib.Jobarg_exec(jobnetId)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", err.Error(), run_jobnet_id))
 		return FAILED
 	}
 	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
