@@ -50,9 +50,10 @@ func (t *Ticket_794) Add_testcases() {
 
 		// Define job names
 		jobs := []string{
-			"TICKET794_Sleep60_Job510",
-			"TICKET794_Sleep60_Job1020",
-			"TICKET794_Sleep60_Job2040",
+
+			"Icon_510",
+			"Icon_1020",
+			"Icon_2040",
 		}
 
 		for _, job := range jobs {
