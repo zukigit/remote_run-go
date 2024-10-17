@@ -3,6 +3,7 @@ package tickets
 import (
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
+	"github.com/zukigit/remote_run-go/src/lib"
 )
 
 type Ticket_000 struct {
@@ -42,6 +43,8 @@ func (t *Ticket_000) Add_testcases() {
 	// TESTCASE 001
 	tc_1 := t.New_testcase(1, "Enter your test case description here.")
 	tc_func := func() common.Testcase_status {
+		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "hostname")
+		lib.Jobarg_exec_E("Icon_1", envs)
 		// Enter your test case logic here
 		return FAILED
 	}

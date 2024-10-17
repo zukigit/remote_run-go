@@ -3,6 +3,7 @@ package lib
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
@@ -182,4 +183,32 @@ func Jobarg_cleanup() error {
 	}
 
 	return nil
+}
+
+func Jobarg_exec_E(jobnet_id string, envs map[string]string) (string, error) {
+	var keys []string
+	var set_values_string string
+
+	for key, value := range envs {
+		set_values_string = fmt.Sprintf("%s export %s=\"%s\" && ", set_values_string, key, value)
+		keys = append(keys, key)
+	}
+	keys_string := strings.Join(keys, ",")
+
+	cmd := fmt.Sprintf("%s jobarg_exec -z %s -U Admin -P zabbix -j %s -E %s &> /tmp/moon_jobarg_exec_result", set_values_string, common.Login_info.Hostname, jobnet_id, keys_string)
+	fmt.Println("cmd", cmd)
+
+	_, err := Ssh_exec_to_str(cmd)
+
+	cmd = "cat /tmp/moon_jobarg_exec_result"
+	result, err1 := Ssh_exec_to_str(cmd)
+	if err1 != nil {
+		return result, err1
+	}
+
+	if err != nil {
+		return result, err
+	}
+
+	return Get_res_no(result)
 }

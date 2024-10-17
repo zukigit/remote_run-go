@@ -44,7 +44,7 @@ func (t *Ticket_800) Set_values() {
 func (t *Ticket_800) Add_testcases() {
 	// TESTCASE 74 (Transaction files delete)
 
-	tc_74 := t.New_testcase(74, "Transaction file delete wile 800 parallel jobnets are running ")
+	tc_74 := t.New_testcase(100000, "Transaction file delete wile 800 parallel jobnets are running ")
 	tc_func := func() common.Testcase_status {
 		return RunJobnetAndStopTheAgentAndDeleteTransactionFileAndRestartTheAgent("TICKET800_TESTCASE74", 800, 15, tc_74, common.Client)
 	}

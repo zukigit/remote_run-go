@@ -49,7 +49,7 @@ func (t *Ticket_844) Set_values() {
 func (t *Ticket_844) Add_testcases() {
 
 	//TESTCASE 74
-	tc_74 := t.New_testcase(74, "Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]")
+	tc_74 := t.New_testcase(100001, "Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]")
 	tc_func := func() common.Testcase_status {
 
 		// Test Case: "Execute 800 jobnets simutaneously."
