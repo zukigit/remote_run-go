@@ -48,6 +48,30 @@ func (t *Ticket_794) Add_testcases() {
 			return t.logError(tc_38, "Error during cleanup: %s", err)
 		}
 
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+			return t.logError(tc_38, "Error during enable jobnet: %s", err)
+		}
+
+		if err := lib.Jobarg_enable_jobnet("Icon_10", "Icon_10"); err != nil {
+			return t.logError(tc_38, "Error during enable jobnet: %s", err)
+		}
+
+		if err := lib.Jobarg_enable_jobnet("Icon_100", "Icon_100"); err != nil {
+			return t.logError(tc_38, "Error during enable jobnet: %s", err)
+		}
+
+		if err := lib.Jobarg_enable_jobnet("Icon_510", "Icon_510"); err != nil {
+			return t.logError(tc_38, "Error during enable jobnet: %s", err)
+		}
+
+		if err := lib.Jobarg_enable_jobnet("Icon_1020", "Icon_1020"); err != nil {
+			return t.logError(tc_38, "Error during enable jobnet: %s", err)
+		}
+
+		if err := lib.Jobarg_enable_jobnet("Icon_2040", "Icon_2040"); err != nil {
+			return t.logError(tc_38, "Error during enable jobnet: %s", err)
+		}
+
 		// Define job names
 		jobs := []string{
 
@@ -70,7 +94,8 @@ func (t *Ticket_794) Add_testcases() {
 }
 
 func (t *Ticket_794) runJob(tc *dao.TestCase, job string) common.Testcase_status {
-	run_jobnet_id, err := lib.Jobarg_exec(job)
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 10")
+	run_jobnet_id, err := lib.Jobarg_exec_E(job, envs)
 	if err != nil {
 		return t.logError(tc, "Error executing job %s: %s", job, err)
 	}

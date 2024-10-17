@@ -45,7 +45,7 @@ func (t *Ticket_000) Add_testcases() {
 	// TESTCASE 001
 	tc_1 := t.New_testcase(1, "Enter your test case description here.")
 	tc_func := func() common.Testcase_status {
-		err := lib.Jobarg_enable_jobnet_objid_objname("Icon_1", "jobicon_linux")
+		err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux")
 		if err != nil {
 			fmt.Println("err in enable jobnet", err.Error())
 			return FAILED

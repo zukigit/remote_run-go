@@ -80,10 +80,10 @@ func Jobarg_get_jobnet_run_info(registry_number string) (*common.Jobnet_run_info
 			return nil, err
 		}
 
-		if jobnet_status == "END" || (jobnet_status == "RUN" && job_status == "ERROR") {
+		if jobnet_status == common.END || (jobnet_status == common.RUN && job_status == common.ERROR) || jobnet_status == common.ENDERR || jobnet_status == common.RUNERR {
 			break
 		}
-		Spinner_log(index, Formatted_log(common.INFO, "Getting jobnet[%s] run info but jobnet is not finished yet", registry_number))
+		Spinner_log(index, Formatted_log(common.INFO, "Getting jobnet[%s] run info but jobnet is not finished yet. jobnet_status: %s, job_status: %s", registry_number, jobnet_status, job_status))
 		time.Sleep(1 * time.Second)
 		index++
 	}
@@ -196,7 +196,6 @@ func Jobarg_exec_E(jobnet_id string, envs map[string]string) (string, error) {
 	keys_string := strings.Join(keys, ",")
 
 	cmd := fmt.Sprintf("%s jobarg_exec -z %s -U Admin -P zabbix -j %s -E %s &> /tmp/moon_jobarg_exec_result", set_values_string, common.Login_info.Hostname, jobnet_id, keys_string)
-	fmt.Println("cmd", cmd)
 
 	_, err := Ssh_exec_to_str(cmd)
 
@@ -213,7 +212,7 @@ func Jobarg_exec_E(jobnet_id string, envs map[string]string) (string, error) {
 	return Get_res_no(result)
 }
 
-func Jobarg_enable_jobnet_objid_objname(jobnet_id string, jobnet_name string) error {
+func Jobarg_enable_jobnet(jobnet_id string, jobnet_name string) error {
 	_, err := DBexec("update ja_jobnet_control_table set valid_flag = 0 where jobnet_id = '%s' and valid_flag = 1;", jobnet_id)
 	if err != nil {
 		return err
