@@ -159,7 +159,7 @@ func (t *Ticket_844) Add_testcases() {
 
 	//TESTCASE 76
 	tc_76 := t.New_testcase(76, "kill jobarg_command process")
-	tc_func := func() common.Testcase_status {
+	tc_func = func() common.Testcase_status {
 		return RunJob800AndKillOneJobIconWithJobargCommand("TICKET844_TESTCASE76-77JOB800", 800, 4, tc_76, common.Client)
 	}
 
