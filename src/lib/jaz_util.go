@@ -212,3 +212,24 @@ func Jobarg_exec_E(jobnet_id string, envs map[string]string) (string, error) {
 
 	return Get_res_no(result)
 }
+
+func Jobarg_enable_jobnet_objid_objname(jobnet_id string, jobnet_name string) error {
+	_, err := DBexec("update ja_jobnet_control_table set valid_flag = 0 where jobnet_id = '%s' and valid_flag = 1;", jobnet_id)
+	if err != nil {
+		return err
+	}
+	res, err := DBexec("update ja_jobnet_control_table set valid_flag = 1 where jobnet_id = '%s' and jobnet_name = '%s'", jobnet_id, jobnet_name)
+	if err != nil {
+		return err
+	}
+
+	affected_rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	} else if affected_rows > 1 {
+		DBexec("update ja_jobnet_control_table set valid_flag = 0 where jobnet_id = '%s' and valid_flag = 1;", jobnet_id)
+		return fmt.Errorf("this function does not supprt duplicated jobnet's version. jobnet_name: '%s'", jobnet_name)
+	}
+
+	return nil
+}
