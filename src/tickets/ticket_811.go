@@ -108,15 +108,7 @@ func (t *Ticket_811) Add_testcases() {
 
 // Run the jobnet, abort it after all jobs are in running state, and confirm ENDERR status of the jobnet
 func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
-	// Clean the ja_run_jobnet_table
-	// _, err := lib.ExecuteQuery(lib.DeleteRunJobnetQuery)
-	err := lib.Cleanup_agent_linux()
-	if err != nil {
-		fmt.Print(testcase.Err_log("Error: %s, Cleanup_agent_linux() failed.", err.Error()))
-		return FAILED
-	}
-
-	err = lib.Jobarg_cleanup_linux()
+	err := lib.Jobarg_cleanup_linux()
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, Jobarg_cleanup_linux() failed.", err.Error()))
 		return FAILED
