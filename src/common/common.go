@@ -19,8 +19,15 @@ const INFO = 1
 const ERR = 2
 
 const (
-	MYSQL Database = "mysql"
-	PSQL  Database = "postgres"
+	MYSQL   Database = "mysql"
+	PSQL    Database = "postgres"
+	NORMAL           = "NORMAL"
+	TIMEOUT          = "TIMEOUT"
+	ERROR            = "ERROR"
+	RUN              = "RUN"
+	END              = "END"
+	RUNERR           = "RUNERR"
+	ENDERR           = "ENDERR"
 )
 
 var Left_string, Right_string, Endticket_string, Endtestcase_string, Log_filename, DB_hostname string
