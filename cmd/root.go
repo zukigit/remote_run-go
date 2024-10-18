@@ -35,19 +35,6 @@ func check_duplicated_ticket() {
 	}
 }
 
-func check_duplicated_testcases() {
-	seen := make(map[uint]bool)
-	for _, tkt := range tkts {
-		for _, tc := range tkt.Get_testcases() {
-			if seen[tc.Get_id()] {
-				fmt.Printf("Error: testcase[%d] is duplicated\n", tc.Get_id())
-				os.Exit(1)
-			}
-			seen[tc.Get_id()] = true
-		}
-	}
-}
-
 func add_run_tickets(ticket_number uint) {
 	if ticket_number == 0 {
 		run_tickets = tkts
@@ -75,6 +62,7 @@ func run_tc_(t dao.Ticket) {
 	dao.Run_testcase(t)
 	dao.Set_total_tc_results(t)
 	lib.Logi("\nTotal_result:\n")
+
 	if dao.Tc_unkown_cnt > 0 {
 		lib.Logi(fmt.Sprintf("PASSED: %d, FAILED: %d, MUST_CHECK: %d, UNKNOWN: %d\n", dao.Tc_passed_cnt, dao.Tc_failed_cnt, dao.Tc_chk_cnt, dao.Tc_unkown_cnt))
 	} else {
@@ -111,13 +99,14 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
+		if common.Specific_testcase_no > 0 && common.Specific_ticket_no == 0 {
+			return fmt.Errorf("specify the ticket number too by using --ticket")
+		}
+
 		return common.Set_usr_hst(args)
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		check_duplicated_ticket()
-		check_duplicated_testcases()
-
 		common.Log_filename = lib.Get_log_filename()
 		common.Set_passwd()
 		common.Set_client()
@@ -134,9 +123,15 @@ var rootCmd = &cobra.Command{
 		defer common.Log_file.Close()
 
 		common.Set_ticket_logs_headers()
-		add_run_tickets(common.Specific_ticket_no)
 
+		add_tickets(&tkts)
+		set_ticket_values(tkts)
+		add_testcases()
+		check_duplicated_ticket()
+		add_run_tickets(common.Specific_ticket_no)
 		run_tc(run_tickets) // run test cases
+
+		fmt.Println("run_tickets", run_tickets)
 
 		if len(run_tickets) > 0 {
 			fmt.Println(lib.Formatted_log(common.INFO, "Logged Filename: %s", common.Log_filename))
@@ -155,11 +150,6 @@ func Execute() {
 }
 
 func init() {
-	add_tickets(&tkts)
-	set_ticket_values(tkts)
-
-	add_testcases()
-
 	rootCmd.Flags().IntVarP(&common.Login_info.Port, "port", "p", 22, "Port")
 	rootCmd.Flags().BoolVar(&common.Is_mysql, "with-mysql", false, "Use MySQL database")
 	rootCmd.Flags().BoolVar(&common.Is_psql, "with-postgresql", false, "Use PostgreSQL database")
