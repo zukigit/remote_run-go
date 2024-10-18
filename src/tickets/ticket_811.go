@@ -161,28 +161,44 @@ func (t *Ticket_811) Add_testcases() {
 	// Run the extjon and check the abort process
 	tc_9 := t.New_testcase(9, "Check Abort process abort the Ext jobnet or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbortExtJobIcon("TICKET811_TESTCASE49_JOB100", 3, tc_9, common.Client, 100)
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "ext_job"); err != nil {
+			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndAbortExtJobIcon("Icon_100", 3, tc_9, common.Client, 100)
 	}
 	tc_9.Set_function(tc_func)
 	t.Add_testcase(*tc_9)
 
 	tc_10 := t.New_testcase(10, "Check Abort process abort the Ext jobnet or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbortExtJobIcon("TICKET811_TESTCASE49_JOB200", 4, tc_10, common.Client, 200)
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "ext_job"); err != nil {
+			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndAbortExtJobIcon("Icon_200", 4, tc_10, common.Client, 200)
 	}
 	tc_10.Set_function(tc_func)
 	t.Add_testcase(*tc_10)
 
 	tc_11 := t.New_testcase(11, "Check Abort process abort the Ext jobnet or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbortExtJobIcon("TICKET811_TESTCASE49_JOB400", 5, tc_11, common.Client, 400)
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "ext_job"); err != nil {
+			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndAbortExtJobIcon("Icon_400", 5, tc_11, common.Client, 400)
 	}
 	tc_11.Set_function(tc_func)
 	t.Add_testcase(*tc_11)
 
 	tc_12 := t.New_testcase(12, "Check Abort process abort the Ext jobnet or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbortExtJobIcon("TICKET811_TESTCASE49_JOB800", 5, tc_12, common.Client, 800)
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "ext_job"); err != nil {
+			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndAbortExtJobIcon("Icon_800", 5, tc_12, common.Client, 800)
 	}
 	tc_12.Set_function(tc_func)
 	t.Add_testcase(*tc_12)
