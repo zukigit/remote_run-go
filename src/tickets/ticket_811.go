@@ -115,22 +115,6 @@ func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout in
 	}
 	fmt.Println(testcase.Info_log("Agent and table is cleaned."))
 
-	// Clean up agent on Linux
-	err = lib.Cleanup_agent_linux()
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, Failed to clean up agent on Linux.", err.Error()))
-		return FAILED
-	}
-	fmt.Println(testcase.Info_log("Agent cleanup on Linux is completed."))
-
-	//Restart jobarg-server and jobarg-agentd
-	err = lib.Jobarg_cleanup_linux()
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, Failed to restart jobarg-server and jobarg-agentd.", err.Error()))
-		return FAILED
-	}
-	fmt.Println(testcase.Info_log("jobarg-server and jobarg-agentd have been successfully restarted."))
-
 	// Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
 	if error != nil {
