@@ -44,16 +44,24 @@ func (t *Ticket_800) Set_values() {
 func (t *Ticket_800) Add_testcases() {
 	// TESTCASE 74 (Transaction files delete)
 
-	tc_74 := t.New_testcase(100000, "Transaction file delete wile 800 parallel jobnets are running ")
+	tc_74 := t.New_testcase(1, "Transaction file delete wile 800 parallel jobnets are running ")
 	tc_func := func() common.Testcase_status {
-		return RunJobnetAndStopTheAgentAndDeleteTransactionFileAndRestartTheAgent("TICKET800_TESTCASE74", 800, 15, tc_74, common.Client)
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+			tc_74.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndStopTheAgentAndDeleteTransactionFileAndRestartTheAgent("Icon_800", 800, 15, tc_74, common.Client)
 	}
 	tc_74.Set_function(tc_func)
 	t.Add_testcase(*tc_74)
 
-	tc_78 := t.New_testcase(78, "Agent servive stop while 800  parallel jobnets are running")
+	tc_78 := t.New_testcase(2, "Agent servive stop while 800  parallel jobnets are running")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndForceStopTheAgent("TICKET800_TESTCASE74", 800, 15, tc_78, common.Client)
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+			tc_74.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndForceStopTheAgent("Icon_800", 800, 15, tc_78, common.Client)
 	}
 	tc_78.Set_function(tc_func)
 	t.Add_testcase(*tc_78)
@@ -70,8 +78,10 @@ func RunJobnetAndStopTheAgentAndDeleteTransactionFileAndRestartTheAgent(jobnetId
 	}
 	fmt.Println(testcase.Info_log("Clean up agent service success."))
 
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 1000")
+
 	// Run jobnet
-	run_jobnet_id, err := lib.Jobarg_exec(jobnetId)
+	run_jobnet_id, err := lib.Jobarg_exec_E(jobnetId, envs)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", err.Error(), run_jobnet_id))
 		return FAILED
@@ -127,13 +137,11 @@ func RunJobnetAndStopTheAgentAndDeleteTransactionFileAndRestartTheAgent(jobnetId
 
 	if zombieProcessCount != 0 {
 		fmt.Println(testcase.Err_log("There are zombie processes: %d", zombieProcessCount))
-		// return FAILED
-	} else {
-		fmt.Println(testcase.Info_log("There is no zombie process."))
+		return FAILED
 	}
+	fmt.Println(testcase.Info_log("There is no zombie process."))
 
 	return PASSED
-
 }
 
 func RunJobnetAndForceStopTheAgent(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
@@ -146,8 +154,10 @@ func RunJobnetAndForceStopTheAgent(jobnetId string, processCount int, processChe
 	}
 	fmt.Println(testcase.Info_log("Clean up agent service success."))
 
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 1000")
+
 	// Run jobnet
-	run_jobnet_id, err := lib.Jobarg_exec(jobnetId)
+	run_jobnet_id, err := lib.Jobarg_exec_E(jobnetId, envs)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", err.Error(), run_jobnet_id))
 		return FAILED
@@ -187,7 +197,7 @@ func RunJobnetAndForceStopTheAgent(jobnetId string, processCount int, processChe
 
 	if zombieProcessCount != 0 {
 		fmt.Println(testcase.Err_log("There are zombie processes: %d", zombieProcessCount))
-		// return FAILED
+		return FAILED
 	} else {
 		fmt.Println(testcase.Info_log("There is no zombie process."))
 	}

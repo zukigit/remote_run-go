@@ -185,6 +185,7 @@ func Jobarg_cleanup() error {
 	return nil
 }
 
+// Jobarg_exec_E() runs jobnets with environment variables.
 func Jobarg_exec_E(jobnet_id string, envs map[string]string) (string, error) {
 	var keys []string
 	var set_values_string string
