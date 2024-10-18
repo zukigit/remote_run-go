@@ -156,6 +156,37 @@ func (t *Ticket_811) Add_testcases() {
 	}
 	tc_8.Set_function(tc_func)
 	t.Add_testcase(*tc_8)
+
+	// Start Ext Job
+	// Run the extjon and check the abort process
+	tc_9 := t.New_testcase(9, "Check Abort process abort the Ext jobnet or not")
+	tc_func = func() common.Testcase_status {
+		return RunJobnetAndAbortExtJobIcon("TICKET811_TESTCASE49", 3, tc_9, common.Client, 100)
+	}
+	tc_9.Set_function(tc_func)
+	t.Add_testcase(*tc_9)
+
+	tc_10 := t.New_testcase(10, "Check Abort process abort the Ext jobnet or not")
+	tc_func = func() common.Testcase_status {
+		return RunJobnetAndAbortExtJobIcon("TICKET811_TESTCASE49", 4, tc_10, common.Client, 200)
+	}
+	tc_10.Set_function(tc_func)
+	t.Add_testcase(*tc_10)
+
+	tc_11 := t.New_testcase(11, "Check Abort process abort the Ext jobnet or not")
+	tc_func = func() common.Testcase_status {
+		return RunJobnetAndAbortExtJobIcon("TICKET811_TESTCASE49", 5, tc_11, common.Client, 400)
+	}
+	tc_11.Set_function(tc_func)
+	t.Add_testcase(*tc_11)
+
+	tc_12 := t.New_testcase(12, "Check Abort process abort the Ext jobnet or not")
+	tc_func = func() common.Testcase_status {
+		return RunJobnetAndAbortExtJobIcon("TICKET811_TESTCASE49", 5, tc_12, common.Client, 800)
+	}
+	tc_12.Set_function(tc_func)
+	t.Add_testcase(*tc_12)
+	// End Ext Job
 }
 
 // Run the jobnet, abort it after all jobs are in running state, and confirm ENDERR status of the jobnet
