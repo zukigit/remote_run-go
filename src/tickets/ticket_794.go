@@ -52,29 +52,8 @@ func (t *Ticket_794) Add_testcases() {
 			return t.logError(tc_38, "Error during enable jobnet: %s", err)
 		}
 
-		if err := lib.Jobarg_enable_jobnet("Icon_10", "Icon_10"); err != nil {
-			return t.logError(tc_38, "Error during enable jobnet: %s", err)
-		}
-
-		if err := lib.Jobarg_enable_jobnet("Icon_100", "Icon_100"); err != nil {
-			return t.logError(tc_38, "Error during enable jobnet: %s", err)
-		}
-
-		if err := lib.Jobarg_enable_jobnet("Icon_510", "Icon_510"); err != nil {
-			return t.logError(tc_38, "Error during enable jobnet: %s", err)
-		}
-
-		if err := lib.Jobarg_enable_jobnet("Icon_1020", "Icon_1020"); err != nil {
-			return t.logError(tc_38, "Error during enable jobnet: %s", err)
-		}
-
-		if err := lib.Jobarg_enable_jobnet("Icon_2040", "Icon_2040"); err != nil {
-			return t.logError(tc_38, "Error during enable jobnet: %s", err)
-		}
-
 		// Define job names
 		jobs := []string{
-
 			"Icon_510",
 			"Icon_1020",
 			"Icon_2040",
