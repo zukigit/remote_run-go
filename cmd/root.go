@@ -23,6 +23,60 @@ func set_ticket_values(t []dao.Ticket) {
 	}
 }
 
+func enable_common_jobnets() {
+	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_2", "Icon_2"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_10", "Icon_10"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_100", "Icon_100"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_200", "Icon_200"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_400", "Icon_400"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_500", "Icon_500"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_510", "Icon_510"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_800", "Icon_800"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_1000", "Icon_1000"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_1020", "Icon_1020"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_2040", "Icon_2040"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_3000", "Icon_3000"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+}
+
 func check_duplicated_ticket() {
 	seen := make(map[uint]bool)
 
@@ -129,9 +183,8 @@ var rootCmd = &cobra.Command{
 		add_testcases()
 		check_duplicated_ticket()
 		add_run_tickets(common.Specific_ticket_no)
+		enable_common_jobnets()
 		run_tc(run_tickets) // run test cases
-
-		fmt.Println("run_tickets", run_tickets)
 
 		if len(run_tickets) > 0 {
 			fmt.Println(lib.Formatted_log(common.INFO, "Logged Filename: %s", common.Log_filename))

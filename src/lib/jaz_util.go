@@ -227,7 +227,7 @@ func Jobarg_enable_jobnet(jobnet_id string, jobnet_name string) error {
 		return err
 	} else if affected_rows > 1 {
 		DBexec("update ja_jobnet_control_table set valid_flag = 0 where jobnet_id = '%s' and valid_flag = 1;", jobnet_id)
-		return fmt.Errorf("this function does not supprt duplicated jobnet's version. jobnet_name: '%s'", jobnet_name)
+		return fmt.Errorf("this function does not supprt duplicated jobnet's version. jobnet_id: %s, jobnet_name: %s", jobnet_id, jobnet_name)
 	}
 
 	return nil
