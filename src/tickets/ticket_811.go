@@ -52,7 +52,28 @@ func (t *Ticket_811) Set_values() {
 
 // Add your test case here
 func (t *Ticket_811) Add_testcases() {
-//Normal jobnet with 100 agent less icon in running state.
+	// create function for all test cases
+	addTestCase := func(id int, description string, jobnetId string, processCount int, timeout int) {
+		tc := t.New_testcase(uint(id), description) // Convert id to uint
+		tc_func := func() common.Testcase_status {
+			return RunJobnetAndAbort(jobnetId, processCount, timeout, tc, common.Client)
+		}
+		tc.Set_function(tc_func)
+		t.Add_testcase(*tc)
+	}
+
+	// TESTCASE 1 (Force stop jobnet with icon count of 100)
+	addTestCase(1, "Check abort process for job icon with count 100", "TICKET811_Jobnet_100", 100, 10)
+
+	// TESTCASE 2 (Force stop jobnet with icon count of 200)
+	addTestCase(2, "Check abort process for job icon with count 200", "TICKET811_Jobnet_200", 200, 12)
+
+	// TESTCASE 3 (Force stop jobnet with icon count of 400)
+	addTestCase(3, "Check abort process for job icon with count 400", "TICKET811_Jobnet_400", 400, 13)
+
+	// TESTCASE 4 (Force stop jobnet with icon count of 1000)
+	addTestCase(4, "Check abort process for job icon with count 800", "TICKET811_Jobnet_1000", 1000, 16)
+	//Normal jobnet with 100 agent less icon in running state.
 	tc_5 := t.New_testcase(5, "Check Abort process abort the Agent Less icon or not")
 	tc_func := func() common.Testcase_status {
 		return RunJobnetAndAbort("TICKET811_AgentLess100", 100, 5, tc_5, common.Client)
@@ -94,13 +115,29 @@ func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout in
 		fmt.Print(testcase.Err_log("Error: %s, Cleanup_agent_linux() failed.", err.Error()))
 		return FAILED
 	}
-	
+
 	err = lib.Jobarg_cleanup_linux()
-	if err != nil{
+	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, Jobarg_cleanup_linux() failed.", err.Error()))
 		return FAILED
 	}
 	fmt.Println(testcase.Info_log("Agent and table is cleaned."))
+
+	// Clean up agent on Linux
+	err = lib.Cleanup_agent_linux()
+	if err != nil {
+		fmt.Println(testcase.Err_log("Error: %s, Failed to clean up agent on Linux.", err.Error()))
+		return FAILED
+	}
+	fmt.Println(testcase.Info_log("Agent cleanup on Linux is completed."))
+
+	//Restart jobarg-server and jobarg-agentd
+	err = lib.Jobarg_cleanup_linux()
+	if err != nil {
+		fmt.Println(testcase.Err_log("Error: %s, Failed to restart jobarg-server and jobarg-agentd.", err.Error()))
+		return FAILED
+	}
+	fmt.Println(testcase.Info_log("jobarg-server and jobarg-agentd have been successfully restarted."))
 
 	// Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
@@ -174,7 +211,7 @@ func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout in
 }
 
 // Run the jobnet, abort the fwait job icon after all jobs are in running state, and confirm ENDERR status of the jobnet
-func RunJobnetAndAbortFwaitJobIcon(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func RunJobnetAndAbortJobIcon(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
 	// Clean the ja_run_jobnet_table
 	_, err := lib.ExecuteQuery(lib.DeleteRunJobnetQuery)
 	if err != nil {
@@ -203,10 +240,10 @@ func RunJobnetAndAbortFwaitJobIcon(jobnetId string, processCount int, processChe
 	// Abort the jobnet
 	_, err = lib.ExecuteQuery(lib.AbortSingleFWaitJobQuery, run_jobnet_id)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, Failed to abort the fwait job icon.", err.Error()))
+		fmt.Println(testcase.Err_log("Error: %s, Failed to abort the Jobnet.", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Fwait job icon is being aborted..."))
+	fmt.Println(testcase.Info_log("Jobnet is being aborted..."))
 
 	// Wait for all jobs to be purged
 	processCount = 0
