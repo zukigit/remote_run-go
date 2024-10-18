@@ -56,6 +56,10 @@ func (t *Ticket_811) Add_testcases() {
 	addTestCase := func(id int, description string, jobnetId string, processCount int, timeout int) {
 		tc := t.New_testcase(uint(id), description) // Convert id to uint
 		tc_func := func() common.Testcase_status {
+			if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+				tc.Err_log("Failed to enable jobnet, Error: %s", err)
+				return FAILED
+			}
 			return RunJobnetAndAbort(jobnetId, processCount, timeout, tc, common.Client)
 		}
 		tc.Set_function(tc_func)
@@ -63,20 +67,32 @@ func (t *Ticket_811) Add_testcases() {
 	}
 
 	// TESTCASE 1 (Force stop jobnet with icon count of 100)
-	addTestCase(1, "Check abort process for job icon with count 100", "TICKET811_Jobnet_100", 100, 10)
+	addTestCase(1, "Check abort process for job icon with count 100", "Icon_100", 100, 10)
 
 	// TESTCASE 2 (Force stop jobnet with icon count of 200)
-	addTestCase(2, "Check abort process for job icon with count 200", "TICKET811_Jobnet_200", 200, 12)
+	addTestCase(2, "Check abort process for job icon with count 200", "Icon_200", 200, 12)
 
 	// TESTCASE 3 (Force stop jobnet with icon count of 400)
-	addTestCase(3, "Check abort process for job icon with count 400", "TICKET811_Jobnet_400", 400, 13)
+	addTestCase(3, "Check abort process for job icon with count 400", "Icon_400", 400, 13)
 
 	// TESTCASE 4 (Force stop jobnet with icon count of 1000)
-	addTestCase(4, "Check abort process for job icon with count 800", "TICKET811_Jobnet_1000", 1000, 16)
+	addTestCase(4, "Check abort process for job icon with count 1000", "Icon_1000", 1000, 16)
 	//Normal jobnet with 100 agent less icon in running state.
 	tc_5 := t.New_testcase(5, "Check Abort process abort the Agent Less icon or not")
 	tc_func := func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_AgentLess100", 100, 5, tc_5, common.Client)
+		if err := lib.Ja_set_server_config_linux("DBconCount", "25"); err != nil {
+			tc_5.Err_log("Failed to set server config, Error: %s", err)
+			return FAILED
+		}
+		if err := lib.Restart_jaz_server(); err != nil {
+			tc_5.Err_log("Failed to restart jobarg-server, Error: %s", err)
+			return FAILED
+		}
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "agentless"); err != nil {
+			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndAbort("Icon_100", 100, 5, tc_5, common.Client)
 	}
 	tc_5.Set_function(tc_func)
 	t.Add_testcase(*tc_5)
@@ -84,7 +100,19 @@ func (t *Ticket_811) Add_testcases() {
 	//Normal jobnet with 200 agent less icon in running state.
 	tc_6 := t.New_testcase(6, "Check Abort process abort the Agent Less icon or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_AgentLess200", 200, 5, tc_6, common.Client)
+		if err := lib.Ja_set_server_config_linux("DBconCount", "25"); err != nil {
+			tc_5.Err_log("Failed to set server config, Error: %s", err)
+			return FAILED
+		}
+		if err := lib.Restart_jaz_server(); err != nil {
+			tc_5.Err_log("Failed to restart jobarg-server, Error: %s", err)
+			return FAILED
+		}
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "agentless"); err != nil {
+			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndAbort("Icon_200", 200, 5, tc_6, common.Client)
 	}
 	tc_6.Set_function(tc_func)
 	t.Add_testcase(*tc_6)
@@ -92,7 +120,19 @@ func (t *Ticket_811) Add_testcases() {
 	//Normal jobnet with 400 agent less icon in running state.
 	tc_7 := t.New_testcase(7, "Check Abort process abort the Agent Less icon or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_AgentLess400", 400, 10, tc_7, common.Client)
+		if err := lib.Ja_set_server_config_linux("DBconCount", "25"); err != nil {
+			tc_5.Err_log("Failed to set server config, Error: %s", err)
+			return FAILED
+		}
+		if err := lib.Restart_jaz_server(); err != nil {
+			tc_5.Err_log("Failed to restart jobarg-server, Error: %s", err)
+			return FAILED
+		}
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "agentless"); err != nil {
+			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndAbort("Icon_400", 400, 10, tc_7, common.Client)
 	}
 	tc_7.Set_function(tc_func)
 	t.Add_testcase(*tc_7)
@@ -100,7 +140,19 @@ func (t *Ticket_811) Add_testcases() {
 	//Normal jobnet with 800 agent less icon in running state.
 	tc_8 := t.New_testcase(8, "Check Abort process abort the Agent Less icon or not")
 	tc_func = func() common.Testcase_status {
-		return RunJobnetAndAbort("TICKET811_AgentLess800", 800, 15, tc_8, common.Client)
+		if err := lib.Ja_set_server_config_linux("DBconCount", "25"); err != nil {
+			tc_5.Err_log("Failed to set server config, Error: %s", err)
+			return FAILED
+		}
+		if err := lib.Restart_jaz_server(); err != nil {
+			tc_5.Err_log("Failed to restart jobarg-server, Error: %s", err)
+			return FAILED
+		}
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "agentless"); err != nil {
+			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndAbort("Icon_800", 800, 15, tc_8, common.Client)
 	}
 	tc_8.Set_function(tc_func)
 	t.Add_testcase(*tc_8)
@@ -115,8 +167,10 @@ func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout in
 	}
 	fmt.Println(testcase.Info_log("Agent and table is cleaned."))
 
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 1000")
+
 	// Run jobnet
-	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
+	run_jobnet_id, error := lib.Jobarg_exec_E(jobnetId, envs)
 	if error != nil {
 		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
