@@ -88,6 +88,50 @@ func JobProcessCountCheck(targetProcessCount int, timeoutDuration int, client *s
 			if currentProcessCount == targetProcessCount {
 				return nil
 			}
+			time.Sleep(1 * time.Second)
+		}
+
+	}
+
+}
+
+// Wait until it reaches a specified sleep process count
+//
+// Parameters:
+//   - targetProcessCount: target process count to be reached
+//   - timeoutDuration: timeout (minutes) for the process count checking
+//   - client: ssh client
+//
+// Returns:
+//
+//	error message when the process does not reach the target count
+func JobSleepProcessCountCheck(targetProcessCount int, timeoutDuration int, client *ssh.Client) error {
+	// set timeout
+	timeout := time.After(time.Duration(timeoutDuration) * time.Minute)
+
+	for {
+		select {
+		case <-timeout:
+			return fmt.Errorf("timeout after %d minutes", timeoutDuration)
+		default:
+			currentProcessCountStr, err := GetOutputStrFromSSHCommand(client, "ps -aux | grep sleep | grep -v grep | wc -l")
+
+			if err != nil {
+				return fmt.Errorf("failed to obtain process count: %s", err.Error())
+			}
+
+			// Check the current job process count if it reaches the specified count
+			currentProcessCountStr = strings.TrimSpace(currentProcessCountStr)
+
+			currentProcessCount, err := strconv.Atoi(currentProcessCountStr)
+
+			if err != nil {
+				return fmt.Errorf("failed to convert the process count from string to int: %s", err.Error())
+			}
+
+			if currentProcessCount == targetProcessCount {
+				return nil
+			}
 
 			time.Sleep(1 * time.Second)
 		}
@@ -169,10 +213,10 @@ func Jobarg_cleanup_linux() error {
 		return fmt.Errorf("failed to clean up agent: %w", err)
 	}
 	if err := Restart_jaz_server(); err != nil {
-		return fmt.Errorf("failed to stop JAZ server: %w", err)
+		return fmt.Errorf("failed to start JAZ server: %w", err)
 	}
 	if err := Restart_jaz_agent_linux(); err != nil {
-		return fmt.Errorf("failed to stop JAZ server: %w", err)
+		return fmt.Errorf("failed to start JAZ server: %w", err)
 	}
 
 	return nil
