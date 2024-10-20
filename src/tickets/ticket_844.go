@@ -170,7 +170,7 @@ func (t *Ticket_844) Add_testcases() {
 	t.Add_testcase(*tc_75)
 
 	//TESTCASE 76
-	// tc_76 := t.New_testcase(76, "kill jobarg_command process")
+	// tc_76 := t.New_testcase(76, "kill jobarg_command process ")
 	// tc_func = func() common.Testcase_status {
 	// 	// enable common jobnet
 	// 	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
