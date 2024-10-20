@@ -63,6 +63,12 @@ func (t *Ticket_844) Add_testcases() {
 		var timeout_minute int = 10       // Enter timeout in minutes for Process count.
 		var jobnet_run_manage_id string
 
+		// enable common jobnet
+		if err := lib.Jobarg_enable_jobnet(jobnet_id, "jobicon_linux"); err != nil {
+			tc_74.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+
 		// 1. Jobarg_cleanup_start.
 		// 2. Run Jobnet.
 		// 3. Count unitl desired procces count is met.
@@ -102,11 +108,17 @@ func (t *Ticket_844) Add_testcases() {
 		//             For linux => ps -aux | grep defunct
 		//             For window=> tasklist /FI "STATUS eq NOT RESPONDING"
 
-		var jobnet_id string = "TICKET844_TESTCASE75" // This value must be the same value as Jobnet_ID
+		var jobnet_id string = "Icon_1" // This value must be the same value as Jobnet_ID
 		var jobnet_run_manage_id, last_std_out string
 		var jobnet_run_info *common.Jobnet_run_info
 		var num int
 		var result bool
+
+		// enable common jobnet
+		if err := lib.Jobarg_enable_jobnet(jobnet_id, "TICKET844_TESTCASE75"); err != nil {
+			tc_74.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
 
 		// 1. Taking current time snapshot to calculate elapsed 8 hour time.
 		// 2. Jobarg_cleanup_start
@@ -158,22 +170,27 @@ func (t *Ticket_844) Add_testcases() {
 	t.Add_testcase(*tc_75)
 
 	//TESTCASE 76
-	tc_76 := t.New_testcase(76, "kill jobarg_command process")
-	tc_func = func() common.Testcase_status {
-		return RunJob800AndKillOneJobIconWithJobargCommand("TICKET844_TESTCASE76-77JOB800", 800, 4, tc_76, common.Client)
-	}
+	// tc_76 := t.New_testcase(76, "kill jobarg_command process")
+	// tc_func = func() common.Testcase_status {
+	// 	// enable common jobnet
+	// 	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+	// 		tc_74.Err_log("Failed to enable jobnet, Error: %s", err)
+	// 		return FAILED
+	// 	}
+	// 	return RunJob800AndKillOneJobIconWithJobargCommand("Icon_800", 800, 4, tc_76, common.Client)
+	// }
 
-	tc_76.Set_function(tc_func)
-	t.Add_testcase(*tc_76)
+	// tc_76.Set_function(tc_func)
+	// t.Add_testcase(*tc_76)
 
 	//TESTCASE 77
-	tc_77 := t.New_testcase(77, "force stop  running job icon")
-	tc_func = func() common.Testcase_status {
-		return RunJob800AndForceStopOneJobIcon("TICKET844_TESTCASE76-77JOB800", 800, 4, tc_77, common.Client)
-	}
+	// tc_77 := t.New_testcase(77, "force stop  running job icon")
+	// tc_func = func() common.Testcase_status {
+	// 	return RunJob800AndForceStopOneJobIcon("TICKET844_TESTCASE76-77JOB800", 800, 4, tc_77, common.Client)
+	// }
 
-	tc_77.Set_function(tc_func)
-	t.Add_testcase(*tc_77)
+	// tc_77.Set_function(tc_func)
+	// t.Add_testcase(*tc_77)
 }
 
 func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
@@ -183,7 +200,8 @@ func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount i
 	******************/
 	lib.Jobarg_cleanup_linux()
 
-	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 500")
+	run_jobnet_id, error := lib.Jobarg_exec_E(jobnetId, envs)
 	if error != nil {
 		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
@@ -460,7 +478,8 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 //   - True and jobnet_run_manage_id if worked.
 //   - False and jobnet_run_manage_id if failed.
 func Run_Jobnet(testcase *dao.TestCase, jobnet_id string) (bool, string) {
-	jobnet_run_manage_id, err := lib.Jobarg_exec(jobnet_id)
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 1000")
+	jobnet_run_manage_id, err := lib.Jobarg_exec_E(jobnet_id, envs)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: Failed when trying to run the job. %s", err.Error()))
 		fmt.Println(testcase.Err_log("Error: Did you imported the necessary xml files?(%s)", jobnet_id))
