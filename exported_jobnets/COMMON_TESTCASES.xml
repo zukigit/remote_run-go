@@ -72,7 +72,7 @@
     <jobnet_id>Icon_1</jobnet_id>
     <update_date>20241016225459</update_date>
     <created_date>2023-10-03T17:21:02+07:00</created_date>
-    <valid_flag>1</valid_flag>
+    <valid_flag>0</valid_flag>
     <public_flag>0</public_flag>
     <multiple_start_up>0</multiple_start_up>
     <user_name>Admin</user_name>
@@ -137,12 +137,25 @@
     <jobnet_id>Icon_1</jobnet_id>
     <update_date>20241017235352</update_date>
     <created_date>2024-10-16T14:48:47+07:00</created_date>
-    <valid_flag>0</valid_flag>
+    <valid_flag>1</valid_flag>
     <public_flag>0</public_flag>
     <multiple_start_up>0</multiple_start_up>
     <user_name>Admin</user_name>
     <jobnet_name>jobicon_linux</jobnet_name>
     <memo>jobicon_linux</memo>
+    <jobnet_timeout>0</jobnet_timeout>
+    <timeout_run_type>0</timeout_run_type>
+  </ja_jobnet_control_table>
+  <ja_jobnet_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-14T15:45:46+07:00</created_date>
+    <valid_flag>0</valid_flag>
+    <public_flag>0</public_flag>
+    <multiple_start_up>0</multiple_start_up>
+    <user_name>Admin</user_name>
+    <jobnet_name>TICKET844_TESTCASE75</jobnet_name>
+    <memo>ループ、計算、条件分岐、数値カウントアップ</memo>
     <jobnet_timeout>0</jobnet_timeout>
     <timeout_run_type>0</timeout_run_type>
   </ja_jobnet_control_table>
@@ -304,6 +317,19 @@
   </ja_job_control_table>
   <ja_job_control_table>
     <jobnet_id>Icon_1</jobnet_id>
+    <job_id>CAL-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <job_type>10</job_type>
+    <point_x>122</point_x>
+    <point_y>241</point_y>
+    <job_name>カウントUp</job_name>
+    <method_flag>0</method_flag>
+    <force_flag>0</force_flag>
+    <continue_flag>0</continue_flag>
+  </ja_job_control_table>
+  <ja_job_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
     <job_id>END-1</job_id>
     <update_date>20241016224904</update_date>
     <created_date>2024-10-16T15:49:04+07:00</created_date>
@@ -447,6 +473,19 @@
   </ja_job_control_table>
   <ja_job_control_table>
     <jobnet_id>Icon_1</jobnet_id>
+    <job_id>END-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <job_type>1</job_type>
+    <point_x>237</point_x>
+    <point_y>123</point_y>
+    <job_name/>
+    <method_flag>0</method_flag>
+    <force_flag>0</force_flag>
+    <continue_flag>0</continue_flag>
+  </ja_job_control_table>
+  <ja_job_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
     <job_id>ENV-1</job_id>
     <update_date>20241016224904</update_date>
     <created_date>2024-10-16T15:49:04+07:00</created_date>
@@ -454,6 +493,19 @@
     <point_x>458</point_x>
     <point_y>132</point_y>
     <job_name>LOOPCNT</job_name>
+    <method_flag>0</method_flag>
+    <force_flag>0</force_flag>
+    <continue_flag>0</continue_flag>
+  </ja_job_control_table>
+  <ja_job_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <job_id>ENV-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <job_type>3</job_type>
+    <point_x>122</point_x>
+    <point_y>19</point_y>
+    <job_name>変数初期化</job_name>
     <method_flag>0</method_flag>
     <force_flag>0</force_flag>
     <continue_flag>0</continue_flag>
@@ -506,6 +558,19 @@
     <point_x>460</point_x>
     <point_y>417</point_y>
     <job_name>IF20</job_name>
+    <method_flag>0</method_flag>
+    <force_flag>0</force_flag>
+    <continue_flag>0</continue_flag>
+  </ja_job_control_table>
+  <ja_job_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <job_id>IF-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <job_type>2</job_type>
+    <point_x>122</point_x>
+    <point_y>124</point_y>
+    <job_name>処理回数Chk</job_name>
     <method_flag>0</method_flag>
     <force_flag>0</force_flag>
     <continue_flag>0</continue_flag>
@@ -571,6 +636,19 @@
     <point_x>280</point_x>
     <point_y>82</point_y>
     <job_name/>
+    <method_flag>0</method_flag>
+    <force_flag>0</force_flag>
+    <continue_flag>0</continue_flag>
+  </ja_job_control_table>
+  <ja_job_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <job_id>JOB-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <job_type>4</job_type>
+    <point_x>122</point_x>
+    <point_y>179</point_y>
+    <job_name>JOB1</job_name>
     <method_flag>0</method_flag>
     <force_flag>0</force_flag>
     <continue_flag>0</continue_flag>
@@ -648,6 +726,19 @@
     <job_type>8</job_type>
     <point_x>484</point_x>
     <point_y>180</point_y>
+    <job_name/>
+    <method_flag>0</method_flag>
+    <force_flag>0</force_flag>
+    <continue_flag>0</continue_flag>
+  </ja_job_control_table>
+  <ja_job_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <job_id>LOOP-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <job_type>8</job_type>
+    <point_x>147</point_x>
+    <point_y>70</point_y>
     <job_name/>
     <method_flag>0</method_flag>
     <force_flag>0</force_flag>
@@ -804,6 +895,19 @@
     <job_type>0</job_type>
     <point_x>291</point_x>
     <point_y>10</point_y>
+    <job_name/>
+    <method_flag>0</method_flag>
+    <force_flag>0</force_flag>
+    <continue_flag>0</continue_flag>
+  </ja_job_control_table>
+  <ja_job_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <job_id>START</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <job_type>0</job_type>
+    <point_x>13</point_x>
+    <point_y>19</point_y>
     <job_name/>
     <method_flag>0</method_flag>
     <force_flag>0</force_flag>
@@ -2185,6 +2289,26 @@
   </ja_flow_control_table>
   <ja_flow_control_table>
     <jobnet_id>Icon_1</jobnet_id>
+    <start_job_id>CAL-1</start_job_id>
+    <end_job_id>LOOP-1</end_job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <flow_type>0</flow_type>
+    <flow_width>0</flow_width>
+    <flow_style>{"style":"edgeStyle=elbowEdgeStyle;rounded=0;curved=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;","points":[{"x":89.98726358897406,"y":165.14573643753326}]}</flow_style>
+  </ja_flow_control_table>
+  <ja_flow_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <start_job_id>ENV-1</start_job_id>
+    <end_job_id>LOOP-1</end_job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <flow_type>0</flow_type>
+    <flow_width>0</flow_width>
+    <flow_style>{"style":"edgeStyle=none;rounded=0;orthogonalLoop=1;bendable=0;jettySize=auto;html=1;","points":null}</flow_style>
+  </ja_flow_control_table>
+  <ja_flow_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
     <start_job_id>ENV-1</start_job_id>
     <end_job_id>LOOP-1</end_job_id>
     <update_date>20241016224904</update_date>
@@ -2236,6 +2360,26 @@
   <ja_flow_control_table>
     <jobnet_id>Icon_1</jobnet_id>
     <start_job_id>IF-1</start_job_id>
+    <end_job_id>END-1</end_job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <flow_type>1</flow_type>
+    <flow_width>0</flow_width>
+    <flow_style>{"style":"edgeStyle=none;rounded=0;orthogonalLoop=1;bendable=0;jettySize=auto;html=1;","points":null}</flow_style>
+  </ja_flow_control_table>
+  <ja_flow_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <start_job_id>IF-1</start_job_id>
+    <end_job_id>JOB-1</end_job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <flow_type>2</flow_type>
+    <flow_width>0</flow_width>
+    <flow_style>{"style":"edgeStyle=none;rounded=0;orthogonalLoop=1;bendable=0;jettySize=auto;html=1;","points":null}</flow_style>
+  </ja_flow_control_table>
+  <ja_flow_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <start_job_id>IF-1</start_job_id>
     <end_job_id>LOOP-1</end_job_id>
     <update_date>20241016224904</update_date>
     <created_date>2024-10-16T15:49:04+07:00</created_date>
@@ -2246,9 +2390,19 @@
   <ja_flow_control_table>
     <jobnet_id>Icon_1</jobnet_id>
     <start_job_id>JOB-1</start_job_id>
+    <end_job_id>CAL-1</end_job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <flow_type>0</flow_type>
+    <flow_width>0</flow_width>
+    <flow_style>{"style":"edgeStyle=none;rounded=0;orthogonalLoop=1;bendable=0;jettySize=auto;html=1;","points":null}</flow_style>
+  </ja_flow_control_table>
+  <ja_flow_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <start_job_id>JOB-1</start_job_id>
     <end_job_id>END-1</end_job_id>
-    <update_date>20241016225752</update_date>
-    <created_date>2024-10-16T15:57:52+07:00</created_date>
+    <update_date>20241016225425</update_date>
+    <created_date>2024-10-16T15:54:26+07:00</created_date>
     <flow_type>0</flow_type>
     <flow_width>0</flow_width>
     <flow_style>{"style":"edgeStyle=none;rounded=0;orthogonalLoop=1;bendable=0;jettySize=auto;html=1;","points":null}</flow_style>
@@ -2277,8 +2431,8 @@
     <jobnet_id>Icon_1</jobnet_id>
     <start_job_id>JOB-1</start_job_id>
     <end_job_id>END-1</end_job_id>
-    <update_date>20241016225425</update_date>
-    <created_date>2024-10-16T15:54:26+07:00</created_date>
+    <update_date>20241016225752</update_date>
+    <created_date>2024-10-16T15:57:52+07:00</created_date>
     <flow_type>0</flow_type>
     <flow_width>0</flow_width>
     <flow_style>{"style":"edgeStyle=none;rounded=0;orthogonalLoop=1;bendable=0;jettySize=auto;html=1;","points":null}</flow_style>
@@ -2355,10 +2509,30 @@
   </ja_flow_control_table>
   <ja_flow_control_table>
     <jobnet_id>Icon_1</jobnet_id>
+    <start_job_id>LOOP-1</start_job_id>
+    <end_job_id>IF-1</end_job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <flow_type>0</flow_type>
+    <flow_width>0</flow_width>
+    <flow_style>{"style":"edgeStyle=none;rounded=0;orthogonalLoop=1;bendable=0;jettySize=auto;html=1;","points":null}</flow_style>
+  </ja_flow_control_table>
+  <ja_flow_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
     <start_job_id>REBOOT-1</start_job_id>
     <end_job_id>END-1</end_job_id>
     <update_date>20241016225212</update_date>
     <created_date>2024-10-16T15:52:13+07:00</created_date>
+    <flow_type>0</flow_type>
+    <flow_width>0</flow_width>
+    <flow_style>{"style":"edgeStyle=none;rounded=0;orthogonalLoop=1;bendable=0;jettySize=auto;html=1;","points":null}</flow_style>
+  </ja_flow_control_table>
+  <ja_flow_control_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <start_job_id>START</start_job_id>
+    <end_job_id>ENV-1</end_job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
     <flow_type>0</flow_type>
     <flow_width>0</flow_width>
     <flow_style>{"style":"edgeStyle=none;rounded=0;orthogonalLoop=1;bendable=0;jettySize=auto;html=1;","points":null}</flow_style>
@@ -3838,6 +4012,15 @@
     <formula>$LOOPCNT + 1</formula>
     <value_name>LOOPCNT</value_name>
   </ja_icon_calc_table>
+  <ja_icon_calc_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <job_id>CAL-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <hand_flag>0</hand_flag>
+    <formula>$LOOP_CNT + 1</formula>
+    <value_name>LOOP_CNT</value_name>
+  </ja_icon_calc_table>
   <ja_icon_end_table>
     <jobnet_id>Icon_1</jobnet_id>
     <job_id>END-1</job_id>
@@ -3923,6 +4106,14 @@
     <job_id>END-1</job_id>
     <update_date>20241017235352</update_date>
     <created_date>2024-10-17T16:53:53+07:00</created_date>
+    <jobnet_stop_flag>0</jobnet_stop_flag>
+    <jobnet_stop_code>0</jobnet_stop_code>
+  </ja_icon_end_table>
+  <ja_icon_end_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <job_id>END-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
     <jobnet_stop_flag>0</jobnet_stop_flag>
     <jobnet_stop_code>0</jobnet_stop_code>
   </ja_icon_end_table>
@@ -4030,6 +4221,15 @@
     <hand_flag>0</hand_flag>
     <value_name>LOOPCNT</value_name>
     <comparison_value>800</comparison_value>
+  </ja_icon_if_table>
+  <ja_icon_if_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <job_id>IF-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <hand_flag>0</hand_flag>
+    <value_name>LOOP_CNT</value_name>
+    <comparison_value>96</comparison_value>
   </ja_icon_if_table>
   <ja_icon_jobnet_table>
     <jobnet_id>Icon_10</jobnet_id>
@@ -4525,6 +4725,19 @@
   </ja_icon_job_table>
   <ja_icon_job_table>
     <jobnet_id>Icon_1</jobnet_id>
+    <job_id>JOB-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <host_flag>1</host_flag>
+    <stop_flag>0</stop_flag>
+    <command_type>0</command_type>
+    <timeout>0</timeout>
+    <host_name>JA_HOSTNAME</host_name>
+    <stop_code/>
+    <timeout_run_type>0</timeout_run_type>
+  </ja_icon_job_table>
+  <ja_icon_job_table>
+    <jobnet_id>Icon_1</jobnet_id>
     <job_id>JOB-2</job_id>
     <update_date>20241016224904</update_date>
     <created_date>2024-10-16T15:49:04+07:00</created_date>
@@ -4575,6 +4788,15 @@
     <command_cls>0</command_cls>
     <created_date>2024-10-17T16:53:53+07:00</created_date>
     <command>$JA_CMD</command>
+  </ja_job_command_table>
+  <ja_job_command_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <job_id>JOB-1</job_id>
+    <update_date>20241020231041</update_date>
+    <command_cls>0</command_cls>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <command>sleep 300
+echo $LOOPCNT </command>
   </ja_job_command_table>
   <ja_job_command_table>
     <jobnet_id>Icon_1</jobnet_id>
@@ -4651,6 +4873,22 @@ sleep 1</command>
   </ja_value_job_table>
   <ja_value_job_table>
     <jobnet_id>Icon_1</jobnet_id>
+    <job_id>JOB-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <value_name>LOOPCNT</value_name>
+    <value>$LOOP_CNT</value>
+  </ja_value_job_table>
+  <ja_value_job_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <job_id>JOB-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <value_name>JA_HOSTNAME</value_name>
+    <value>$JA_HOSTNAME</value>
+  </ja_value_job_table>
+  <ja_value_job_table>
+    <jobnet_id>Icon_1</jobnet_id>
     <job_id>JOB-2</job_id>
     <update_date>20241016224904</update_date>
     <created_date>2024-10-16T15:49:04+07:00</created_date>
@@ -4692,6 +4930,22 @@ sleep 1</command>
     <update_date>20241016224904</update_date>
     <created_date>2024-10-16T15:49:04+07:00</created_date>
     <value_name>LOOPCNT</value_name>
+    <value>0</value>
+  </ja_icon_value_table>
+  <ja_icon_value_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <job_id>ENV-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <value_name>LOOP_CNT</value_name>
+    <value>0</value>
+  </ja_icon_value_table>
+  <ja_icon_value_table>
+    <jobnet_id>Icon_1</jobnet_id>
+    <job_id>ENV-1</job_id>
+    <update_date>20241020231041</update_date>
+    <created_date>2024-10-20T16:10:42+07:00</created_date>
+    <value_name>OK_JOB_EXIT_CD</value_name>
     <value>0</value>
   </ja_icon_value_table>
   <ja_icon_fcopy_table>
