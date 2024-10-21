@@ -307,7 +307,7 @@ func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount i
 	}
 
 	// Wait for all jobs to be in running state
-	err = lib.JobSleepProcessCountCheck(0, 10, sshClient)
+	err = lib.JobSleepProcessCountCheck(0, 12, sshClient)
 
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, Failed to get process count.", err.Error()))
@@ -387,6 +387,7 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 
 	// Convert string to int64 (if needed)
 	intValue, err := strconv.ParseInt(afterValue, 10, 64)
+	fmt.Println(testcase.Info_log("innerjobnet id %d", intValue))
 	if err != nil {
 		fmt.Println(testcase.Info_log("Error converting afterValue to int64: %v", err))
 	}
@@ -453,7 +454,7 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 	}
 
 	// Wait for all jobs to be in running state
-	err = lib.JobSleepProcessCountCheck(0, 10, sshClient)
+	err = lib.JobSleepProcessCountCheck(0, 12, sshClient)
 
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, Failed to get process count.", err.Error()))
