@@ -387,7 +387,6 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 
 	// Convert string to int64 (if needed)
 	intValue, err := strconv.ParseInt(afterValue, 10, 64)
-	fmt.Println(testcase.Info_log("innerjobnet id %d", intValue))
 	if err != nil {
 		fmt.Println(testcase.Info_log("Error converting afterValue to int64: %v", err))
 	}
