@@ -336,6 +336,13 @@ func (t *Ticket_1225) Add_testcases() {
 		}
 		fmt.Println(tc_79.Info_log("The expected JAZ server logs are found. %s", server_log))
 
+		// Check if all data inside the database gets deleted
+		if err := checkRunIconCount(15, 0); err != nil {
+			tc_79.Err_log("Faild to check the run icon count, Error: %s", err.Error())
+			return FAILED
+		}
+		fmt.Println(tc_79.Info_log("All run job icons are deleted from DB."))
+
 		return PASSED
 	}
 	tc_79.Set_function(tc_func)
@@ -422,4 +429,32 @@ func checkPurgeLog(jaPurgeLimit int, timeoutDuration int, client *ssh.Client, se
 		}
 
 	}
+}
+
+// Check the run icon count in database until it reaches the target count
+func checkRunIconCount(timeoutDuration int, targetCount int) error {
+	// set timeout
+	timeout := time.After(time.Duration(timeoutDuration) * time.Minute)
+
+	for {
+		select {
+		case <-timeout:
+			return fmt.Errorf("timeout after %d minutes while checking run icon count", timeoutDuration)
+		default:
+			var count int
+			if err := lib.GetSingleRow(lib.CheckAllRunCount, nil, &count); err != nil {
+				return fmt.Errorf("failed to get the count of running icons: %s", err.Error())
+			}
+
+			fmt.Printf("Run icon count: %d\n", count)
+
+			if count == targetCount {
+				return nil
+			}
+
+			time.Sleep(time.Second)
+
+		}
+	}
+
 }
