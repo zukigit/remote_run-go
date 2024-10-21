@@ -307,7 +307,7 @@ func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount i
 	}
 
 	// Wait for all jobs to be in running state
-	err = lib.JobSleepProcessCountCheck(0, 12, sshClient)
+	err = lib.JobSleepProcessCountCheck(0, 10, sshClient)
 
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: %s, Failed to get process count.", err.Error()))
