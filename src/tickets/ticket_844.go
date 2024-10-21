@@ -170,27 +170,32 @@ func (t *Ticket_844) Add_testcases() {
 	t.Add_testcase(*tc_75)
 
 	//TESTCASE 76
-	// tc_76 := t.New_testcase(76, "kill jobarg_command process ")
-	// tc_func = func() common.Testcase_status {
-	// 	// enable common jobnet
-	// 	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-	// 		tc_74.Err_log("Failed to enable jobnet, Error: %s", err)
-	// 		return FAILED
-	// 	}
-	// 	return RunJob800AndKillOneJobIconWithJobargCommand("Icon_800", 800, 4, tc_76, common.Client)
-	// }
+	tc_76 := t.New_testcase(76, "kill jobarg_command process ")
+	tc_func = func() common.Testcase_status {
+		// enable common jobnet
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+			tc_76.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJob800AndKillOneJobIconWithJobargCommand("Icon_800", 800, 4, tc_76, common.Client)
+	}
 
-	// tc_76.Set_function(tc_func)
-	// t.Add_testcase(*tc_76)
+	tc_76.Set_function(tc_func)
+	t.Add_testcase(*tc_76)
 
 	//TESTCASE 77
-	// tc_77 := t.New_testcase(77, "force stop  running job icon")
-	// tc_func = func() common.Testcase_status {
-	// 	return RunJob800AndForceStopOneJobIcon("TICKET844_TESTCASE76-77JOB800", 800, 4, tc_77, common.Client)
-	// }
+	tc_77 := t.New_testcase(77, "force stop  running job icon")
+	tc_func = func() common.Testcase_status {
+		// enable common jobnet
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+			tc_77.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJob800AndForceStopOneJobIcon("Icon_800", 800, 4, tc_77, common.Client)
+	}
 
-	// tc_77.Set_function(tc_func)
-	// t.Add_testcase(*tc_77)
+	tc_77.Set_function(tc_func)
+	t.Add_testcase(*tc_77)
 }
 
 func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
@@ -336,7 +341,8 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 
 	lib.Jobarg_cleanup_linux()
 
-	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 500")
+	run_jobnet_id, error := lib.Jobarg_exec_E(jobnetId, envs)
 
 	if error != nil {
 		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
