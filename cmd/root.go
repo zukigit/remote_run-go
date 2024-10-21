@@ -23,6 +23,60 @@ func set_ticket_values(t []dao.Ticket) {
 	}
 }
 
+func enable_common_jobnets() {
+	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_2", "Icon_2"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_10", "Icon_10"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_100", "Icon_100"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_200", "Icon_200"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_400", "Icon_400"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_500", "Icon_500"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_510", "Icon_510"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_800", "Icon_800"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_1000", "Icon_1000"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_1020", "Icon_1020"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_2040", "Icon_2040"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := lib.Jobarg_enable_jobnet("Icon_3000", "Icon_3000"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+}
+
 func check_duplicated_ticket() {
 	seen := make(map[uint]bool)
 
@@ -32,19 +86,6 @@ func check_duplicated_ticket() {
 			os.Exit(1)
 		}
 		seen[tkt.Get_no()] = true
-	}
-}
-
-func check_duplicated_testcases() {
-	seen := make(map[uint]bool)
-	for _, tkt := range tkts {
-		for _, tc := range tkt.Get_testcases() {
-			if seen[tc.Get_id()] {
-				fmt.Printf("Error: testcase[%d] is duplicated\n", tc.Get_id())
-				os.Exit(1)
-			}
-			seen[tc.Get_id()] = true
-		}
 	}
 }
 
@@ -75,6 +116,7 @@ func run_tc_(t dao.Ticket) {
 	dao.Run_testcase(t)
 	dao.Set_total_tc_results(t)
 	lib.Logi("\nTotal_result:\n")
+
 	if dao.Tc_unkown_cnt > 0 {
 		lib.Logi(fmt.Sprintf("PASSED: %d, FAILED: %d, MUST_CHECK: %d, UNKNOWN: %d\n", dao.Tc_passed_cnt, dao.Tc_failed_cnt, dao.Tc_chk_cnt, dao.Tc_unkown_cnt))
 	} else {
@@ -111,13 +153,14 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
+		if common.Specific_testcase_no > 0 && common.Specific_ticket_no == 0 {
+			return fmt.Errorf("specify the ticket number too by using --ticket")
+		}
+
 		return common.Set_usr_hst(args)
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		check_duplicated_ticket()
-		check_duplicated_testcases()
-
 		common.Log_filename = lib.Get_log_filename()
 		common.Set_passwd()
 		common.Set_client()
@@ -134,8 +177,13 @@ var rootCmd = &cobra.Command{
 		defer common.Log_file.Close()
 
 		common.Set_ticket_logs_headers()
-		add_run_tickets(common.Specific_ticket_no)
 
+		add_tickets(&tkts)
+		set_ticket_values(tkts)
+		add_testcases()
+		check_duplicated_ticket()
+		add_run_tickets(common.Specific_ticket_no)
+		enable_common_jobnets()
 		run_tc(run_tickets) // run test cases
 
 		if len(run_tickets) > 0 {
@@ -155,11 +203,6 @@ func Execute() {
 }
 
 func init() {
-	add_tickets(&tkts)
-	set_ticket_values(tkts)
-
-	add_testcases()
-
 	rootCmd.Flags().IntVarP(&common.Login_info.Port, "port", "p", 22, "Port")
 	rootCmd.Flags().BoolVar(&common.Is_mysql, "with-mysql", false, "Use MySQL database")
 	rootCmd.Flags().BoolVar(&common.Is_psql, "with-postgresql", false, "Use PostgreSQL database")
@@ -172,11 +215,11 @@ func init() {
 
 // Add your tickets here
 func add_tickets(t *[]dao.Ticket) {
-	// *t = append(*t, new(tickets.Ticket_1318))
+	*t = append(*t, new(tickets.Ticket_1318))
 	// *t = append(*t, new(tickets.Ticket_000))
-	// *t = append(*t, new(tickets.Ticket_811))
+	*t = append(*t, new(tickets.Ticket_811))
 	*t = append(*t, new(tickets.Ticket_800))
-	*t = append(*t, new(tickets.Ticket_1225))
+	// *t = append(*t, new(tickets.Ticket_1225))
 	*t = append(*t, new(tickets.Ticket_844))
 	*t = append(*t, new(tickets.Ticket_794))
 }

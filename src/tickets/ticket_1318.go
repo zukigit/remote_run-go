@@ -57,8 +57,16 @@ func (t *Ticket_1318) Add_testcases() {
 			return FAILED
 		}
 
+		// Enable jobnet
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_windows"); err != nil {
+			tc_168.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+
+		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.windows", "JA_CMD", "exit -100000;")
+
 		// Run jobnet
-		run_jobnet_id, error := lib.Jobarg_exec("TICKET1318_TESTCASE169")
+		run_jobnet_id, error := lib.Jobarg_exec_E("Icon_1", envs)
 		if error != nil {
 			tc_168.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id)
 			return FAILED
@@ -100,8 +108,16 @@ func (t *Ticket_1318) Add_testcases() {
 			return FAILED
 		}
 
+		// Enable jobnet
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_windows"); err != nil {
+			tc_169.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+
+		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.windows", "JA_CMD", "exit -100000;")
+
 		// Run jobnet
-		run_jobnet_id, error := lib.Jobarg_exec("TICKET1318_TESTCASE169")
+		run_jobnet_id, error := lib.Jobarg_exec_E("Icon_1", envs)
 		if error != nil {
 			tc_169.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id)
 			return FAILED
@@ -140,7 +156,15 @@ func (t *Ticket_1318) Add_testcases() {
 			return FAILED
 		}
 
-		run_jobnet_id, err := lib.Jobarg_exec("TICKET1318_TESTCASE170")
+		// Enable jobnet
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+			tc_170.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+
+		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "exit -100000")
+
+		run_jobnet_id, err := lib.Jobarg_exec_E("Icon_1", envs)
 		if err != nil {
 			tc_170.Err_log("Error: %s, std_out: %s", err.Error(), run_jobnet_id)
 			return FAILED

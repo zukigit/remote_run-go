@@ -42,7 +42,18 @@ func (t *Ticket_000) Add_testcases() {
 	// TESTCASE 001
 	tc_1 := t.New_testcase(1, "Enter your test case description here.")
 	tc_func := func() common.Testcase_status {
-		// Enter your test case logic here
+		// err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux")
+		// if err != nil {
+		// 	fmt.Println("err in enable jobnet", err.Error())
+		// 	return FAILED
+		// }
+		// envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "hostname")
+		// if _, err := lib.Jobarg_exec_E("Icon_1", envs); err != nil {
+		// 	fmt.Println("err", err.Error())
+		// 	return FAILED
+		// } else {
+		// 	return FAILED
+		// }
 		return FAILED
 	}
 	tc_1.Set_function(tc_func)
