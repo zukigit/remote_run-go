@@ -262,7 +262,7 @@ func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount i
 	Expected Results
 	****************/
 
-	sleepDuration := 2 * time.Minute
+	sleepDuration := 3 * time.Minute
 	time.Sleep(sleepDuration)
 	DBQuery := "SELECT after_value FROM ja_run_value_after_table WHERE after_value LIKE '%Check job status(end) failed.%'"
 
@@ -408,7 +408,7 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 	Expected Results
 	****************/
 
-	sleepDuration := 2 * time.Minute
+	sleepDuration := 3 * time.Minute
 	time.Sleep(sleepDuration)
 
 	DBQuery = "SELECT after_value FROM ja_run_value_after_table WHERE after_value LIKE '%Aborted the job%'"
