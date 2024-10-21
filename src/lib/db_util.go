@@ -25,6 +25,31 @@ const (
 	AbortJobnetQuery         DBQuery = "UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = $1"
 	AbortSingleJOBIconQuery  DBQuery = "UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_jobnet_id = $1"
 	CheckJobnetDoneWithRed   DBQuery = "select * from ja_run_jobnet_table where status = 2 or status = 6"
+	CheckAllRunCount         DBQuery = `SELECT (
+		(SELECT COUNT(*) FROM ja_run_jobnet_table) +
+		(SELECT COUNT(*) FROM ja_run_jobnet_summary_table) +
+		(SELECT COUNT(*) FROM ja_run_flow_table) +
+		(SELECT COUNT(*) FROM ja_value_after_jobnet_table) +
+		(SELECT COUNT(*) FROM ja_value_before_jobnet_table) +
+		(SELECT COUNT(*) FROM ja_run_value_before_table) +
+		(SELECT COUNT(*) FROM ja_run_value_after_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_task_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_value_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_release_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_calc_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_reboot_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_fwait_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_info_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_zabbix_link_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_agentless_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_jobnet_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_end_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_extjob_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_job_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_if_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_fcopy_table) +
+		(SELECT COUNT(*) FROM ja_run_job_table)
+	) AS total_count;`
 )
 
 // Converts the parameter in postgresql query to a compatible version for mysql
@@ -93,6 +118,12 @@ func GetData(query DBQuery, args ...interface{}) (*sql.Rows, error) {
 		return nil, err
 	}
 	return rows, nil
+}
+
+// This function will execute the query that will get exactly one row
+func GetSingleRow(query DBQuery, args []interface{}, dest ...interface{}) error {
+	// Prepare the query with arguments, then scan the result into the provided destination variables
+	return common.DB.QueryRow(string(query), args...).Scan(dest...)
 }
 
 func DBexec(unfmt string, arg ...any) (sql.Result, error) {
