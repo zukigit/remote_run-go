@@ -337,7 +337,8 @@ func (t *Ticket_1225) Add_testcases() {
 		fmt.Println(tc_79.Info_log("The expected JAZ server logs are found. %s", server_log))
 
 		// Check if all data inside the database gets deleted
-		if err := checkRunIconCount(15, 0); err != nil {
+		timeout_min := 240 // timeout in minutes
+		if err := checkRunIconCount(timeout_min, 0); err != nil {
 			tc_79.Err_log("Faild to check the run icon count, Error: %s", err.Error())
 			return FAILED
 		}

@@ -203,6 +203,58 @@ func (t *Ticket_811) Add_testcases() {
 	tc_12.Set_function(tc_func)
 	t.Add_testcase(*tc_12)
 	// End Ext Job
+
+	/* FWait Job START */
+
+	// FWait Icon 100
+	tc_13 := t.New_testcase(13, "Check Abort process abort the fwait icon 100 (with waiting for file creation option ON)")
+	tc_func = func() common.Testcase_status {
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "fwait_for_file_creation"); err != nil {
+			tc_13.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndAbort("Icon_100", 200, 10, tc_13, common.Client)
+	}
+	tc_13.Set_function(tc_func)
+	t.Add_testcase(*tc_13)
+
+	// FWait Icon 200
+	tc_14 := t.New_testcase(14, "Check Abort process abort the fwait icon 200 (with waiting for file creation option ON)")
+	tc_func = func() common.Testcase_status {
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "fwait_for_file_creation"); err != nil {
+			tc_14.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndAbort("Icon_200", 400, 20, tc_14, common.Client)
+	}
+	tc_14.Set_function(tc_func)
+	t.Add_testcase(*tc_14)
+
+	// FWait Icon 400
+	tc_15 := t.New_testcase(15, "Check Abort process abort the fwait icon 400 (with waiting for file creation option ON)")
+	tc_func = func() common.Testcase_status {
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "fwait_for_file_creation"); err != nil {
+			tc_15.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndAbort("Icon_400", 800, 40, tc_15, common.Client)
+	}
+	tc_15.Set_function(tc_func)
+	t.Add_testcase(*tc_15)
+
+	// FWait Icon 800
+	tc_16 := t.New_testcase(16, "Check Abort process abort the fwait icon 800 (with waiting for file creation option ON)")
+	tc_func = func() common.Testcase_status {
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "fwait_for_file_creation"); err != nil {
+			tc_16.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJobnetAndAbort("Icon_800", 1600, 80, tc_16, common.Client)
+	}
+	tc_16.Set_function(tc_func)
+	t.Add_testcase(*tc_16)
+
+	/* FWait Job END */
 }
 
 // Run the jobnet, abort it after all jobs are in running state, and confirm ENDERR status of the jobnet
