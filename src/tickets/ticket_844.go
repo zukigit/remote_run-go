@@ -390,7 +390,7 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 		fmt.Println(testcase.Info_log("Error converting inner_jobnet_id to int64: %v", err))
 	}
 
-	fmt.Println(testcase.Info_log("Kill Job Icon using inner_jobnet_id %d", convert_inner_job_id))
+	fmt.Println(testcase.Info_log("Kill Job Icon using inner_job_id %d", convert_inner_job_id))
 
 	// Execute the update query
 	_, err = lib.ExecuteQuery("UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_job_id = $1 AND status = 2", convert_inner_job_id)
