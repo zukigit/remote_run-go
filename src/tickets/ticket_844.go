@@ -359,10 +359,10 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 	Operation State
 	***************/
 
-	DBQuery := "SELECT jrijt.inner_job_id FROM ja_run_icon_job_table jrijt INNER JOIN ja_run_job_table jrjt ON jrjt.inner_jobnet_id = jrijt.inner_jobnet_id WHERE jrjt.inner_jobnet_main_id = $1 LIMIT 1"
+	DBQuery := "SELECT inner_job_id FROM ja_run_job_table jr WHERE jr.job_type = 4 AND jr.status = 2"
 
 	// Execute the query
-	rows, err := common.DB.Query(DBQuery, run_jobnet_id)
+	rows, err := common.DB.Query(DBQuery)
 	if err != nil {
 		// If there was an error executing the query, print an error message
 		fmt.Println(testcase.Err_log("Error executing query: %v\n", err))
@@ -393,7 +393,7 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 	fmt.Println(testcase.Info_log("Kill Job Icon using inner_job_id %d", convert_inner_job_id))
 
 	// Execute the update query
-	_, err = lib.ExecuteQuery("UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_job_id = $1 AND status = 2", convert_inner_job_id)
+	_, err = lib.ExecuteQuery("UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_job_id = $1", convert_inner_job_id)
 	if err != nil {
 		// Log error and return FAILED if the query execution fails
 		fmt.Println(testcase.Err_log("Error: %s, Failed to abort the job icon.", err.Error()))
