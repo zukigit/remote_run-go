@@ -1,7 +1,6 @@
 package tickets
 
 import (
-	"database/sql"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -81,239 +80,27 @@ func (t *Ticket_1225) Add_testcases() {
 
 		if _, err := lib.DBexec(`INSERT INTO ja_run_jobnet_table
 						(inner_jobnet_id, inner_jobnet_main_id) VALUES (%d, %d);`,
-			1500000000000000001, 1500000000000000001); err != nil {
+			1500000000000000002, 1500000000000000002); err != nil {
 			tc_79.Err_log("Failed to insert jobnet, Error: %s", err.Error())
 			return FAILED
 		}
 
 		if _, err := lib.DBexec(`INSERT INTO ja_run_jobnet_summary_table (
-    					inner_jobnet_id, update_date, created_date, invo_flag, run_type, status, job_status, 
-						jobnet_abort_flag, load_status, scheduled_time, start_time, end_time, public_flag) 
-						VALUES ('1500000000000000001', '20240704120626', '2024-07-04 07:50:40.064', 1, 1, 3, 0,
-    					0, 0, 0, '20240704035042', '20240704035044', 0);`); err != nil {
+						inner_jobnet_id, update_date, created_date, invo_flag, run_type, status, job_status,
+						jobnet_abort_flag, load_status, scheduled_time, start_time, end_time, public_flag)
+						VALUES ('1500000000000000002', '20240704120626', '2024-07-04 07:50:40.064', 1, 1, 3, 0,
+						0, 0, 0, '20240704035042', '20240704035044', 0);`); err != nil {
 			tc_79.Err_log("Failed to insert into jobnet summary table, Error: %s", err.Error())
 			return FAILED
 		}
 
-		record_counter := 0
-		records_per_tx := 499
-		maximum_records := 1000000
-		var tx *sql.Tx
-		var err error
-		for i := 0; i < maximum_records; i++ {
-			if record_counter == 0 {
-				tx, err = common.DB.Begin()
-				if err != nil {
-					tc_79.Err_log("Faild to start the transaction, Error: %s", err.Error())
-					return FAILED
-				}
-			}
-
-			query := lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_job_table  (
-						inner_job_id, inner_jobnet_id, inner_jobnet_main_id, inner_job_id_fs_link, created_date,
-						invo_flag, job_type, test_flag, method_flag, force_flag, timeout_flag, status, boot_count,
-						end_count, start_time, end_time, point_x, point_y, job_id, job_name, continue_flag, run_user, run_user_password) 
-						VALUES ($1, '1500000000000000001', '1500000000000000001', 0, '2024-07-04 08:02:01.434', 0, 0, 0, 0, 0, 0, 3, 0, 0,
-						'20240704040203', '20240704040203', 354, 19, 'START', '', 0, '', '');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_flow_table (
-						inner_flow_id, inner_jobnet_id, start_inner_job_id, end_inner_job_id, flow_type, flow_width) 
-						VALUES ($1, '1500000000000000001', 14, 13, 0, 0);`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_value_after_jobnet_table  (
-						inner_jobnet_id, value_name, after_value , seq_no) 
-						VALUES ('1500000000000000001', 'JOBNET_ID', 'JOBNET_1', $1);`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_value_before_jobnet_table  (
-						inner_jobnet_id, value_name, before_value , seq_no) 
-						VALUES ('1500000000000000001', 'JOBNET_ID', 'JOBNET_1', $1);`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_value_before_table (
-						inner_job_id, inner_jobnet_id, value_name, before_value, seq_no) 
-						VALUES ($1, '1500000000000000001', 'JOBNET_ID', 'JOBNET_1', $1);`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_value_after_table (
-						inner_job_id, inner_jobnet_id, value_name, after_value, seq_no) 
-						VALUES ($1, '1500000000000000001', 'JOBNET_ID', 'JOBNET_1', $1);`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_job_table (
-							inner_job_id, inner_jobnet_id, host_flag, stop_flag, command_type, timeout, host_name, stop_code, timeout_run_type) 
-							VALUES ($1, '1500000000000000001', 0, 0, 0, 0, 'moon8.7', NULL, 0);`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_task_table (
-						inner_job_id, inner_jobnet_id) 
-						VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_value_table (
-					inner_job_id, inner_jobnet_id) 
-					VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_release_table (
-					inner_job_id, inner_jobnet_id) 
-					VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_calc_table (
-				inner_job_id, inner_jobnet_id
-			) VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_reboot_table (
-				inner_job_id, inner_jobnet_id
-			) VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_fwait_table (
-				inner_job_id, inner_jobnet_id
-			) VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_info_table (
-				inner_job_id, inner_jobnet_id
-			) VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_zabbix_link_table (
-				inner_job_id, inner_jobnet_id
-			) VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_agentless_table (
-				inner_job_id, inner_jobnet_id
-			) VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_jobnet_table (
-				inner_job_id, inner_jobnet_id
-			) VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_end_table (
-				inner_job_id, inner_jobnet_id
-			) VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_extjob_table (
-				inner_job_id, inner_jobnet_id
-			) VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_if_table (
-				inner_job_id, inner_jobnet_id
-			) VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			query = lib.ConvertParamPostgresToMysql(`INSERT INTO ja_run_icon_fcopy_table (
-				inner_job_id, inner_jobnet_id
-			) VALUES ($1, '1500000000000000001');`)
-			if _, err := tx.Exec(query, i); err != nil {
-				tc_79.Err_log("Failed to insert data, Error: %s", err.Error())
-				tx.Rollback()
-				return FAILED
-			}
-
-			if record_counter >= records_per_tx {
-				if err = tx.Commit(); err != nil {
-					tc_79.Err_log("Faild to commit the transaction, Error: %s", err.Error())
-					return FAILED
-				}
-				fmt.Println("commited", i+1)
-				record_counter = 0
-				continue
-			}
-			record_counter += 1
-			fmt.Println("inserted, counter", i+1, record_counter)
+		err := insertOneMillionRecords()
+		if err != nil {
+			tc_79.Err_log("Faild to insert records, Error: %s", err.Error())
+			return FAILED
 		}
-		fmt.Println(tc_79.Info_log("%d records have been inserted to DB.", maximum_records))
+
+		fmt.Println(tc_79.Info_log("one million records have been inserted to DB."))
 
 		// Backup and clean jobarg server log
 		if err := moveAndBackupJAZServerLog(); err != nil {
@@ -458,4 +245,306 @@ func checkRunIconCount(timeoutDuration int, targetCount int) error {
 		}
 	}
 
+}
+
+// insert one million records with native procedure language (mysql/postgresql)
+func insertOneMillionRecords() error {
+
+	// prepare query for each database type
+	var query string
+
+	if common.Is_psql {
+		query = `DO $$
+		DECLARE
+			batch_size CONSTANT INTEGER := 500;
+			counter INTEGER := 0;
+			total_records INTEGER := 50000;  -- Total number of records to process
+		BEGIN
+			FOR i IN 1..total_records LOOP
+
+				INSERT INTO ja_run_job_table  (
+					inner_job_id, inner_jobnet_id, inner_jobnet_main_id, inner_job_id_fs_link, created_date,
+					invo_flag, job_type, test_flag, method_flag, force_flag, timeout_flag, status, boot_count,
+					end_count, start_time, end_time, point_x, point_y, job_id, job_name, continue_flag, run_user, run_user_password
+				) VALUES (
+					i, '1500000000000000002', '1500000000000000002', 0, '2024-07-04 08:02:01.434', 0, 0, 0, 0, 0, 0, 3, 0, 0,
+					'20240704040203', '20240704040203', 354, 19, 'START', '', 0, '', '');
+				INSERT INTO ja_run_flow_table (
+					inner_flow_id, inner_jobnet_id, start_inner_job_id, end_inner_job_id, flow_type, flow_width
+				) VALUES (
+					i, '1500000000000000002', 14, 13, 0, 0);
+				INSERT INTO ja_value_after_jobnet_table  (
+					inner_jobnet_id, value_name, after_value , seq_no
+				) VALUES
+					('1500000000000000002', 'JOBNET_ID', 'JOBNET_1', i);
+				INSERT INTO ja_value_before_jobnet_table  (
+					inner_jobnet_id, value_name, before_value , seq_no
+				) VALUES
+					('1500000000000000002', 'JOBNET_ID', 'JOBNET_1', i);
+				INSERT INTO ja_run_value_before_table (
+					inner_job_id, inner_jobnet_id, value_name, before_value, seq_no
+				) VALUES (
+					i, '1500000000000000002', 'JOBNET_ID', 'JOBNET_1', i);
+				INSERT INTO ja_run_value_after_table (
+					inner_job_id, inner_jobnet_id, value_name, after_value, seq_no
+				) VALUES (
+					i, '1500000000000000002', 'JOBNET_ID', 'JOBNET_1', i);
+				INSERT INTO ja_run_icon_job_table (
+					inner_job_id, inner_jobnet_id, host_flag, stop_flag, command_type, timeout, host_name, stop_code, timeout_run_type
+				) VALUES (
+					i, '1500000000000000002', 0, 0, 0, 0, 'moon8.7', NULL, 0);
+				INSERT INTO ja_run_icon_task_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+				INSERT INTO ja_run_icon_value_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+				INSERT INTO ja_run_icon_release_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+				INSERT INTO ja_run_icon_calc_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+				INSERT INTO ja_run_icon_reboot_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+				INSERT INTO ja_run_icon_fwait_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+				INSERT INTO ja_run_icon_info_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+				INSERT INTO ja_run_icon_zabbix_link_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+				INSERT INTO ja_run_icon_agentless_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+				INSERT INTO ja_run_icon_jobnet_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+				INSERT INTO ja_run_icon_end_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+				INSERT INTO ja_run_icon_extjob_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+				INSERT INTO ja_run_icon_if_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+				INSERT INTO ja_run_icon_fcopy_table (
+					inner_job_id, inner_jobnet_id
+				) VALUES (
+					i, '1500000000000000002');
+
+				counter := counter + 1;
+
+				IF counter >= batch_size THEN
+					COMMIT;
+					counter := 0;
+				END IF;
+			END LOOP;
+
+			IF counter > 0 THEN
+				COMMIT;
+			END IF;
+		END $$;`
+	} else {
+
+		// Drop if the procedure already exists
+		dropProcedureSQL := "DROP PROCEDURE IF EXISTS insert_one_million_records;"
+		_, err := common.DB.Exec(dropProcedureSQL)
+		if err != nil {
+			return err
+		}
+
+		query = `
+-- Create the stored procedure with transaction handling
+CREATE PROCEDURE insert_one_million_records()
+BEGIN
+    DECLARE batch_size INT DEFAULT 500;
+    DECLARE counter INT DEFAULT 0;
+    DECLARE total_records INT DEFAULT 50000;
+    DECLARE i INT DEFAULT 1;
+
+    -- Start transaction
+    START TRANSACTION;
+
+    -- Begin the loop
+    WHILE i <= total_records DO
+        -- Insert three rows into ja_run_job_table
+        INSERT INTO ja_run_job_table (
+            inner_job_id, inner_jobnet_id, inner_jobnet_main_id, inner_job_id_fs_link, created_date,
+            invo_flag, job_type, test_flag, method_flag, force_flag, timeout_flag, status, boot_count,
+            end_count, start_time, end_time, point_x, point_y, job_id, job_name, continue_flag, run_user, run_user_password
+        ) VALUES
+        (i, '1500000000000000002', '1500000000000000002', 0, '2024-07-04 08:02:01', 0, 0, 0, 0, 0, 0, 3, 0, 0,
+            '20240704040203', '20240704040203', 354, 19, 'START', '', 0, '', ''),
+        (i+1, '1500000000000000002', '1500000000000000002', 0, '2024-07-04 08:02:01', 0, 0, 0, 0, 0, 0, 3, 0, 0,
+            '20240704040203', '20240704040203', 354, 19, 'START', '', 0, '', '');
+
+        -- Insert three rows into ja_run_flow_table
+        INSERT INTO ja_run_flow_table (
+            inner_flow_id, inner_jobnet_id, start_inner_job_id, end_inner_job_id, flow_type, flow_width
+        ) VALUES
+        (i, '1500000000000000002', 14, 13, 0, 0),
+        (i+1, '1500000000000000002', 14, 13, 0, 0);
+
+        -- Insert three rows into ja_value_after_jobnet_table
+        INSERT INTO ja_value_after_jobnet_table (
+            inner_jobnet_id, value_name, after_value, seq_no
+        ) VALUES
+        ('1500000000000000002', 'JOBNET_ID', 'JOBNET_1', i),
+        ('1500000000000000002', 'JOBNET_ID', 'JOBNET_1', i+1);
+
+        -- Insert three rows into ja_value_before_jobnet_table
+        INSERT INTO ja_value_before_jobnet_table (
+            inner_jobnet_id, value_name, before_value, seq_no
+        ) VALUES
+        ('1500000000000000002', 'JOBNET_ID', 'JOBNET_1', i),
+        ('1500000000000000002', 'JOBNET_ID', 'JOBNET_1', i+1);
+
+        -- Insert three rows into ja_run_value_before_table
+        INSERT INTO ja_run_value_before_table (
+            inner_job_id, inner_jobnet_id, value_name, before_value, seq_no
+        ) VALUES
+        (i, '1500000000000000002', 'JOBNET_ID', 'JOBNET_1', i),
+        (i+1, '1500000000000000002', 'JOBNET_ID', 'JOBNET_1', i+1);
+
+        -- Insert three rows into ja_run_value_after_table
+        INSERT INTO ja_run_value_after_table (
+            inner_job_id, inner_jobnet_id, value_name, after_value, seq_no
+        ) VALUES
+        (i, '1500000000000000002', 'JOBNET_ID', 'JOBNET_1', i),
+        (i+1, '1500000000000000002', 'JOBNET_ID', 'JOBNET_1', i+1);
+
+
+        -- Insert into ja_run_icon_job_table
+        INSERT INTO ja_run_icon_job_table (
+            inner_job_id, inner_jobnet_id, host_flag, stop_flag, command_type, timeout, host_name, stop_code, timeout_run_type
+        ) VALUES 
+		(i, '1500000000000000002', 0, 0, 0, 0, 'moon8.7', NULL, 0),
+		(i+1, '1500000000000000002', 0, 0, 0, 0, 'moon8.7', NULL, 0);
+
+         -- Insert three rows into ja_run_icon_task_table
+        INSERT INTO ja_run_icon_task_table (inner_job_id, inner_jobnet_id) VALUES
+        (i, '1500000000000000002'),
+        (i+1, '1500000000000000002');
+
+        -- Insert three rows into ja_run_icon_value_table
+        INSERT INTO ja_run_icon_value_table (inner_job_id, inner_jobnet_id, value_name, value) VALUES
+        (i, '1500000000000000002', 'a', 'test value'),
+        (i+1, '1500000000000000002', 'a', 'test value');
+
+        -- Insert three rows into ja_run_icon_release_table
+        INSERT INTO ja_run_icon_release_table (inner_job_id, inner_jobnet_id, release_job_id) VALUES
+        (i, '1500000000000000002', 'release test value'),
+        (i+1, '1500000000000000002', 'release test value');
+
+        -- Insert three rows into ja_run_icon_calc_table
+        INSERT INTO ja_run_icon_calc_table (inner_job_id, inner_jobnet_id) VALUES
+        (i, '1500000000000000002'),
+        (i+1, '1500000000000000002');
+
+        -- Insert three rows into ja_run_icon_reboot_table
+        INSERT INTO ja_run_icon_reboot_table (inner_job_id, inner_jobnet_id) VALUES
+        (i, '1500000000000000002'),
+        (i+1, '1500000000000000002');
+
+        -- Insert three rows into ja_run_icon_fwait_table
+        INSERT INTO ja_run_icon_fwait_table (inner_job_id, inner_jobnet_id, host_flag, fwait_mode_flag, file_delete_flag, file_wait_time, host_name, file_name) VALUES
+        (i, 1500000000000000002, 0, 0, 0, 0, 'hostname.example.com', 'filename.txt'),
+        (i+1, 1500000000000000002, 0, 0, 0, 0, 'hostname.example.com', 'filename.txt');
+
+        -- Insert three rows into ja_run_icon_info_table
+        INSERT INTO ja_run_icon_info_table (inner_job_id, inner_jobnet_id, info_flag, item_id, trigger_id, host_group, host_name, get_job_id, get_calendar_id) VALUES
+        (i, 1500000000000000002, 0, NULL, NULL, 'group1', 'hostname.example.com', 'job_id_1', 'calendar_id_1'),
+        (i+1, 1500000000000000002, 0, NULL, NULL, 'group1', 'hostname.example.com', 'job_id_1', 'calendar_id_1');
+
+        -- Insert three rows into ja_run_icon_zabbix_link_table
+        INSERT INTO ja_run_icon_zabbix_link_table (inner_job_id, inner_jobnet_id) VALUES
+        (i, '1500000000000000002'),
+        (i+1, '1500000000000000002');
+
+        -- Insert three rows into ja_run_icon_agentless_table
+        INSERT INTO ja_run_icon_agentless_table (inner_job_id, inner_jobnet_id) VALUES
+        (i, '1500000000000000002'),
+        (i+1, '1500000000000000002');
+
+        -- Insert three rows into ja_run_icon_jobnet_table
+        INSERT INTO ja_run_icon_jobnet_table (inner_job_id, inner_jobnet_id) VALUES
+        (i, '1500000000000000002'),
+        (i+1, '1500000000000000002');
+
+        -- Insert three rows into ja_run_icon_end_table
+        INSERT INTO ja_run_icon_end_table (inner_job_id, inner_jobnet_id) VALUES
+        (i, '1500000000000000002'),
+        (i+1, '1500000000000000002');
+
+        -- Insert three rows into ja_run_icon_extjob_table
+        INSERT INTO ja_run_icon_extjob_table (inner_job_id, inner_jobnet_id) VALUES
+        (i, '1500000000000000002'),
+        (i+1, '1500000000000000002');
+
+        -- Insert three rows into ja_run_icon_if_table
+        INSERT INTO ja_run_icon_if_table (inner_job_id, inner_jobnet_id, hand_flag, value_name, comparison_value) VALUES
+        (i, 1500000000000000002, 0, 'JOBNET_ID', 'EXPECTED_VALUE'),
+        (i+1, 1500000000000000002, 0, 'JOBNET_ID', 'EXPECTED_VALUE');
+
+        -- Insert three rows into ja_run_icon_fcopy_table
+        INSERT INTO ja_run_icon_fcopy_table (inner_job_id, inner_jobnet_id, from_host_flag, to_host_flag, overwrite_flag, from_host_name, from_directory, from_file_name, to_host_name, to_directory) VALUES
+        (i, 1500000000000000002, 0, 0, 0, 'source_host', '/source/directory/', 'source_file.txt', 'destination_host', '/destination/directory/'),
+        (i+1, 1500000000000000002, 0, 0, 0, 'source_host', '/source/directory/', 'source_file.txt', 'destination_host', '/destination/directory/');
+
+        -- Increment counter
+        SET counter = counter + 2;
+
+        -- Commit after each batch
+        IF counter >= batch_size THEN
+            COMMIT;
+            SET counter = 0;
+            -- Restart the transaction after each batch commit
+            START TRANSACTION;
+        END IF;
+
+        -- Increment loop counter
+        SET i = i + 2;
+    END WHILE;
+
+    -- Commit remaining inserts if any
+    IF counter > 0 THEN
+        COMMIT;
+    END IF;
+END;
+		`
+	}
+
+	_, err := common.DB.Exec(query)
+
+	if err != nil {
+		return err
+	}
+
+	// Call the created procedure for mysql
+	if common.Is_mysql {
+		_, err := common.DB.Exec("CALL insert_one_million_records();")
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
