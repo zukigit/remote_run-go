@@ -170,27 +170,32 @@ func (t *Ticket_844) Add_testcases() {
 	t.Add_testcase(*tc_75)
 
 	//TESTCASE 76
-	// tc_76 := t.New_testcase(76, "kill jobarg_command process ")
-	// tc_func = func() common.Testcase_status {
-	// 	// enable common jobnet
-	// 	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-	// 		tc_74.Err_log("Failed to enable jobnet, Error: %s", err)
-	// 		return FAILED
-	// 	}
-	// 	return RunJob800AndKillOneJobIconWithJobargCommand("Icon_800", 800, 4, tc_76, common.Client)
-	// }
+	tc_76 := t.New_testcase(76, "kill jobarg_command process ")
+	tc_func = func() common.Testcase_status {
+		// enable common jobnet
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+			tc_76.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJob800AndKillOneJobIconWithJobargCommand("Icon_800", 800, 4, tc_76, common.Client)
+	}
 
-	// tc_76.Set_function(tc_func)
-	// t.Add_testcase(*tc_76)
+	tc_76.Set_function(tc_func)
+	t.Add_testcase(*tc_76)
 
 	//TESTCASE 77
-	// tc_77 := t.New_testcase(77, "force stop  running job icon")
-	// tc_func = func() common.Testcase_status {
-	// 	return RunJob800AndForceStopOneJobIcon("TICKET844_TESTCASE76-77JOB800", 800, 4, tc_77, common.Client)
-	// }
+	tc_77 := t.New_testcase(77, "force stop  running job icon")
+	tc_func = func() common.Testcase_status {
+		// enable common jobnet
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+			tc_77.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}
+		return RunJob800AndForceStopOneJobIcon("Icon_800", 800, 4, tc_77, common.Client)
+	}
 
-	// tc_77.Set_function(tc_func)
-	// t.Add_testcase(*tc_77)
+	tc_77.Set_function(tc_func)
+	t.Add_testcase(*tc_77)
 }
 
 func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
@@ -257,7 +262,7 @@ func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount i
 	Expected Results
 	****************/
 
-	sleepDuration := 2 * time.Minute
+	sleepDuration := 1 * time.Minute
 	time.Sleep(sleepDuration)
 	DBQuery := "SELECT after_value FROM ja_run_value_after_table WHERE after_value LIKE '%Check job status(end) failed.%'"
 
@@ -336,7 +341,8 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 
 	lib.Jobarg_cleanup_linux()
 
-	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 500")
+	run_jobnet_id, error := lib.Jobarg_exec_E(jobnetId, envs)
 
 	if error != nil {
 		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
@@ -353,10 +359,10 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 	Operation State
 	***************/
 
-	DBQuery := "SELECT inner_jobnet_id FROM ja_run_job_table WHERE inner_jobnet_main_id = $1 LIMIT 1"
+	DBQuery := "SELECT inner_job_id FROM ja_run_job_table jr WHERE jr.job_type = 4 AND jr.status = 2"
 
 	// Execute the query
-	rows, err := common.DB.Query(DBQuery, run_jobnet_id)
+	rows, err := common.DB.Query(DBQuery)
 	if err != nil {
 		// If there was an error executing the query, print an error message
 		fmt.Println(testcase.Err_log("Error executing query: %v\n", err))
@@ -365,44 +371,40 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 	// Ensure the rows are closed after processing
 	defer rows.Close()
 
-	// Variable to store the result
-	var afterValue string
+	var inner_job_id string
 
 	// Iterate over the rows
 	for rows.Next() {
 		// Scan the result into the variable
-		err := rows.Scan(&afterValue)
+		err := rows.Scan(&inner_job_id)
 		if err != nil {
 			// If there was an error scanning the row, print an error message
-			fmt.Println(testcase.Err_log("Error retrieving result: %v\n", err))
+			fmt.Println(testcase.Err_log("Error retrieving inner_job_id: %v\n", err))
 			return FAILED
 		}
 	}
 
 	// Convert string to int64 (if needed)
-	intValue, err := strconv.ParseInt(afterValue, 10, 64)
+	convert_inner_job_id, err := strconv.ParseInt(inner_job_id, 10, 64)
 	if err != nil {
-		fmt.Println(testcase.Info_log("Error converting afterValue to int64: %v", err))
+		fmt.Println(testcase.Info_log("Error converting inner_jobnet_id to int64: %v", err))
 	}
-	fmt.Println(testcase.Info_log("Kill Job Icon using innerjobnet id %d", intValue))
 
-	DBQuery = "UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_jobnet_id = $1"
+	fmt.Println(testcase.Info_log("Kill Job Icon using inner_job_id %d", convert_inner_job_id))
 
 	// Execute the update query
-	_, err = lib.ExecuteQuery("UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_jobnet_id = $1", intValue) // Pass the necessary argument for $1
+	_, err = lib.ExecuteQuery("UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_job_id = $1", convert_inner_job_id)
 	if err != nil {
 		// Log error and return FAILED if the query execution fails
 		fmt.Println(testcase.Err_log("Error: %s, Failed to abort the job icon.", err.Error()))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("Job icon is being aborted..."))
+	// /***************
+	// Expected Results
+	// ****************/
 
-	/***************
-	Expected Results
-	****************/
-
-	sleepDuration := 2 * time.Minute
+	sleepDuration := 1 * time.Minute
 	time.Sleep(sleepDuration)
 
 	DBQuery = "SELECT after_value FROM ja_run_value_after_table WHERE after_value LIKE '%Aborted the job%'"
@@ -420,6 +422,7 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 	// Variables for counting occurrences and storing result
 	occurrenceCount := 0
 
+	var afterValue string
 	// Iterate over the rows
 	for rows.Next() {
 		// Scan the result into the variable
