@@ -51,6 +51,18 @@ func Stop_jaz_server() error {
 	return err
 }
 
+func Clear_linux_jaz_agent_log() error {
+	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_agentd.log")
+
+	return err
+}
+
+func Clear_linux_jaz_server_log() error {
+	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_server.log")
+
+	return err
+}
+
 // Wait until it reaches a specified process count
 //
 // Parameters:
