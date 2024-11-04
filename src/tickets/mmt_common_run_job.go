@@ -34,10 +34,10 @@ import (
 func Run_enable_jobnet(testcase *dao.TestCase, jobnet_id string, jobnet_name string) bool {
 	// "TICKET844_TESTCASE75"
 	if err := lib.Jobarg_enable_jobnet(jobnet_id, jobnet_name); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet. Jobnet Id: %s, Jobnet Name: %s Error: %s", jobnet_id, jobnet_name, err))
+		fmt.Println(testcase.Err_log("Error: Failed to enable jobnet. Jobnet Id: %s, Jobnet Name: %s Error: %s", jobnet_id, jobnet_name, err))
 		return false
 	} else {
-		fmt.Println(testcase.Info_log("Jobnet Enabled successfully. Jobnet Id: %s, Jobnet Name: %s", jobnet_id, jobnet_name))
+		fmt.Println(testcase.Info_log("Info: Jobnet Enabled successfully. Jobnet Id: %s, Jobnet Name: %s", jobnet_id, jobnet_name))
 		return true
 	}
 }
@@ -70,7 +70,8 @@ func Run_Jobnet_E(testcase *dao.TestCase, jobnet_id string, execute_command stri
 	jobnet_run_manage_id, err := lib.Jobarg_exec_E(jobnet_id, envs)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: Failed when trying to run the job. %s", err.Error()))
-		fmt.Println(testcase.Err_log("Error: Did you imported the necessary xml files?(%s)", jobnet_id))
+
+		//fmt.Println(testcase.Err_log("Error: Did you imported the necessary xml files?(%s)", jobnet_id))
 		return false, jobnet_run_manage_id
 	} else {
 		fmt.Println(testcase.Info_log("Info: Job has start running."))
@@ -146,7 +147,7 @@ func Run_Jobarg_get_jobnet_run_info(testcase *dao.TestCase, jobnet_run_manage_id
 		_, lastSTDOut := lib.Jobarg_get_LASTSTDOUT(jobnet_run_manage_id)
 		fmt.Println(testcase.Err_log("Error: LAST STD ERR : %s. LAST STD OUT : %s.", lastSTDErr, lastSTDOut))
 		if lastSTDErr == nil && lastSTDOut == nil {
-			fmt.Println(testcase.Err_log("Error: Possible error; Jobnet process killed, Jobnet force-stopped, Wrong Hostname in Job Icon."))
+			fmt.Println(testcase.Err_log("Error: Possible error: Jobnet process killed, Jobnet force-stopped, Wrong Hostname in Job Icon, Job Icon failed, Job Icon force-stopped."))
 		}
 		return false, jobnet_run_info
 	} else {
@@ -216,7 +217,7 @@ func Run_Clear_Agent_log(testcase *dao.TestCase) bool {
 		fmt.Println(testcase.Err_log("Error: Failed at clearing Jobarg Agentd log. Perhaps log file doesn't exist?"))
 		return false
 	}
-	fmt.Println(testcase.Err_log("Info: Agent log is cleaned."))
+	fmt.Println(testcase.Info_log("Info: Agent log is cleaned."))
 	return true
 }
 
@@ -235,10 +236,16 @@ func Run_Clear_Server_log(testcase *dao.TestCase) bool {
 	return true
 }
 
+// To run linux command
+//
+// Returns
+//   - True and command result as string
+//   - False and command result as string
 func Run_Linux_Command(testcase *dao.TestCase, executeCommand string) (bool, string) {
 	result, err := lib.Ssh_exec_to_str(executeCommand)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: Failed at executing linux command. Command executed: %s, Error: %s", executeCommand, err.Error()))
+		result = ""
 		return false, result
 	}
 	fmt.Println(testcase.Info_log("Info: Command executed successfully: %s", executeCommand))
