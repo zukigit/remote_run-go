@@ -86,13 +86,13 @@ func (t *Ticket_844) Add_testcases() {
 			Run_Jobarg_cleanup_linux(tc_74) &&
 			func() bool {
 				var result bool
-				result, jobnet_run_manage_id = Run_Jobnet_E(tc_74, jobnet_id, execute_command)
+				result, jobnet_run_manage_id = Run_Jobnet_Exec(tc_74, jobnet_id, execute_command)
 				return result
 			}() &&
 			Run_Job_process_count(tc_74, job_process_count_amt, timeout_minute) &&
 			Run_Restart_Linux_Jaz_agent(tc_74) &&
 			Run_Job_process_count(tc_74, 0, 1) &&
-			Tc_74_Job_Status_Check_For_Error(tc_74, jobnet_run_manage_id) {
+			Run_Job_Status_Check_For_Error(tc_74, timeout_minute, jobnet_run_manage_id) {
 			fmt.Println("All operations completed successfully")
 			return PASSED
 		} else {

@@ -37,13 +37,13 @@ func (t *Ticket_1021) Get_testcases() []dao.TestCase {
 // Enter your ticket information here
 func (t *Ticket_1021) Set_values() {
 	t.no = 1021 // Enter your ticket id
-	t.description = "Simple Testing."
+	t.description = "Issue 1021 - Converts the character code from UTF-8 and creates transaction files"
 }
 
 // Add your test case here
 func (t *Ticket_1021) Add_testcases() {
 	// TESTCASE 001
-	tc_104 := t.New_testcase(1021, "Simple Description.")
+	tc_104 := t.New_testcase(1021, "Normal Case Check")
 
 	tc_func := func() common.Testcase_status {
 
@@ -82,20 +82,16 @@ func (t *Ticket_1021) Add_testcases() {
 		// 19. Get File encoding of .json file in close folder with file --mime command.
 		// 20. Compare Encoding value.
 
-		if Run_Clear_Agent_log(tc_104) &&
+		if Run_Clear_Linux_Agent_log(tc_104) &&
 			Run_Restart_Linux_Jaz_agent(tc_104) &&
+			Run_Linux_Command(tc_104, "rm -rf /var/lib/jobarranger/tmp/close/*") &&
 			func() bool {
-				result, _ := Run_Linux_Command(tc_104, "rm -rf /var/lib/jobarranger/tmp/close/*")
-				fmt.Print(tc_104.Info_log("Info: All files in close folder have been removed."))
-				return result
-			}() &&
-			func() bool {
-				result, executeResult := Run_Linux_Command(tc_104, "locale | grep 'LC_CTYPE='")
+				result, executeResult := Run_Linux_Command_Str(tc_104, "locale | grep 'LC_CTYPE='")
 				systemEncode = executeResult[strings.LastIndex(executeResult, "=")+1:]
 				return result
 			}() &&
 			func() bool {
-				result, executeResult := Run_Linux_Command(tc_104, "cat /var/log/jobarranger/jobarg_agentd.log | grep 'LC_CTYPE :'")
+				result, executeResult := Run_Linux_Command_Str(tc_104, "cat /var/log/jobarranger/jobarg_agentd.log | grep 'LC_CTYPE :'")
 				agentEncode = executeResult[strings.LastIndex(executeResult, ":")+1:]
 				return result
 			}() &&
@@ -119,7 +115,7 @@ func (t *Ticket_1021) Add_testcases() {
 			Run_Jobarg_cleanup_linux(tc_104) &&
 			Run_enable_jobnet(tc_104, jobnet_id, "jobicon_linux") &&
 			func() bool {
-				result, jobnet_run_manage_id = Run_Jobnet_E(tc_104, jobnet_id, "echo ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｀１２３４５６７８９０－＝～！＠＃＄％＾＆＊（）＿＋，．／＜＞？；＇：＂［］｛｝＼｜ジョブの単一実行")
+				result, jobnet_run_manage_id = Run_Jobnet_Exec(tc_104, jobnet_id, "echo ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｀１２３４５６７８９０－＝～！＠＃＄％＾＆＊（）＿＋，．／＜＞？；＇：＂［］｛｝＼｜ジョブの単一実行")
 				return result
 			}() &&
 			func() bool {
@@ -130,11 +126,7 @@ func (t *Ticket_1021) Add_testcases() {
 			}() &&
 			Run_Jobarg_cleanup_linux(tc_104) &&
 			Run_enable_jobnet(tc_104, jobnet_id, jobnet_name) &&
-			func() bool {
-				result, _ := Run_Linux_Command(tc_104, "touch /home/ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｀１２３４５６７８９０－＝～！＠＃＄％＾＆＊（）＿＋，．／＜＞？；＇：＂［］｛｝＼｜ジョブの単一実行．ｔｘｔ")
-				fmt.Println(tc_104.Info_log("Info: File creation with full-width character successful."))
-				return result
-			}() &&
+			Run_Linux_Command(tc_104, "touch /home/ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｀１２３４５６７８９０－＝～！＠＃＄％＾＆＊（）＿＋，．／＜＞？；＇：＂［］｛｝＼｜ジョブの単一実行．ｔｘｔ") &&
 			func() bool {
 				result, jobnet_run_manage_id = Run_Jobnet(tc_104, jobnet_id)
 				return result
@@ -145,25 +137,21 @@ func (t *Ticket_1021) Add_testcases() {
 				fmt.Println(tc_104.Info_log("Info: Both File Wait and File Check can be executed correctly with full-width characters."))
 				return result
 			}() &&
+			Run_Linux_Command(tc_104, "rm -rf /home/ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｀１２３４５６７８９０－＝～！＠＃＄％＾＆＊（）＿＋，．／＜＞？；＇：＂［］｛｝＼｜ジョブの単一実行．ｔｘｔ") &&
 			func() bool {
-				result, _ := Run_Linux_Command(tc_104, "rm -rf /home/ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｀１２３４５６７８９０－＝～！＠＃＄％＾＆＊（）＿＋，．／＜＞？；＇：＂［］｛｝＼｜ジョブの単一実行．ｔｘｔ")
-				fmt.Println(tc_104.Info_log("Info: File removal successful."))
-				return result
-			}() &&
-			func() bool {
-				result, executeResult := Run_Linux_Command(tc_104, "ls /var/lib/jobarranger/tmp/close/")
+				result, executeResult := Run_Linux_Command_Str(tc_104, "ls /var/lib/jobarranger/tmp/close/")
 				close_folder_name = strings.Split(executeResult, "\n")[0]
 				fmt.Print(tc_104.Info_log("Info: Execution result: %s", strings.Trim(executeResult, "\n")))
 				return result
 			}() &&
 			func() bool {
-				result, executeResult := Run_Linux_Command(tc_104, "file --mime-encoding /var/lib/jobarranger/tmp/close/"+close_folder_name+"/"+close_folder_name+".sh")
+				result, executeResult := Run_Linux_Command_Str(tc_104, "file --mime-encoding /var/lib/jobarranger/tmp/close/"+close_folder_name+"/"+close_folder_name+".sh")
 				fmt.Print(tc_104.Info_log("Info: Execution result: %s", strings.Trim(executeResult, "\n")))
 				sh_file_encoding = executeResult
 				return result
 			}() &&
 			func() bool {
-				result, executeResult := Run_Linux_Command(tc_104, "file --mime-encoding /var/lib/jobarranger/tmp/close/"+close_folder_name+"/"+close_folder_name[:strings.LastIndex(close_folder_name, "-")]+".json")
+				result, executeResult := Run_Linux_Command_Str(tc_104, "file --mime-encoding /var/lib/jobarranger/tmp/close/"+close_folder_name+"/"+close_folder_name[:strings.LastIndex(close_folder_name, "-")]+".json")
 				fmt.Print(tc_104.Info_log("Info: Execution result: %s", strings.Trim(executeResult, "\n")))
 				json_file_encoding = executeResult
 				return result
