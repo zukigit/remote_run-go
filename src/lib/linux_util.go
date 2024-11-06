@@ -51,6 +51,12 @@ func Stop_jaz_server() error {
 	return err
 }
 
+func Disable_jaz_server() error {
+	_, err := Ssh_exec_to_str("systemctl disable jobarg-server")
+
+	return err
+}
+
 // Wait until it reaches a specified process count
 //
 // Parameters:
@@ -220,4 +226,61 @@ func Jobarg_cleanup_linux() error {
 	}
 
 	return nil
+}
+
+func ClearLogFile(client *ssh.Client, filePath string) error {
+	session, err := client.NewSession()
+	if err != nil {
+		return fmt.Errorf("failed to create SSH session for clearing log: %w", err)
+	}
+	defer session.Close()
+
+	clearCommand := fmt.Sprintf("truncate -s 0 %s", filePath)
+	if err := session.Run(clearCommand); err != nil {
+		return fmt.Errorf("failed to clear log file %s: %w", filePath, err)
+	}
+	return nil
+}
+
+// WaitForPatternInLogFile checks a remote log file for a specific pattern within a given timeout period.
+// It polls the file at regular intervals until the pattern is found or the timeout is reached.
+//
+// Parameters:
+// - client: SSH client connection to the remote server.
+// - filePath: The path to the log file on the remote server.
+// - pattern: The string pattern to search for in the log file.
+// - timeout: The maximum duration to wait for the pattern to appear.
+// - interval: The duration between each poll of the log file.
+//
+// Returns:
+// - An error if the pattern is not found within the timeout or if any errors occur during SSH command execution.
+func WaitForPatternInLogFile(client *ssh.Client, filePath, pattern string, timeout, interval time.Duration) (string, error) {
+	timeoutChan := time.After(timeout)
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-timeoutChan:
+			return "", fmt.Errorf("timeout reached: pattern not found in log file %s", filePath)
+		case <-ticker.C:
+			session, err := client.NewSession()
+			if err != nil {
+				return "", fmt.Errorf("failed to create SSH session: %w", err)
+			}
+			defer session.Close()
+
+			command := fmt.Sprintf("cat %s", filePath)
+			output, err := session.Output(command)
+			if err != nil {
+				return "", fmt.Errorf("failed to execute command: %w", err)
+			}
+
+			content := string(output)
+			if strings.Contains(content, pattern) {
+				fmt.Printf("Pattern found: %s\n", pattern)
+				return content, nil // Successfully found the pattern
+			}
+		}
+	}
 }
