@@ -109,7 +109,6 @@ func (t *Ticket_968) CheckDBconCount(tc_97 *dao.TestCase) common.Testcase_status
 	files := strings.Split(strings.TrimSpace(string(output)), "\n")
 	fmt.Printf("Lock files: %s\n", output)
 
-	// Check if the number of files is exactly 10
 	if len(files) != 10 {
 		return t.logError(tc_97, "Expected 10 lock files, but found %d", len(files))
 	}
@@ -125,8 +124,8 @@ func (t *Ticket_968) runAgentless100(tc_97 *dao.TestCase) common.Testcase_status
 
 	// Execute job
 	jobID, status := t.executeJob("Icon_100", envs, tc_97)
-	if status != PASSED { // Check if job execution succeeded
-		return status // Return the failure status
+	if status != PASSED {
+		return status
 	}
 
 	// Check job status

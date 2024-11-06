@@ -73,19 +73,25 @@ func (t *Ticket_794) Add_testcases() {
 }
 
 func (t *Ticket_794) runJob(tc *dao.TestCase, job string) common.Testcase_status {
-	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 10")
+	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 10")
+	if err != nil {
+		return t.logError(tc, "Error retrieving environment variables: %s", err)
+	}
+
 	run_jobnet_id, err := lib.Jobarg_exec_E(job, envs)
 	if err != nil {
 		return t.logError(tc, "Error executing job %s: %s", job, err)
 	}
+	fmt.Printf("Executed job: %s with run_jobnet_id: %s\n", job, run_jobnet_id)
 
 	jobnet_run_info, err := lib.Jobarg_get_jobnet_run_info(run_jobnet_id)
 	if err != nil {
 		return t.logError(tc, "Error retrieving run info for job %s: %s", job, err)
 	}
+	fmt.Printf("Jobnet Run Info: %+v\n", jobnet_run_info)
 
 	if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Exit_cd == 0 {
-		fmt.Println(tc.Info_log("%s completed successfully.", job))
+		tc.Info_log("%s completed successfully.", job)
 		return PASSED
 	}
 
