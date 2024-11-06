@@ -1,0 +1,39 @@
+- Ticket_no: 1318
+  Ticket_des: "Fixed for negative JOB_EXT_CD return value."
+  Test_cases:
+    - Testcase_no: 1
+      Testcase_description: "Normal Case with ExtUnsignedFlag=0, Windows agent."
+      Pre_operation:
+        - "Enable jobnet jobicon_windows."
+        - "Set ExtUnsignedFlag=0 in jobarg_agentd.conf."
+        - "Restart jobarg-agentd."
+      Opt:
+        - "Run jobnet with command: 'exit -100000;', host: oss.windows"
+      Expected_results:
+        - "Jobnet_status must be END"
+        - "Job_status must be  NORMAL"
+        - "Exit_cd must be 4294867296"
+      Duration_in_sec: 4
+      Status: "PASSED"
+      Tested Date: 20241019
+      Person_in_charge: "AUTHOR_OF_THIS_TESTCASE"
+      
+    - Testcase_no: 2
+      Testcase_description: "Normal Case with ExtUnsignedFlag=1, Windows agent."
+      Pre_operation:
+        - "Enable jobnet jobicon_windows."
+        - "Set ExtUnsignedFlag=1 in jobarg_agentd.conf."
+        - "Restart jobarg-agentd."
+      Opt:
+        - "Run jobnet with command: 'exit -100000;', host: oss.windows"
+      Expected_results:
+        - "Jobnet_status must be END"
+        - "Job_status must be  NORMAL"
+        - "Exit_cd must be -100000"
+      Duration_in_sec: 4
+      Status: "PASSED"
+      Tested Date: 20241019
+      Person_in_charge: "AUTHOR_OF_THIS_TESTCASE"
+  PASSED: 2
+  FAILED: 0
+  MUST_CHECK: 0
