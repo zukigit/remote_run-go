@@ -7,7 +7,7 @@
         - "Enable jobnet jobicon_windows."
         - "Set ExtUnsignedFlag=0 in jobarg_agentd.conf."
         - "Restart jobarg-agentd."
-      Opt:
+      Operation:
         - "Run jobnet with command: 'exit -100000;', host: oss.windows"
       Expected_results:
         - "Jobnet_status must be END"
@@ -24,7 +24,7 @@
         - "Enable jobnet jobicon_windows."
         - "Set ExtUnsignedFlag=1 in jobarg_agentd.conf."
         - "Restart jobarg-agentd."
-      Opt:
+      Operation:
         - "Run jobnet with command: 'exit -100000;', host: oss.windows"
       Expected_results:
         - "Jobnet_status must be END"
