@@ -55,18 +55,6 @@ func Get_log_filepath() string {
 	return file_path
 }
 
-// Write logs to the log file
-func Logi(log string) {
-	if common.Log_file == nil {
-		fmt.Println("Error: Log_file is nil.")
-		os.Exit(1)
-	}
-	if _, err := common.Log_file.WriteString(log); err != nil {
-		fmt.Println("Error:", err.Error())
-		os.Exit(1)
-	}
-}
-
 func Spinner_log(index int, log string) {
 	fmt.Printf("\r%s %c", log, spinner[index%len(spinner)])
 }

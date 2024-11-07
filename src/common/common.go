@@ -35,7 +35,6 @@ var Log_filepath, DB_hostname string
 var Specific_ticket_no, Specific_testcase_no, DB_port, Timeout uint
 var Client *ssh.Client
 var Login_info Auth
-var Log_file *os.File
 var Is_mysql, Is_psql bool
 var DB_type Database
 var DB *sql.DB
@@ -88,15 +87,6 @@ func Set_db_type() error {
 	}
 
 	return nil
-}
-
-func Set_log_file(file_path string) {
-	file, err := os.OpenFile(file_path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Println("Error:", err.Error())
-		os.Exit(1)
-	}
-	Log_file = file
 }
 
 func Set_usr_hst(args []string) error {
