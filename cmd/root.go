@@ -16,6 +16,7 @@ import (
 )
 
 var tkts, run_tickets []dao.Ticket
+var run_testcases []dao.TestCase
 
 func set_ticket_values(t []dao.Ticket) {
 	for _, ticket := range t {
@@ -102,40 +103,36 @@ func add_run_tickets(ticket_number uint) {
 	}
 }
 
-// Add your tickets here
+func add_run_testcases(testcase_number uint) {
+	for _, ticket := range run_tickets {
+		for _, testcase := range ticket.Get_testcases() {
+			if testcase_number == 0 || testcase_number == testcase.Get_no() {
+				testcase.Set_ticket_no(ticket.Get_no())
+				run_testcases = append(run_testcases, testcase)
+
+				if testcase_number != 0 {
+					return
+				}
+			}
+		}
+	}
+}
+
 func add_testcases() {
 	for _, tkt := range tkts {
 		tkt.Add_testcases()
 	}
 }
 
-func run_tc_(t dao.Ticket) {
-	lib.Logi(fmt.Sprintf("Ticket[%d] %s\n", t.Get_no(), t.Get_dsctn()))
-	lib.Logi("\nTest_cases:\n")
-	lib.Logi(fmt.Sprintf("%s\n", common.Endtestcase_string))
-	dao.Run_testcase(t)
-	dao.Set_total_tc_results(t)
-	lib.Logi("\nTotal_result:\n")
-
-	if dao.Tc_unkown_cnt > 0 {
-		lib.Logi(fmt.Sprintf("PASSED: %d, FAILED: %d, MUST_CHECK: %d, UNKNOWN: %d\n", dao.Tc_passed_cnt, dao.Tc_failed_cnt, dao.Tc_chk_cnt, dao.Tc_unkown_cnt))
-	} else {
-		lib.Logi(fmt.Sprintf("PASSED: %d, FAILED: %d, MUST_CHECK: %d\n", dao.Tc_passed_cnt, dao.Tc_failed_cnt, dao.Tc_chk_cnt))
+func run_tc() {
+	for _, testcase := range run_testcases {
+		dao.Run_testcase(testcase)
 	}
-	lib.Logi(fmt.Sprintf("%s\n", common.Endticket_string))
-}
 
-func run_tc(t []dao.Ticket) {
-	for _, ticket := range t {
-		if common.Specific_testcase_no == 0 {
-			run_tc_(ticket)
-		} else {
-			for _, tc := range ticket.Get_testcases() {
-				if tc.Get_id() == common.Specific_testcase_no {
-					run_tc_(ticket)
-				}
-			}
-		}
+	if len(run_testcases) > 0 {
+		fmt.Println(lib.Formatted_log(common.INFO, "Logged File: %s", common.Log_filepath))
+	} else {
+		fmt.Println("There is no testcase to run.")
 	}
 }
 
@@ -161,7 +158,10 @@ var rootCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		common.Log_filename = lib.Get_log_filename()
+		common.Log_filepath = lib.Get_log_filepath()
+		common.Set_sugar(common.Log_filepath)
+		defer common.Sugar.Sync()
+
 		common.Set_passwd()
 		common.Set_client()
 		defer common.Client.Close()
@@ -173,24 +173,17 @@ var rootCmd = &cobra.Command{
 		lib.ConnectDB("zabbix", "zabbix", "zabbix")
 		defer common.DB.Close()
 
-		common.Set_log_file(common.Log_filename)
+		common.Set_log_file(common.Log_filepath)
 		defer common.Log_file.Close()
-
-		common.Set_ticket_logs_headers()
 
 		add_tickets(&tkts)
 		set_ticket_values(tkts)
 		add_testcases()
 		check_duplicated_ticket()
 		add_run_tickets(common.Specific_ticket_no)
+		add_run_testcases(common.Specific_testcase_no)
 		enable_common_jobnets()
-		run_tc(run_tickets) // run test cases
-
-		if len(run_tickets) > 0 {
-			fmt.Println(lib.Formatted_log(common.INFO, "Logged Filename: %s", common.Log_filename))
-		} else {
-			fmt.Println("There is no ticket to run.")
-		}
+		run_tc() // run test cases
 	},
 }
 
@@ -215,11 +208,11 @@ func init() {
 
 // Add your tickets here
 func add_tickets(t *[]dao.Ticket) {
-	// *t = append(*t, new(tickets.Ticket_000))
-	*t = append(*t, new(tickets.Ticket_1318))
-	*t = append(*t, new(tickets.Ticket_811))
-	*t = append(*t, new(tickets.Ticket_800))
-	*t = append(*t, new(tickets.Ticket_1225))
-	*t = append(*t, new(tickets.Ticket_844))
-	*t = append(*t, new(tickets.Ticket_794))
+	*t = append(*t, new(tickets.Ticket_000))
+	// *t = append(*t, new(tickets.Ticket_1318))
+	// *t = append(*t, new(tickets.Ticket_811))
+	// *t = append(*t, new(tickets.Ticket_800))
+	// *t = append(*t, new(tickets.Ticket_1225))
+	// *t = append(*t, new(tickets.Ticket_844))
+	// *t = append(*t, new(tickets.Ticket_794))
 }
