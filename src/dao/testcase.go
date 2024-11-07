@@ -8,38 +8,36 @@ import (
 )
 
 type TestCase struct {
-	id          uint
+	testcase_no uint
+	ticket_no   uint
 	description string
-	logs        *[]string
 	status      *common.Testcase_status
 	function    func() common.Testcase_status
 }
 
 func New_testcase(testcase_id uint, testcase_description string) *TestCase {
 	status := FAILED
-	logs := []string{}
 	return &TestCase{
-		id:          testcase_id,
+		testcase_no: testcase_id,
 		description: testcase_description,
 		status:      &status,
-		logs:        &logs,
 	}
 }
 
-func (t *TestCase) Set_log(log string) {
-	*t.logs = append(*t.logs, log)
+func (t *TestCase) Get_no() uint {
+	return t.testcase_no
 }
 
-func (t *TestCase) Get_id() uint {
-	return t.id
+func (t *TestCase) Get_ticket_no() uint {
+	return t.ticket_no
+}
+
+func (t *TestCase) Set_ticket_no(ticket_no uint) {
+	t.ticket_no = ticket_no
 }
 
 func (t *TestCase) Get_dsctn() string {
 	return t.description
-}
-
-func (t *TestCase) Get_logs() []string {
-	return *t.logs
 }
 
 func (t *TestCase) Set_status(status common.Testcase_status) {
@@ -65,9 +63,10 @@ func (t *TestCase) Is_function_nil() bool {
 // From here is test case util functions
 
 func (t *TestCase) Logi(level int, log string) string {
-	log = fmt.Sprintf("[%d] %s", t.Get_id(), log)
+	log = fmt.Sprintf("[%d] [%d] %s", t.Get_ticket_no(), t.Get_no(), log)
 	log = lib.Formatted_log(level, log)
-	t.Set_log(log)
+
+	common.Sugar.Infof(log)
 
 	return log
 }
@@ -80,16 +79,4 @@ func (t *TestCase) Err_log(unfmt string, arg ...any) string {
 func (t *TestCase) Info_log(unfmt string, arg ...any) string {
 	log := fmt.Sprintf(unfmt, arg...)
 	return t.Logi(common.INFO, log)
-}
-
-func (t *TestCase) Write_log() {
-	lib.Logi(fmt.Sprintf("Testcase_NO: %d\n", t.Get_id()))
-	lib.Logi(fmt.Sprintf("Testcase_DES: %s\n", t.Get_dsctn()))
-	lib.Logi(fmt.Sprintf("Status: %s\n", t.Get_status()))
-	lib.Logi("Logs:\n")
-
-	for _, l := range t.Get_logs() {
-		lib.Logi(fmt.Sprintf("%s\n", l))
-	}
-	lib.Logi(fmt.Sprintf("%s\n", common.Endtestcase_string))
 }
