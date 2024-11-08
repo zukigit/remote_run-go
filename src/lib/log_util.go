@@ -33,8 +33,7 @@ func Formatted_log(level int, unfmt string, arg ...any) string {
 	return log
 }
 
-func Get_log_filepath() string {
-	file_name := fmt.Sprintf("%s_TK%d_TC%d.log", Get_formatted_time(), common.Specific_ticket_no, common.Specific_testcase_no)
+func Get_log_folderpath() string {
 	currentDir, err := os.Getwd()
 	if err != nil {
 		fmt.Println("Error:", err.Error())
@@ -42,8 +41,6 @@ func Get_log_filepath() string {
 	}
 
 	sub_dir := filepath.Join(currentDir, "logs")
-	file_path := filepath.Join(sub_dir, file_name)
-
 	if _, err := os.Stat(sub_dir); os.IsNotExist(err) {
 		err = os.Mkdir(sub_dir, 0755) // Create the directory with read/write permissions
 		if err != nil {
@@ -51,6 +48,20 @@ func Get_log_filepath() string {
 			os.Exit(1)
 		}
 	}
+
+	return sub_dir
+}
+
+func Get_yml_filepath() string {
+	file_name := fmt.Sprintf("%s_TK%d_TC%d.yml", Get_formatted_time(), common.Specific_ticket_no, common.Specific_testcase_no)
+	file_path := filepath.Join(Get_log_folderpath(), file_name)
+
+	return file_path
+}
+
+func Get_log_filepath() string {
+	file_name := fmt.Sprintf("%s_TK%d_TC%d.log", Get_formatted_time(), common.Specific_ticket_no, common.Specific_testcase_no)
+	file_path := filepath.Join(Get_log_folderpath(), file_name)
 
 	return file_path
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"github.com/zukigit/remote_run-go/src/tickets"
+	"gopkg.in/yaml.v3"
 
 	"github.com/spf13/cobra"
 )
@@ -66,13 +67,30 @@ func add_run_testcases(testcase_number uint) {
 	}
 }
 
+func save_runtks_records() {
+	yaml_data, err := yaml.Marshal(run_tickets)
+	if err != nil {
+		fmt.Println("Failed in getting password, Error:", err.Error())
+		os.Exit(1)
+	}
+
+	err = os.WriteFile(common.Yml_filepath, yaml_data, 0644)
+	if err != nil {
+		fmt.Printf("Error writing YAML to file: %v\n", err)
+		return
+	}
+}
+
 func run_tc() {
 	for _, testcase := range run_testcases {
 		dao.Run_testcase(testcase)
 	}
 
 	if len(run_testcases) > 0 {
+		save_runtks_records()
+
 		fmt.Println(lib.Formatted_log(common.INFO, "Logged File: %s", common.Log_filepath))
+		fmt.Println(lib.Formatted_log(common.INFO, "Yaml File: %s", common.Yml_filepath))
 	} else {
 		fmt.Println("There is no testcase to run.")
 	}
@@ -107,6 +125,8 @@ var rootCmd = &cobra.Command{
 		common.Log_filepath = lib.Get_log_filepath()
 		common.Set_sugar(common.Log_filepath)
 		defer common.Sugar.Sync()
+
+		common.Yml_filepath = lib.Get_yml_filepath()
 
 		// Initialize DB Connection
 		common.Set_db_hostname()

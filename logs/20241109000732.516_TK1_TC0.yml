@@ -1,0 +1,6 @@
+- ticket_no: 1
+  ticket_description: Enter your ticket description here.
+  testcases:
+    - testcase_no: 1
+      testcase_description: Enter your test case description here.
+      testcase_status: FAILED

@@ -31,7 +31,7 @@ const (
 	ENDERR           = "ENDERR"
 )
 
-var Log_filepath, DB_hostname string
+var Log_filepath, Yml_filepath, DB_hostname string
 var Specific_ticket_no, Specific_testcase_no, DB_port, Timeout uint
 var Client *ssh.Client
 var Login_info Auth
