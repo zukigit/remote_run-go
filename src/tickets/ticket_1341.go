@@ -1,8 +1,10 @@
 package tickets
 
 import (
+	"bufio"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -118,7 +120,9 @@ func JaRunLoopNormalTestWithJaRunInterval(jobnetId string, processCount int, pro
 	*/
 	lib.Jobarg_cleanup_linux()
 
-	_set_param_err := lib.Ja_set_server_config_linux("JaRunInterval", "5")
+	setIntervalCmd := "sed -i 's/^\\s*#\\?\\s*JaRunInterval=\\s*[0-9]\\+$/JaRunInterval=5/' /etc/jobarranger/jobarg_server.conf"
+
+	_, _set_param_err := lib.GetOutputStrFromSSHCommand(client, setIntervalCmd)
 	if _set_param_err != nil {
 		fmt.Println(testcase.Err_log("Error set params : %s", _set_param_err))
 	}
@@ -256,66 +260,348 @@ func ExtractJobStartTimes(logData string) (string, string, error) {
 }
 
 func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
-	// Define the path to the postgresql.conf file
-	newLogDirectory := "/var/log/postgresql/" // New log directory path
 
-	// Command to create the log directory and set permissions
-	createDirCmd := fmt.Sprintf(`bash -c 'rm -rf /var/log/postgresql/ && mkdir /var/log/postgresql/ && chown -R postgres:postgres %s'`, newLogDirectory)
+	configPath := "/etc/jobarranger/jobarg_server.conf"
+	cmdGetInterval := fmt.Sprintf("grep -i 'JaRunInterval=' %s", configPath)
 
-	// Execute the directory creation and permission command
-	output, err_create_dir := lib.Ssh_exec(createDirCmd)
-	if err_create_dir != nil {
-		fmt.Println("Error creating log directory and setting permissions:", err_create_dir)
-		fmt.Println("Output:", output) // Print the error and output to debug
-		return FAILED
-	}
-
-	logDes_cmd := "sed -i \"s|^#*\\(log_destination\\s*=\\s*\\).*|log_destination = 'stderr'|\" /var/lib/pgsql/data/postgresql.conf"
-
-	_logDes_output, _logDes_err := lib.Ssh_exec(logDes_cmd)
-
-	if _logDes_err != nil {
-		fmt.Printf("Error logDes : %v\n", _logDes_err)
-		fmt.Printf("Output: %s\n", _logDes_output) // Print the output to get more details
-		return FAILED
-	}
-
-	log_collector_cmd := "sed -i 's|^#*\\(logging_collector\\s*=\\s*\\).*|\\1on|' /var/lib/pgsql/data/postgresql.conf"
-
-	_log_collector_output, _log_collector_err := lib.Ssh_exec(log_collector_cmd)
-
-	if _log_collector_err != nil {
-		fmt.Printf("Error log collector : %v\n", _log_collector_err)
-		fmt.Printf("Output: %s\n", _log_collector_output) // Print the output to get more details
-		return FAILED
-	}
-
-	_log_dir_cmd := "sed -i \"s|^#*\\(log_directory\\s*=\\s*\\).*|log_directory = '/var/log/postgresql/'|\" /var/lib/pgsql/data/postgresql.conf"
-
-	_log_dir_output, _log_dir_err := lib.Ssh_exec(_log_dir_cmd)
-
-	if _log_dir_err != nil {
-		fmt.Printf("Error log dir : %v\n", _log_dir_err)
-		fmt.Printf("Output: %s\n", _log_dir_output) // Print the output to get more details
-		return FAILED
-	}
-
-	_log_statement_cmd := "sed -i \"s|^#*\\(log_statement\\s*=\\s*\\).*|log_statement = 'all'|\" /var/lib/pgsql/data/postgresql.conf"
-
-	_log_statement_output, _log_statement_err := lib.Ssh_exec(_log_statement_cmd)
-
-	if _log_statement_err != nil {
-		fmt.Printf("Error log statement : %v\n", _log_statement_err)
-		fmt.Printf("Output: %s\n", _log_statement_output) // Print the output to get more details
-		return FAILED
-	}
-
-	// Optionally, reload PostgreSQL after the change
-	reloadCmd := `bash -c 'systemctl restart postgresql'`
-	_, err := lib.Ssh_exec(reloadCmd)
+	// Execute the command remotely using SSH
+	getInterval, err := lib.GetOutputStrFromSSHCommand(client, cmdGetInterval)
 	if err != nil {
-		fmt.Println("Error reloading PostgreSQL:", err)
-		return FAILED
+		fmt.Println(testcase.Err_log("Error get interval value : %s", err))
+	}
+
+	// Trim the output to remove extra whitespace
+	getInterval = strings.TrimSpace(getInterval)
+	var getIntervalValue string
+
+	// fmt.Println(getInterval)
+
+	// Split the string by the "=" character
+	parts := strings.Split(getInterval, "=")
+
+	// Check if the split was successful and if there's a valid value
+	if len(parts) > 1 && strings.TrimSpace(parts[1]) != "" {
+		// If the value after '=' is not empty
+		getIntervalValue = strings.TrimSpace(parts[1])
+		fmt.Println("Interval Value:", getIntervalValue) // Output: 5
+	} else {
+		// Handle case when no value is found
+		fmt.Println("No valid value found")
+	}
+
+	defaultConfig, _def_err := findPostgresqlConf(client)
+
+	if _def_err != nil {
+		fmt.Println(testcase.Err_log("Error default config : %s", _def_err))
+	}
+
+	// fmt.Println(defaultConfig)
+
+	if common.DB_type == "postgres" {
+		// Define the path to the postgresql.conf file
+		newLogDirectory := "/var/log/postgresql/" // New log directory path
+
+		// Command to create the log directory and set permissions
+		createDirCmd := `bash -c 'rm -rf /var/log/postgresql/ && mkdir /var/log/postgresql/ && chown -R postgres:postgres /var/log/postgresql/'`
+
+		// Execute the directory creation and permission command
+		output, err_create_dir := lib.GetOutputStrFromSSHCommand(client, createDirCmd)
+		if err_create_dir != nil {
+			fmt.Println("Error creating log directory and setting permissions:", err_create_dir)
+			fmt.Println("Output:", output) // Print the error and output to debug
+			return FAILED
+		}
+
+		logDes_cmd := fmt.Sprintf("sed -i \"s|^#*\\(log_destination\\s*=\\s*\\).*|log_destination = 'stderr'|\" %s", defaultConfig)
+
+		_logDes_output, _logDes_err := lib.Ssh_exec(logDes_cmd)
+
+		if _logDes_err != nil {
+			fmt.Printf("Error logDes : %v\n", _logDes_err)
+			fmt.Printf("Output: %s\n", _logDes_output) // Print the output to get more details
+			return FAILED
+		}
+
+		log_collector_cmd := fmt.Sprintf("sed -i 's|^#*\\(logging_collector\\s*=\\s*\\).*|\\1on|' %s", defaultConfig)
+
+		_log_collector_output, _log_collector_err := lib.GetOutputStrFromSSHCommand(client, log_collector_cmd)
+
+		if _log_collector_err != nil {
+			fmt.Printf("Error log collector : %v\n", _log_collector_err)
+			fmt.Printf("Output: %s\n", _log_collector_output) // Print the output to get more details
+			return FAILED
+		}
+
+		_log_dir_cmd := fmt.Sprintf("sed -i \"s|^#*\\(log_directory\\s*=\\s*\\).*|log_directory = '/var/log/postgresql/'|\" %s", defaultConfig)
+
+		_log_dir_output, _log_dir_err := lib.Ssh_exec(_log_dir_cmd)
+
+		if _log_dir_err != nil {
+			fmt.Printf("Error log dir : %v\n", _log_dir_err)
+			fmt.Printf("Output: %s\n", _log_dir_output) // Print the output to get more details
+			return FAILED
+		}
+
+		_log_statement_cmd := fmt.Sprintf("sed -i \"s|^#*\\(log_statement\\s*=\\s*\\).*|log_statement = 'all'|\" %s", defaultConfig)
+
+		_log_statement_output, _log_statement_err := lib.GetOutputStrFromSSHCommand(client, _log_statement_cmd)
+
+		if _log_statement_err != nil {
+			fmt.Printf("Error log statement : %v\n", _log_statement_err)
+			fmt.Printf("Output: %s\n", _log_statement_output) // Print the output to get more details
+			return FAILED
+		}
+
+		_log_filename_cmd := fmt.Sprintf("sed -i \"s|^#*\\(log_filename\\s*=\\s*\\).*|log_filename = 'postgresql.log'|\" %s", defaultConfig)
+
+		_log_filename_output, _log_filename_err := lib.GetOutputStrFromSSHCommand(client, _log_filename_cmd)
+
+		if _log_filename_err != nil {
+			fmt.Printf("Error log filename : %v\n", _log_filename_err)
+			fmt.Printf("Output: %s\n", _log_filename_output) // Print the output to get more details
+			return FAILED
+		}
+
+		// Optionally, reload PostgreSQL after the change
+		reloadCmd := `bash -c 'systemctl restart postgresql'`
+		_, err_restart := lib.GetOutputStrFromSSHCommand(client, reloadCmd)
+		if err_restart != nil {
+			fmt.Println("Error reloading PostgreSQL:", err_restart)
+			return FAILED
+		} else {
+
+			// Find the most recent log file in the log directory
+			latestLogFile, err := getLatestLogFileSSH(newLogDirectory, client)
+			if err != nil {
+				fmt.Println("Error finding the latest log file:", err)
+				return FAILED
+			}
+
+			fmt.Println("Latest log file path:", latestLogFile)
+			// Now monitor the latest log file
+			interval := 1 * time.Second // Check every 5 seconds
+			searchTerm := "select inner_job_id, inner_jobnet_id, method_flag, job_type, test_flag, inner_jobnet_main_id from ja_run_job_table where status = 1 and method_flag <> 3"
+			logIntervalValue, log_interval_err := watchLogFileSSH(latestLogFile, searchTerm, client, interval)
+
+			if log_interval_err != nil {
+				fmt.Println(testcase.Err_log("Error log interval : %s", log_interval_err))
+			}
+
+			fmt.Println(logIntervalValue)
+
+			// Parse logIntervalValue into time.Duration
+			duration, err := time.ParseDuration(logIntervalValue)
+			if err != nil {
+				fmt.Println("Error parsing logIntervalValue:", err)
+			}
+
+			// Parse getIntervalValue as an integer
+			getInterval, err := strconv.Atoi(getIntervalValue)
+			if err != nil {
+				fmt.Println("Error parsing getIntervalValue:", err)
+			}
+
+			// Compare the values
+			if duration >= time.Duration(getInterval)*time.Second {
+				fmt.Println("logIntervalValue is equal to or greater than getIntervalValue")
+				lib.Restart_jaz_server()
+				return PASSED
+			} else {
+				fmt.Println("logIntervalValue is less than getIntervalValue")
+				lib.Restart_jaz_server()
+				return FAILED
+			}
+
+		}
+	} else {
+
 	}
 	return FAILED
+}
+
+func getLatestLogFileSSH(logDirectory string, client *ssh.Client) (string, error) {
+	// SSH command to list files, sorted by modification time, filter for postgresql*.log
+	cmd := fmt.Sprintf("ls -t %spostgresql.log 2>/dev/null", logDirectory)
+
+	// Execute the command remotely using SSH
+	output, err := lib.GetOutputStrFromSSHCommand(client, cmd)
+	if err != nil {
+		return "", fmt.Errorf("error executing SSH command: %v", err)
+	}
+
+	// If the result is empty, it means no log files were found
+	if output == "" {
+		return "", fmt.Errorf("no log files found in directory %s", logDirectory)
+	}
+
+	// The output should be a list of log files, so we return the first one (the latest)
+	return output, nil
+}
+
+// Function to extract the timestamp from a PostgreSQL log line
+func extractTimestamp(logLine string) (time.Time, error) {
+	// PostgreSQL timestamp format: 2024-11-07 16:26:49.571 +0630
+	// Use a regular expression to match the timestamp at the start of the log line
+	timestampPattern := `^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})`
+	re := regexp.MustCompile(timestampPattern)
+	matches := re.FindStringSubmatch(logLine)
+
+	if len(matches) > 1 {
+		// Parse the timestamp into a time.Time object
+		timestamp, err := time.Parse("2006-01-02 15:04:05.000", matches[1])
+		if err != nil {
+			return time.Time{}, err
+		}
+		return timestamp, nil
+	}
+
+	return time.Time{}, fmt.Errorf("no timestamp found in log line")
+}
+
+func watchLogFileSSH(filePath, searchTerm string, client *ssh.Client, interval time.Duration) (string, error) {
+
+	var logInterval time.Duration
+	// var confInterval string
+
+	// configPath := "/etc/jobarranger/jobarg_server.conf"
+
+	// SSH command to tail the log file
+	cmd := fmt.Sprintf("tail -f %s", filePath)
+
+	// Execute the command remotely using SSH
+	session, err := client.NewSession()
+	if err != nil {
+		return "", fmt.Errorf("error creating SSH session: %v", err)
+	}
+
+	defer session.Close()
+
+	// Get the output of the command (tail -f)
+	stdout, err := session.StdoutPipe()
+	if err != nil {
+		return "", fmt.Errorf("error getting stdout pipe: %v", err)
+	}
+
+	// Start the command execution
+	err = session.Start(cmd)
+	if err != nil {
+		return "", fmt.Errorf("error starting command: %v", err)
+	}
+
+	// Create a scanner to read the output of the tail command line by line
+	scanner := bufio.NewScanner(stdout)
+
+	var previousTimestamp time.Time
+
+	// Create a ticker for checking at intervals (optional)
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	// Handle any errors that occurred during scanning
+	if err := scanner.Err(); err != nil {
+		fmt.Printf("Error reading from log file %s: %v\n", filePath, err)
+	}
+
+	// Continuously read the output for new lines
+	for {
+		select {
+		case <-ticker.C: // Triggered at every interval
+			// This can be used for additional checks if needed
+			// fmt.Println("Interval check triggered...") // You can comment out or remove this
+			// This block is executed periodically by the ticker
+
+		case <-time.After(60 * time.Second): // Example: Timeout after 60 seconds
+			return "", fmt.Errorf("timeout reached, stopping log tailing. %v", time.Second)
+
+		default: // Default case to read the next log line
+			if scanner.Scan() {
+				line := scanner.Text()
+
+				// Filter the lines containing the searchTerm (similar to 'grep')
+				if strings.Contains(line, searchTerm) {
+					// Extract timestamp from the log line
+					timestamp, err := extractTimestamp(line)
+					if err != nil {
+						fmt.Printf("Error extracting timestamp: %v\n", err)
+						continue
+					}
+
+					// If this isn't the first log line, calculate the interval
+					if !previousTimestamp.IsZero() {
+						logInterval = timestamp.Sub(previousTimestamp)
+						//fmt.Printf("Time interval between logs: %v\n", interval)
+						return logInterval.String(), nil
+					}
+
+					// Update the previous timestamp to the current one
+					previousTimestamp = timestamp
+
+					// Print the matched line
+					// this is log out put
+					// fmt.Println(line)
+
+				}
+			}
+		}
+	}
+}
+
+func findPostgresqlConf(client *ssh.Client) (string, error) {
+	// Define the command to search for the postgresql.conf file
+	// cmd := exec.Command("bash", "-c", "sudo find /var/lib/pgsql /etc/postgresql /var/lib/postgresql -name postgresql.conf 2>/dev/null | head -n 1")
+
+	cmd := "bash -c 'sudo find /var/lib/pgsql /etc/postgresql /var/lib/postgresql -name postgresql.conf 2>/dev/null | head -n 1'"
+
+	// Get the output of the command
+	output, err := lib.GetOutputStrFromSSHCommand(client, cmd)
+	if err != nil {
+		return "", fmt.Errorf("error executing find command: %v", err)
+	}
+
+	// Clean up the output by trimming any leading/trailing whitespace
+	result := strings.TrimSpace(string(output))
+
+	// If the result is empty, it means no postgresql.conf file was found
+	if result == "" {
+		return "", fmt.Errorf("postgresql.conf not found")
+	}
+
+	// Return the path to the found postgresql.conf file
+	return result, nil
+}
+
+// GetJaRunInterval fetches the JaRunInterval parameter from the jobarg_server.conf file
+func GetJaRunInterval(client *ssh.Client, configPath string) (int, error) {
+	// SSH command to find the JaRunInterval line in the config file, whether commented or not
+	cmd := fmt.Sprintf("grep -E '^#?JaRunInterval=' %s", configPath)
+
+	// Execute the command remotely using SSH
+	output, err := lib.GetOutputStrFromSSHCommand(client, cmd)
+	if err != nil {
+		return 0, fmt.Errorf("error executing SSH command: %v", err)
+	}
+
+	// Trim the output to remove extra whitespace
+	output = strings.TrimSpace(output)
+
+	// If output is empty, JaRunInterval is not set
+	if output == "" {
+		return 0, fmt.Errorf("JaRunInterval not found in config file")
+	}
+
+	// Now remove the comment if present and extract the value
+	re := regexp.MustCompile(`^#?\s*JaRunInterval\s*=\s*(\d+)`)
+	matches := re.FindStringSubmatch(output)
+
+	// If the regular expression matches, extract the value
+	if len(matches) > 1 {
+		// Convert the string value to an integer
+		interval, err := strconv.Atoi(matches[1])
+		if err != nil {
+			return 0, fmt.Errorf("error converting JaRunInterval to integer: %v", err)
+		}
+		return interval, nil
+	}
+
+	return 0, fmt.Errorf("JaRunInterval line format is incorrect")
 }
