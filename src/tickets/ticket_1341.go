@@ -70,12 +70,21 @@ func (t *Ticket_1341) Add_testcases() {
 	tc_2.Set_function(tc_func)
 	t.Add_testcase(*tc_2)
 
-	tc_3 := t.New_testcase(162, "JaRunInterval Test with Database.")
+	tc_3 := t.New_testcase(162, "JaRunInterval Test with Database. JaJob")
 	tc_func = func() common.Testcase_status {
-		return JaRunIntervalTestWithDatabase("Icon_1", 0, 30, tc_3, common.Client)
+		searchTerm := "select inner_job_id, inner_jobnet_id, method_flag, job_type, test_flag, inner_jobnet_main_id from ja_run_job_table where status = 1 and method_flag <> 3"
+		return JaRunIntervalTestWithDatabase("Icon_1", 0, 30, tc_3, common.Client, searchTerm)
 	}
 	tc_3.Set_function(tc_func)
 	t.Add_testcase(*tc_3)
+
+	// tc_4 := t.New_testcase(164, "JaRunInterval Test with Database. JaRun")
+	// tc_func = func() common.Testcase_status {
+	// 	searchTerm :=  "select inner_job_id, inner_jobnet_id, method_flag, job_type, test_flag from ja_run_job_table where status = 2 and method_flag in"
+	// 	return JaRunIntervalTestWithDatabase("Icon_1", 0, 30, tc_4, common.Client, searchTerm)
+	// }
+	// tc_4.Set_function(tc_func)
+	// t.Add_testcase(*tc_4)
 }
 
 func JaRunLoopNormalTest(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
@@ -259,7 +268,7 @@ func ExtractJobStartTimes(logData string) (string, string, error) {
 	}
 }
 
-func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client, searchTerm string) common.Testcase_status {
 
 	configPath := "/etc/jobarranger/jobarg_server.conf"
 	cmdGetInterval := fmt.Sprintf("grep -i 'JaRunInterval=' %s", configPath)
@@ -289,15 +298,16 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 		fmt.Println("No valid value found")
 	}
 
-	defaultConfig, _def_err := findPostgresqlConf(client)
-
-	if _def_err != nil {
-		fmt.Println(testcase.Err_log("Error default config : %s", _def_err))
-	}
-
 	// fmt.Println(defaultConfig)
 
 	if common.DB_type == "postgres" {
+
+		defaultConfig, _def_err := findPostgresqlConf(client)
+
+		if _def_err != nil {
+			fmt.Println(testcase.Err_log("Error default config : %s", _def_err))
+		}
+
 		// Define the path to the postgresql.conf file
 		newLogDirectory := "/var/log/postgresql/" // New log directory path
 
@@ -380,7 +390,7 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 			fmt.Println("Latest log file path:", latestLogFile)
 			// Now monitor the latest log file
 			interval := 1 * time.Second // Check every 5 seconds
-			searchTerm := "select inner_job_id, inner_jobnet_id, method_flag, job_type, test_flag, inner_jobnet_main_id from ja_run_job_table where status = 1 and method_flag <> 3"
+			// searchTerm := "select inner_job_id, inner_jobnet_id, method_flag, job_type, test_flag, inner_jobnet_main_id from ja_run_job_table where status = 1 and method_flag <> 3"
 			logIntervalValue, log_interval_err := watchLogFileSSH(latestLogFile, searchTerm, client, interval)
 
 			if log_interval_err != nil {
@@ -414,9 +424,82 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 
 		}
 	} else {
+		fmt.Println("This is mysql")
+		config := "/etc/my.cnf"
+		logDir := "/var/log/mysql/general.log"
+
+		// Command to create the log directory and set permissions
+		createDirCmd := `bash -c 'cd /var/log/mysql/ && rm -rf general.log && touch general.log && chown -R mysql:mysql general.log'`
+
+		// Execute the directory creation and permission command
+		output_dir, err_create_dir := lib.GetOutputStrFromSSHCommand(client, createDirCmd)
+		if err_create_dir != nil {
+			fmt.Println("Error creating log directory and setting permissions:", err_create_dir)
+			fmt.Println("Output:", output_dir) // Print the error and output to debug
+			return FAILED
+		}
+
+		log_sed_cmd := fmt.Sprintf(
+			"sed -i -e '/^\\[mysqld\\]/a general_log = 1' -e '/^\\[mysqld\\]/a general_log_file = /var/log/mysql/general.log' %s",
+			config,
+		)
+		output, _log_sed_err := lib.Ssh_exec(log_sed_cmd)
+		fmt.Println("Log statement output:", output)
+		if _log_sed_err != nil {
+			fmt.Println(testcase.Err_log("Error log statement : %s", _log_sed_err))
+		}
+
+		// Optionally, reload PostgreSQL after the change
+		reloadCmd := `bash -c 'systemctl restart mysqld'`
+		_, err_restart := lib.GetOutputStrFromSSHCommand(client, reloadCmd)
+		if err_restart != nil {
+			fmt.Println("Error reloading mysql :", err_restart)
+			return FAILED
+		} else {
+			// Find the most recent log file in the log directory
+			// latestLogFile, err := getLatestLogFileSSH(logDir, client)
+			// if err != nil {
+			// 	fmt.Println("Error finding the latest log file:", err)
+			// 	return FAILED
+			// }
+
+			// fmt.Println("Latest log file path:", latestLogFile)
+			// Now monitor the latest log file
+			interval := 1 * time.Second // Check every 5 seconds
+			// searchTerm := "select inner_job_id, inner_jobnet_id, method_flag, job_type, test_flag, inner_jobnet_main_id from ja_run_job_table where status = 1 and method_flag <> 3"
+			logIntervalValue, log_interval_err := watchLogFileSSH(logDir, searchTerm, client, interval)
+
+			if log_interval_err != nil {
+				fmt.Println(testcase.Err_log("Error log interval : %s", log_interval_err))
+			}
+
+			fmt.Println(logIntervalValue)
+
+			// Parse logIntervalValue into time.Duration
+			duration, err := time.ParseDuration(logIntervalValue)
+			if err != nil {
+				fmt.Println("Error parsing logIntervalValue:", err)
+			}
+
+			// Parse getIntervalValue as an integer
+			getInterval, err := strconv.Atoi(getIntervalValue)
+			if err != nil {
+				fmt.Println("Error parsing getIntervalValue:", err)
+			}
+
+			// Compare the values
+			if duration >= time.Duration(getInterval)*time.Second {
+				fmt.Println("logIntervalValue is equal to or greater than getIntervalValue")
+				lib.Restart_jaz_server()
+				return PASSED
+			} else {
+				fmt.Println("logIntervalValue is less than getIntervalValue")
+				lib.Restart_jaz_server()
+				return FAILED
+			}
+		}
 
 	}
-	return FAILED
 }
 
 func getLatestLogFileSSH(logDirectory string, client *ssh.Client) (string, error) {
@@ -440,18 +523,42 @@ func getLatestLogFileSSH(logDirectory string, client *ssh.Client) (string, error
 
 // Function to extract the timestamp from a PostgreSQL log line
 func extractTimestamp(logLine string) (time.Time, error) {
-	// PostgreSQL timestamp format: 2024-11-07 16:26:49.571 +0630
-	// Use a regular expression to match the timestamp at the start of the log line
-	timestampPattern := `^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})`
-	re := regexp.MustCompile(timestampPattern)
-	matches := re.FindStringSubmatch(logLine)
 
-	if len(matches) > 1 {
-		// Parse the timestamp into a time.Time object
-		timestamp, err := time.Parse("2006-01-02 15:04:05.000", matches[1])
-		if err != nil {
-			return time.Time{}, err
+	if common.DB_type == "postgres" {
+
+		// PostgreSQL timestamp format: 2024-11-07 16:26:49.571 +0630
+		// Use a regular expression to match the timestamp at the start of the log line
+		timestampPattern := `^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})`
+		re := regexp.MustCompile(timestampPattern)
+		matches := re.FindStringSubmatch(logLine)
+
+		if len(matches) > 1 {
+			// Parse the timestamp into a time.Time object
+			timestamp, err := time.Parse("2006-01-02 15:04:05.000", matches[1])
+			if err != nil {
+				return time.Time{}, err
+			}
+			return timestamp, nil
 		}
+
+	} else {
+		// Example log line: "2024-11-08T14:59:21.888993Z        12 Query     ..."
+		// Define the log time format to match the timestamp in your logs
+		const logTimeFormat = "2006-01-02T15:04:05.999999Z"
+
+		// Split the log line to get the timestamp
+		parts := strings.Fields(logLine)
+		if len(parts) == 0 {
+			return time.Time{}, fmt.Errorf("no timestamp found in log line")
+		}
+
+		timestampStr := parts[0]
+		// Parse the timestamp using the defined format
+		timestamp, err := time.Parse(logTimeFormat, timestampStr)
+		if err != nil {
+			return time.Time{}, fmt.Errorf("error extracting timestamp: %v", err)
+		}
+
 		return timestamp, nil
 	}
 
