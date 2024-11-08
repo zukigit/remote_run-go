@@ -22,3 +22,22 @@ func Run_testcase(tc TestCase) {
 	}
 	fmt.Println(tc.Info_log("finished!"))
 }
+
+func Update_testcase_results_in_tickets(tks []Ticket) {
+	var passed_count, failed_count, mustcheck_count int
+	for _, ticket := range tks {
+		for _, testcase := range ticket.Get_testcases() {
+			switch testcase.Get_status() {
+			case PASSED:
+				passed_count++
+			case FAILED:
+				failed_count++
+			default:
+				mustcheck_count++
+			}
+		}
+		ticket.Set_PASSED_count(passed_count)
+		ticket.Set_FAILED_count(failed_count)
+		ticket.Set_MUSTCHECK_count(mustcheck_count)
+	}
+}
