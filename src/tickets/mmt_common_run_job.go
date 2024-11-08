@@ -308,6 +308,37 @@ func Run_Clear_Linux_Server_log(testcase *dao.TestCase) bool {
 	return true
 }
 
+// To set config files in linux.
+//
+// Parameter:
+//   - Operations
+//   - 1 for append
+//   - 2 for replace.
+//
+// Returns
+//   - True if worked.
+//   - False if failed.
+func Run_Set_Config_Linux(testcase *dao.TestCase, key string, value string, config_file_path string, operations int) bool {
+	var err error
+	switch operations {
+	case 1:
+		err = lib.Ja_set_config_linux(key, value, config_file_path)
+	case 2:
+		var command string
+		err, command = lib.Ja_set_config_linux_str_replace(key, value, config_file_path)
+		fmt.Println(testcase.Info_log("Info: Executed command: %s", command))
+	default:
+		fmt.Println("Invalid parameter. Try again.")
+		return false
+	}
+	if err != nil {
+		fmt.Println(testcase.Err_log("Error: Failed at setting config. %s", err.Error()))
+		return false
+	}
+	fmt.Println(testcase.Info_log("Info: Config set successfully."))
+	return true
+}
+
 // To run linux command
 //
 // Returns
