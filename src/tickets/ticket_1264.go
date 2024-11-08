@@ -41,14 +41,31 @@ func (t *Ticket_1264) Get_testcases() []dao.TestCase {
 // Enter your ticket information here
 func (t *Ticket_1264) Set_values() {
 	t.no = 1264 // Enter your ticket id
-	t.description = "Enter your ticket description here."
+	t.description = "Issue 1264 - Automate zabbix-web, jaz-web and jobarg-server"
 }
 
 // Add your test case here
 func (t *Ticket_1264) Add_testcases() {
 	// TESTCASE 125 and TESTCASE 156
 
-	tc_125 := t.New_testcase(125, "Enter your test case description here.")
+	// Issue 1264 - Automate zabbix-web, jaz-web and jobarg-server
+	//
+	// Default Case Check and Abnormal Case Check
+	//
+	// - Downd the jobarg_json_parse from the following link.
+	// - Link: http://172.30.20.63/redmine/attachments/17496
+	// - Move jobarg_json_parse to /usr/local/bin .
+	//
+	// - Change the config files.
+	//
+	//  - Run the following command to reastart jobarg-server and httpd
+	//  - systemctl restart jobarg-server php-fpm httpd
+	//  - Make sure all job icons are running.
+	//  - Restart the jobarg-server
+	//
+	//  - Check jobarg-server, zabbix-web and jobarg-web like job creation, host creation and job running. Everything must work normally.
+
+	tc_125 := t.New_testcase(125, "Default Case Check and Abnormal Case Check")
 	tc_func := func() common.Testcase_status {
 
 		var result bool

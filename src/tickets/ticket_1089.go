@@ -41,6 +41,18 @@ func (t *Ticket_1089) Set_values() {
 
 // Add your test case here
 func (t *Ticket_1089) Add_testcases() {
+	// Issue 1089 - Jobnet Timeout
+	//
+	// Normal Case Check
+	//
+	// - Create a jobnet with a timeout warning flag set to 1 minute.
+	// - Create a jobnet with a timeout jobnet stop flag set to 1 minute.
+	//
+	// - Run those jobnet and wait 1 min at job execution management screen.
+	//
+	// - Jobnet's status background color should be changed from yellow to orange after 1 min..
+	// - Jobnet's status background color should be changed from yellow to red after 1 min.
+
 	// TESTCASE 101
 	tc_101 := t.New_testcase(101, "Enter your test case description here.")
 	tc_func := func() common.Testcase_status {
