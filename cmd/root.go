@@ -87,6 +87,7 @@ func run_tc() {
 	}
 
 	if len(run_testcases) > 0 {
+		dao.Update_testcase_results_in_tickets(run_tickets)
 		save_runtks_records()
 
 		fmt.Println(lib.Formatted_log(common.INFO, "Logged File: %s.log", common.Filepath))

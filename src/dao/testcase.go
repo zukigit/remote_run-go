@@ -12,15 +12,17 @@ type TestCase struct {
 	Testcase_description string
 	Testcase_status      *common.Testcase_status
 	function             func() common.Testcase_status
-	ticket_no            uint
+	ticket_no            *uint
 }
 
 func New_testcase(testcase_id uint, testcase_description string) *TestCase {
 	status := FAILED
+	ticket_no := uint(0)
 	return &TestCase{
 		Testcase_no:          testcase_id,
 		Testcase_description: testcase_description,
 		Testcase_status:      &status,
+		ticket_no:            &ticket_no,
 	}
 }
 
@@ -29,11 +31,11 @@ func (t *TestCase) Get_no() uint {
 }
 
 func (t *TestCase) Get_ticket_no() uint {
-	return t.ticket_no
+	return *t.ticket_no
 }
 
 func (t *TestCase) Set_ticket_no(ticket_no uint) {
-	t.ticket_no = ticket_no
+	*t.ticket_no = ticket_no
 }
 
 func (t *TestCase) Get_dsctn() string {

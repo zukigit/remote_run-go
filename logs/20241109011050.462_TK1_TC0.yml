@@ -1,0 +1,15 @@
+- ticket_no: 1
+  ticket_description: Enter your ticket description here.
+  passed_count: 1
+  failed_count: 2
+  mustcheck_count: 0
+  testcases:
+    - testcase_no: 1
+      testcase_description: Enter your test case description here.
+      testcase_status: FAILED
+    - testcase_no: 2
+      testcase_description: Enter your test case description here.
+      testcase_status: FAILED
+    - testcase_no: 1
+      testcase_description: Enter your test case description here.
+      testcase_status: PASSED
