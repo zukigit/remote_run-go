@@ -74,7 +74,7 @@ func save_runtks_records() {
 		os.Exit(1)
 	}
 
-	err = os.WriteFile(common.Yml_filepath, yaml_data, 0644)
+	err = os.WriteFile(common.Filepath+".yml", yaml_data, 0644)
 	if err != nil {
 		fmt.Printf("Error writing YAML to file: %v\n", err)
 		return
@@ -89,8 +89,8 @@ func run_tc() {
 	if len(run_testcases) > 0 {
 		save_runtks_records()
 
-		fmt.Println(lib.Formatted_log(common.INFO, "Logged File: %s", common.Log_filepath))
-		fmt.Println(lib.Formatted_log(common.INFO, "Yaml File: %s", common.Yml_filepath))
+		fmt.Println(lib.Formatted_log(common.INFO, "Logged File: %s.log", common.Filepath))
+		fmt.Println(lib.Formatted_log(common.INFO, "Yaml File: %s.yml", common.Filepath))
 	} else {
 		fmt.Println("There is no testcase to run.")
 	}
@@ -122,11 +122,9 @@ var rootCmd = &cobra.Command{
 		common.Set_client()
 		defer common.Client.Close()
 
-		common.Log_filepath = lib.Get_log_filepath()
-		common.Set_sugar(common.Log_filepath)
+		common.Filepath = lib.Get_filepath()
+		common.Set_sugar(common.Filepath + ".log")
 		defer common.Sugar.Sync()
-
-		common.Yml_filepath = lib.Get_yml_filepath()
 
 		// Initialize DB Connection
 		common.Set_db_hostname()

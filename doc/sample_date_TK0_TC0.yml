@@ -34,6 +34,6 @@
       Status: "PASSED"
       Tested Date: 20241019
       Person_in_charge: "AUTHOR_OF_THIS_TESTCASE"
-  PASSED: 2
-  FAILED: 0
-  MUST_CHECK: 0
+  PASSED_count: 2
+  FAILED_count: 0
+  MUSTCHECK_count: 0
