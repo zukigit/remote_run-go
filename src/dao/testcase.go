@@ -10,6 +10,9 @@ import (
 type TestCase struct {
 	Testcase_no          uint
 	Testcase_description string
+	Pre_operation        *[]string
+	Operation            *[]string
+	Expected_results     *[]string
 	Testcase_status      *common.Testcase_status
 	function             func() common.Testcase_status
 	ticket_no            *uint
@@ -18,11 +21,29 @@ type TestCase struct {
 func New_testcase(testcase_id uint, testcase_description string) *TestCase {
 	status := FAILED
 	ticket_no := uint(0)
+	pre_opt := []string{}
+	opt := []string{}
+	expt_res := []string{}
+
 	return &TestCase{
 		Testcase_no:          testcase_id,
 		Testcase_description: testcase_description,
 		Testcase_status:      &status,
+		Pre_operation:        &pre_opt,
+		Operation:            &opt,
+		Expected_results:     &expt_res,
 		ticket_no:            &ticket_no,
+	}
+}
+
+func (t *TestCase) Add_doc(doc_type common.Doc_data_type, doc string) {
+	switch doc_type {
+	case common.PRE_OPT:
+		*t.Pre_operation = append(*t.Pre_operation, doc)
+	case common.OPT:
+		*t.Operation = append(*t.Operation, doc)
+	case common.EXPT_RES:
+		*t.Expected_results = append(*t.Expected_results, doc)
 	}
 }
 

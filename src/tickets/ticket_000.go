@@ -55,6 +55,9 @@ func (t *Ticket_000) Add_testcases() {
 	// TESTCASE 001
 	tc_1 := t.New_testcase(1, "Enter your test case description here.")
 	tc_func := func() common.Testcase_status {
+		tc_1.Add_doc(common.PRE_OPT, "tested preopt")
+		tc_1.Add_doc(common.OPT, "tested opt")
+		tc_1.Add_doc(common.EXPT_RES, "tested expt_result")
 		tc_1.Err_log("tested error log")
 		return PASSED
 	}
