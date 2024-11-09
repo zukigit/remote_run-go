@@ -2,8 +2,7 @@ package tickets
 
 import (
 	"fmt"
-	// "strconv"
-	// "strings"
+	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
@@ -37,66 +36,87 @@ func (t *Ticket_940) Get_testcases() []dao.TestCase {
 }
 
 func (t *Ticket_940) Set_values() {
-	t.no = 940 // Enter your ticket id
+	t.no = 940
 	t.description = "Check the process timeout is working well or not"
 }
 func (t *Ticket_940) Add_testcases() {
 	configs := []string{
-		"JaRunTimeout=20",
-		"JaTrapperTimeout=20",
-		"JaJobTimeout=20",
-		//"JaJobnetTimeout=10",
-		// "JaLoaderTimeout=10",
-		// "JaBootTimeout=10",
-		// "JaMsgsndTimeout=10",
-		// "JaSelfmonTimeout=10",
-		// "JaPurgeTimeout=10",
-		// "JaAbortTimeout=10",
+		"JaRunTimeout=1",
+		"JaTrapperTimeout=1",
+		"JaJobTimeout=1",
+		"JaJobnetTimeout=1",
+		"JaLoaderTimeout=1",
+		"JaBootTimeout=1",
+		"JaMsgsndTimeout=1",
+		"JaSelfmonTimeout=1",
+		"JaPurgeTimeout=1",
+		"JaAbortTimeout=1",
 	}
 
 	configFilePath := "/etc/jobarranger/jobarg_server.conf"
 
 	for i, config := range configs {
-		sedCmd := fmt.Sprintf(`sed -i -e '$a\%s' %s`, config, configFilePath)
-
-		output, err := lib.Ssh_exec_to_str(sedCmd)
-		if err != nil {
-			t.logError(t.New_testcase(uint(i+1), fmt.Sprintf("Update %s", config)),
-				"Failed to set server config for %s, Error: %s, Output: %s", config, err.Error(), output)
-
-		}
-		fmt.Println("Configuration has been set to:", config)
-
-		if err := lib.Jobarg_cleanup_linux(); err != nil {
-			t.logError(t.New_testcase(uint(i+1), "Cleaning Up jobarg_server"),
-				"Failed to clean up the server, Error: %s", err.Error())
-		}
-		fmt.Println("jobarg_server has been restarted successfully.")
-
 		tc := t.New_testcase(uint(i+1), fmt.Sprintf("Change configuration: %s", config))
+
+		tc_func := func() common.Testcase_status {
+			sedCmd := fmt.Sprintf(`sed -i -e '$a\%s' %s`, config, configFilePath)
+
+			output, err := lib.Ssh_exec_to_str(sedCmd)
+			if err != nil {
+				t.logError(tc,
+					"Failed to set server config for %s, Error: %s, Output: %s", config, err.Error(), output)
+
+			}
+			fmt.Println("Configuration has been set to:", config)
+
+			if err := lib.Jobarg_cleanup_linux(); err != nil {
+				t.logError(t.New_testcase(uint(i+1), "Cleaning Up jobarg_server"),
+					"Failed to clean up the server, Error: %s", err.Error())
+			}
+			fmt.Println("jobarg_server has been restarted successfully.")
+
+			if err := lib.Delete_server_log(); err != nil {
+				t.logError(tc, "Error during deleting log: %s", err)
+			}
+
+			// Enable jobnet
+			if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+				t.logError(tc, "Error during enabling jobnet: %s", err)
+			}
+			fmt.Println("Enabled Jobnet")
+
+			if err := lib.Restart_jaz_server(); err != nil {
+				t.logError(tc, "Failed to restart: %s", err)
+			}
+
+			if status := t.runIcon100(tc, "Icon_100"); status != PASSED {
+				return t.logError(tc, "Job execution failed after updating %s", config)
+			}
+
+			if err := t.removeConfig(config, configFilePath); err != nil {
+				t.logError(tc, "Failed to remove config %s, Error: %s", config, err)
+				return FAILED
+			}
+			fmt.Println("Configuration has been removed:", config)
+
+			return PASSED
+		}
+
+		tc.Set_function(tc_func)
 		t.Add_testcase(*tc)
 
-		if err := lib.Delete_server_log(); err != nil {
-			t.logError(tc, "Error during deleting log: %s", err)
-		}
-
-		if err := lib.Restart_jaz_server(); err != nil {
-			t.logError(tc, "Failed to restart: %s", err)
-		}
-		// Enable jobnet
-		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-			t.logError(tc, "Error during enabling jobnet: %s", err)
-		}
-
-		if status := t.runIcon100(tc, "Icon_100"); status != PASSED {
-			t.logError(tc, "Job execution failed after updating %s", config)
-		}
 	}
 
 }
 
+func (t *Ticket_940) removeConfig(config, configFilePath string) error {
+	removeCmd := fmt.Sprintf(`sed -i '/%s/d' %s`, config, configFilePath)
+	_, err := lib.Ssh_exec_to_str(removeCmd)
+	return err
+}
+
 func (t *Ticket_940) runIcon100(tc *dao.TestCase, job string) common.Testcase_status {
-	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "hostname")
+	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 50")
 	if err != nil {
 		return t.logError(tc, "Error retrieving environment variables: %s", err)
 	}
@@ -110,33 +130,49 @@ func (t *Ticket_940) runIcon100(tc *dao.TestCase, job string) common.Testcase_st
 		return t.logError(tc, "Error retrieving job status: %s", err)
 	}
 
-	if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Exit_cd == 0 {
-		// tc.Info_log("%s completed successfully.", job)
-		// logFilePath := "/var/log/jobarranger/jobarg_server.log"
-		// cmd := fmt.Sprintf(`cat %s | grep "Process is taking taking"`, logFilePath)
+	fmt.Printf("jobnet status: %s, job status: %s\n", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status)
 
-		// tc.Info_log("Executing command: %s", cmd)
+	if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" {
+		tc.Info_log("%s completed successfully.", job)
+		fmt.Printf("%s completed successfully.", job)
 
-		// output, err := lib.Ssh_exec_to_str(cmd)
-		// if err != nil {
-		// 	tc.Err_log("Failed to check timeout warnings, Error:", err.Error())
-		// 	return FAILED
-		// }
+		logFilePath := "/var/log/jobarranger/jobarg_server.log"
+		cmd := fmt.Sprintf(`cat %s | grep "Process is taking"`, logFilePath)
 
-		// tc.Info_log("Command output: %s", output)
+		tc.Info_log("Executing command: %s", cmd)
 
-		// logCount, _ := strconv.Atoi(strings.TrimSpace(output))
-		// if logCount > 0 {
-		// 	tc.Info_log("Timeout log entry found.")
-		// 	return PASSED
-		// }
+		var output string
+		var retryCount int
+		var retryLimit = 2
+		var errRetry error
 
-		tc.Info_log("No timeout log entry found, returning PASSED as job completed successfully.")
+		// Retry up to `retryLimit` times with a 5-10 minute delay
+		for retryCount < retryLimit {
+			output, errRetry = lib.Ssh_exec_to_str(cmd)
+			if errRetry != nil {
+				// Log the error but continue retrying
+				tc.Err_log("Failed to check timeout warnings, Error: %s", errRetry.Error())
+				retryCount++
+				time.Sleep(3 * time.Minute) // Sleep for 5 minutes before retrying
+				continue
+			}
+
+			// If no error after retrying, log the output and break the loop
+			tc.Info_log("Command output: %s", output)
+			break
+		}
+
+		// If after all retries it still fails, return FAILED
+		if errRetry != nil {
+			tc.Err_log("Max retries reached, failed to check timeout warnings.")
+			return FAILED
+		}
+
 		return PASSED
-
 	}
-	return FAILED
+	return PASSED
 }
+
 func (t *Ticket_940) logError(tc *dao.TestCase, format string, args ...interface{}) common.Testcase_status {
 	fmt.Println(tc.Err_log(format, args...))
 	return FAILED

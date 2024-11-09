@@ -44,6 +44,10 @@ func Jobarg_get_LASTEXITCD(registry_number string) (int64, error) {
 		return -1, err
 	}
 
+	if exit_cd == "" {
+		return 0, nil
+	}
+
 	num, err := strconv.ParseInt(exit_cd, 10, 64) // Base 10, 64-bit integer
 	if err != nil {
 		return -1, err

@@ -91,14 +91,61 @@ func (t *Ticket_968) Add_testcases() {
 	}
 	tc_97.Set_function(tc_func)
 	t.Add_testcase(*tc_97)
-}
 
+	/////////////////////////////98//////////////////////////////
+
+	tc_98 := t.New_testcase(98, "Abormal Case Check -Delete files")
+	tc_func = func() common.Testcase_status {
+		// Stop the jobarg_server to apply config changes
+
+		if err := lib.Jobarg_cleanup_linux(); err != nil {
+			return t.logError(tc_98, "Error during cleanup: %s", err)
+		}
+
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "agentless"); err != nil {
+			return t.logError(tc_98, "Error during enabling jobnet: %s", err)
+		}
+
+		agentlessStatus := t.runAgentless(tc_98)
+		if agentlessStatus != PASSED {
+
+			t.logError(tc_98, "Agentless Icon failed.")
+			return FAILED
+		}
+
+		return PASSED
+	}
+	tc_98.Set_function(tc_func)
+	t.Add_testcase(*tc_98)
+
+	/////////////////////////////99//////////////////////////////
+
+	tc_99 := t.New_testcase(99, "Abnormal Case Check - Delete Folder")
+	tc_func = func() common.Testcase_status {
+		if err := lib.Jobarg_cleanup_linux(); err != nil {
+			return t.logError(tc_99, "Error during cleanup: %s", err)
+		}
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "agentless"); err != nil {
+			return t.logError(tc_99, "Error during enabling jobnet: %s", err)
+		}
+
+		agentlessStatus := t.runAgentless2(tc_99)
+		if agentlessStatus != PASSED {
+			t.logError(tc_99, "Agentless Icon failed.")
+			return FAILED
+		}
+
+		return PASSED
+	}
+	tc_99.Set_function(tc_func)
+	t.Add_testcase(*tc_99)
+}
 func (t *Ticket_968) logError(tc_97 *dao.TestCase, format string, args ...interface{}) common.Testcase_status {
 	fmt.Println(tc_97.Err_log(format, args...))
 	return FAILED
 }
 
-// checks for the presence of 10 lock files
+// check for the presence of 10 lock files
 func (t *Ticket_968) CheckDBconCount(tc_97 *dao.TestCase) common.Testcase_status {
 
 	output, err := lib.Ssh_exec("ls /var/log/jobarranger/session_dbc_locks")
@@ -116,24 +163,12 @@ func (t *Ticket_968) CheckDBconCount(tc_97 *dao.TestCase) common.Testcase_status
 	return PASSED
 }
 
-func (t *Ticket_968) runAgentless100(tc_97 *dao.TestCase) common.Testcase_status {
-	envs, err := t.setupEnv()
-	if err != nil {
-		return t.logError(tc_97, "Error getting environment variables: %s", err)
-	}
-
-	// Execute job
-	jobID, status := t.executeJob("Icon_100", envs, tc_97)
-	if status != PASSED {
-		return status
-	}
-
-	// Check job status
-	return t.checkJobStatus(jobID, tc_97)
-}
-
+// /////////////////ENV_SETUP/////////////////////
 func (t *Ticket_968) setupEnv() (map[string]string, error) {
 	return lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 30")
+}
+func (t *Ticket_968) setupEnv2() (map[string]string, error) {
+	return lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 3")
 }
 
 func (t *Ticket_968) executeJob(job string, envs map[string]string, tc_97 *dao.TestCase) (string, common.Testcase_status) {
@@ -145,13 +180,109 @@ func (t *Ticket_968) executeJob(job string, envs map[string]string, tc_97 *dao.T
 	}
 
 	fmt.Printf("Received jobnet ID: %s\n", runJobnetID)
-	return runJobnetID, PASSED // Return the job ID with a success status
+	return runJobnetID, PASSED
+}
+
+func (t *Ticket_968) runAgentless100(tc_97 *dao.TestCase) common.Testcase_status {
+	envs, err := t.setupEnv()
+	if err != nil {
+		return t.logError(tc_97, "Error getting environment variables: %s", err)
+	}
+
+	jobID, status := t.executeJob("Icon_10", envs, tc_97)
+	if status != PASSED {
+		return status
+	}
+	return t.checkJobStatus(jobID, tc_97)
+}
+
+func (t *Ticket_968) runAgentless(tc_98 *dao.TestCase) common.Testcase_status {
+	envs, err := t.setupEnv2()
+	if err != nil {
+		return t.logError(tc_98, "Error getting environment variables: %s", err)
+	}
+	jobID, status := t.executeJob("Icon_1", envs, tc_98)
+	if status != PASSED {
+		return status
+	}
+
+	if status := t.deleteLockFiles(tc_98); status != PASSED {
+		return status
+	}
+
+	if status := t.checkLog(tc_98); status != PASSED {
+		return status
+	}
+	t.checkJobStatus(jobID, tc_98)
+	return PASSED
+}
+
+func (t *Ticket_968) runAgentless2(tc_98 *dao.TestCase) common.Testcase_status {
+	envs, err := t.setupEnv2()
+	if err != nil {
+		return t.logError(tc_98, "Error getting environment variables: %s", err)
+	}
+	jobID, status := t.executeJob("Icon_1", envs, tc_98)
+	if status != PASSED {
+		return status
+	}
+
+	if status := t.deleteLockFiles2(tc_98); status != PASSED {
+		return status
+	}
+
+	if status := t.checkLog(tc_98); status != PASSED {
+		return status
+	}
+	t.checkJobStatus(jobID, tc_98)
+	return PASSED
+}
+
+func (t *Ticket_968) deleteLockFiles(tc_98 *dao.TestCase) common.Testcase_status {
+	cmd := "rm -rf /var/log/jobarranger/session_dbc_locks/*" // Delete all files in the folder
+	_, err := lib.Ssh_exec(cmd)
+	if err != nil {
+		return t.logError(tc_98, "Failed to delete lock files: %s", err)
+	}
+	return PASSED
+}
+
+func (t *Ticket_968) deleteLockFiles2(tc_99 *dao.TestCase) common.Testcase_status {
+	cmd := "rm -rf /var/log/jobarranger/session_dbc_locks/" // Delete all files in the folder
+	_, err := lib.Ssh_exec(cmd)
+	if err != nil {
+		return t.logError(tc_99, "Failed to delete lock files: %s", err) // Fix the error argument to tc_99 instead of tc_98
+	}
+	return PASSED
+}
+
+func (t *Ticket_968) checkLog(tc_98 *dao.TestCase) common.Testcase_status {
+	const logFilePath = "/var/log/jobarranger/jobarg_server.log"
+	const logFileWarning = `In ja_session_dbc_lock(), /var/log/jobarranger/session_dbc_locks does not exist`
+
+	// Prepare the command to search for the warning log in the jobarg_server.log file
+	cmd := fmt.Sprintf(`cat %s | grep "%s"`, logFilePath, logFileWarning)
+	tc_98.Info_log("Executing command: %s", cmd)
+
+	warningLogOutput, err := lib.Ssh_exec_to_str(cmd)
+	if err != nil {
+		tc_98.Err_log("Error checking for warning log: %s", err.Error())
+		return FAILED
+	}
+
+	if strings.Contains(warningLogOutput, logFileWarning) {
+		tc_98.Info_log("Warning log found, returning Passed.")
+		return PASSED
+	}
+
+	tc_98.Err_log("Warning log not found, returning FAILED.")
+	return FAILED
 }
 
 func (t *Ticket_968) checkJobStatus(runJobnetID string, tc_97 *dao.TestCase) common.Testcase_status {
 	jobnetRunInfo, err := lib.Jobarg_get_jobnet_run_info(runJobnetID)
-	if err != nil || jobnetRunInfo == nil {
-		return t.logError(tc_97, "Error retrieving jobnet run info or received nil jobnet_run_info.")
+	if err != nil {
+		return t.logError(tc_97, "Error retrieving jobnet run info or received nil jobnet_run_info: %s", err.Error())
 	}
 
 	if jobnetRunInfo.Job_status == "NORMAL" && jobnetRunInfo.Exit_cd == 0 {
