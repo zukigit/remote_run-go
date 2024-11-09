@@ -108,6 +108,7 @@ func (t *Ticket_1318) Add_testcases() {
 	tc_func = func() common.Testcase_status {
 
 		// Set joabrg agent config value
+		tc_169.Add_doc(common.PRE_OPT, "Change jobarg-agent's config ExtUnsignedFlag=1")
 		err := lib.Ja_set_agent_config_windows("ExtUnsignedFlag", "1")
 		if err != nil {
 			tc_169.Err_log("Failed to set joabrg agent config value. Error: %s", err.Error())
@@ -115,6 +116,7 @@ func (t *Ticket_1318) Add_testcases() {
 		}
 
 		// Restart jobarg-agentd
+		tc_169.Add_doc(common.PRE_OPT, "Restart jobarg-agentd service")
 		err = lib.Restart_jaz_agent_windows()
 		if err != nil {
 			tc_169.Err_log("Failed to restart windows service. Error: %s", err.Error())
@@ -122,6 +124,7 @@ func (t *Ticket_1318) Add_testcases() {
 		}
 
 		// Enable jobnet
+		tc_169.Add_doc(common.PRE_OPT, "Enable jobnet for windows agent.")
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_windows"); err != nil {
 			tc_169.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
@@ -130,6 +133,7 @@ func (t *Ticket_1318) Add_testcases() {
 		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.windows", "JA_CMD", "exit -100000;")
 
 		// Run jobnet
+		tc_169.Add_doc(common.PRE_OPT, "Run jobnet. JA_HOSTNAME: oss.windows, JA_CMD: exit -100000;.")
 		run_jobnet_id, error := lib.Jobarg_exec_E("Icon_1", envs)
 		if error != nil {
 			tc_169.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id)
@@ -144,6 +148,7 @@ func (t *Ticket_1318) Add_testcases() {
 		}
 
 		// Check jobnet run status and exit code.
+		tc_169.Add_doc(common.PRE_OPT, "JObnet status must be END, job status must be normal and exitcode must be 4294867296.")
 		if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Exit_cd == 4294867296 {
 			return PASSED
 		}

@@ -15,20 +15,24 @@ import (
 
 type Testcase_status string
 type Database string
+type Doc_data_type string
 
 const INFO = 1
 const ERR = 2
 
 const (
-	MYSQL   Database = "mysql"
-	PSQL    Database = "postgres"
-	NORMAL           = "NORMAL"
-	TIMEOUT          = "TIMEOUT"
-	ERROR            = "ERROR"
-	RUN              = "RUN"
-	END              = "END"
-	RUNERR           = "RUNERR"
-	ENDERR           = "ENDERR"
+	MYSQL    Database      = "mysql"
+	PSQL     Database      = "postgres"
+	NORMAL                 = "NORMAL"
+	TIMEOUT                = "TIMEOUT"
+	ERROR                  = "ERROR"
+	RUN                    = "RUN"
+	END                    = "END"
+	RUNERR                 = "RUNERR"
+	ENDERR                 = "ENDERR"
+	PRE_OPT  Doc_data_type = "pre_operation"
+	OPT      Doc_data_type = "operation"
+	EXPT_RES Doc_data_type = "expected_results"
 )
 
 var Filepath, DB_hostname string
