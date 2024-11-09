@@ -51,6 +51,24 @@ func Stop_jaz_server() error {
 	return err
 }
 
+func Sleep_linux(sleepCount int) error {
+	_, err := Ssh_exec_to_str("sleep " + strconv.Itoa(sleepCount))
+
+	return err
+}
+
+func Clean_jaz_server_log() error {
+	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_server.log")
+
+	return err
+}
+
+func Clean_jaz_agent_log() error {
+	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_agent.log")
+
+	return err
+}
+
 // Wait until it reaches a specified process count
 //
 // Parameters:
