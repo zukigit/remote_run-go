@@ -59,14 +59,12 @@ func (t *Ticket_943) runJob(tc *dao.TestCase, job string, shouldBeFound bool) co
 		return t.logError(tc, "Error during cleanup: %s", err)
 	}
 
-	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-		return t.logError(tc, "Error during enable jobnet: %s", err)
-	}
-
 	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 120")
-
 	if err != nil {
 		return t.logError(tc, "Error retrieving environment variables: %s", err)
+	}
+	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+		return t.logError(tc, "Error during enable jobnet: %s", err)
 	}
 
 	runJobnetID, err := lib.Jobarg_exec_E(job, envs)
