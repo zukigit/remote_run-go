@@ -154,7 +154,7 @@ func (t *Ticket_968) CheckDBconCount(tc_97 *dao.TestCase) common.Testcase_status
 	}
 
 	files := strings.Split(strings.TrimSpace(string(output)), "\n")
-	fmt.Printf("Lock files: %s\n", output)
+	fmt.Printf("Lock files: %s\n  ", output)
 
 	if len(files) != 10 {
 		return t.logError(tc_97, "Expected 10 lock files, but found %d", len(files))
