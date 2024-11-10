@@ -98,7 +98,7 @@ func (t *Ticket_952) logError(tc *dao.TestCase, format string, args ...interface
 }
 
 func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_status {
-	const defaultTestFolderPath = `C:\Users\26-00317\Desktop\test_folder`
+	const defaultTestFolderPath = `C:\Users\26-00317\Desktop\test_folder` //change default
 
 	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "C01-DAT0387", "JA_CMD", fmt.Sprintf("echo mkdir %s", defaultTestFolderPath))
 	if err != nil {
