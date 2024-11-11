@@ -228,6 +228,7 @@ func Jobarg_cleanup_linux() error {
 	return nil
 }
 
+
 func ClearLogFile(client *ssh.Client, filePath string) error {
 	session, err := client.NewSession()
 	if err != nil {
@@ -283,4 +284,16 @@ func WaitForPatternInLogFile(client *ssh.Client, filePath, pattern string, timeo
 			}
 		}
 	}
+
+func Delete_agent_log() error {
+	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_agentd.log")
+
+	return err
+}
+
+func Delete_server_log() error {
+	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_server.log")
+
+	return err
+
 }

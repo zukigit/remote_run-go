@@ -8,46 +8,67 @@ import (
 )
 
 type TestCase struct {
-	id          uint
-	description string
-	logs        *[]string
-	status      *common.Testcase_status
-	function    func() common.Testcase_status
+	Testcase_no          uint
+	Testcase_description string
+	Pre_operation        *[]string
+	Operation            *[]string
+	Expected_results     *[]string
+	Testcase_status      *common.Testcase_status
+	function             func() common.Testcase_status
+	ticket_no            *uint
 }
 
 func New_testcase(testcase_id uint, testcase_description string) *TestCase {
 	status := FAILED
-	logs := []string{}
+	ticket_no := uint(0)
+	pre_opt := []string{}
+	opt := []string{}
+	expt_res := []string{}
+
 	return &TestCase{
-		id:          testcase_id,
-		description: testcase_description,
-		status:      &status,
-		logs:        &logs,
+		Testcase_no:          testcase_id,
+		Testcase_description: testcase_description,
+		Testcase_status:      &status,
+		Pre_operation:        &pre_opt,
+		Operation:            &opt,
+		Expected_results:     &expt_res,
+		ticket_no:            &ticket_no,
 	}
 }
 
-func (t *TestCase) Set_log(log string) {
-	*t.logs = append(*t.logs, log)
+func (t *TestCase) Add_doc(doc_type common.Doc_data_type, doc string) {
+	switch doc_type {
+	case common.PRE_OPT:
+		*t.Pre_operation = append(*t.Pre_operation, doc)
+	case common.OPT:
+		*t.Operation = append(*t.Operation, doc)
+	case common.EXPT_RES:
+		*t.Expected_results = append(*t.Expected_results, doc)
+	}
 }
 
-func (t *TestCase) Get_id() uint {
-	return t.id
+func (t *TestCase) Get_no() uint {
+	return t.Testcase_no
+}
+
+func (t *TestCase) Get_ticket_no() uint {
+	return *t.ticket_no
+}
+
+func (t *TestCase) Set_ticket_no(ticket_no uint) {
+	*t.ticket_no = ticket_no
 }
 
 func (t *TestCase) Get_dsctn() string {
-	return t.description
-}
-
-func (t *TestCase) Get_logs() []string {
-	return *t.logs
+	return t.Testcase_description
 }
 
 func (t *TestCase) Set_status(status common.Testcase_status) {
-	*t.status = status
+	*t.Testcase_status = status
 }
 
 func (t *TestCase) Get_status() common.Testcase_status {
-	return *t.status
+	return *t.Testcase_status
 }
 
 func (t *TestCase) Set_function(function func() common.Testcase_status) {
@@ -65,9 +86,10 @@ func (t *TestCase) Is_function_nil() bool {
 // From here is test case util functions
 
 func (t *TestCase) Logi(level int, log string) string {
-	log = fmt.Sprintf("[%d] %s", t.Get_id(), log)
+	log = fmt.Sprintf("[%d] [%d] %s", t.Get_ticket_no(), t.Get_no(), log)
 	log = lib.Formatted_log(level, log)
-	t.Set_log(log)
+
+	common.Sugar.Infof(log)
 
 	return log
 }
@@ -80,16 +102,4 @@ func (t *TestCase) Err_log(unfmt string, arg ...any) string {
 func (t *TestCase) Info_log(unfmt string, arg ...any) string {
 	log := fmt.Sprintf(unfmt, arg...)
 	return t.Logi(common.INFO, log)
-}
-
-func (t *TestCase) Write_log() {
-	lib.Logi(fmt.Sprintf("Testcase_NO: %d\n", t.Get_id()))
-	lib.Logi(fmt.Sprintf("Testcase_DES: %s\n", t.Get_dsctn()))
-	lib.Logi(fmt.Sprintf("Status: %s\n", t.Get_status()))
-	lib.Logi("Logs:\n")
-
-	for _, l := range t.Get_logs() {
-		lib.Logi(fmt.Sprintf("%s\n", l))
-	}
-	lib.Logi(fmt.Sprintf("%s\n", common.Endtestcase_string))
 }
