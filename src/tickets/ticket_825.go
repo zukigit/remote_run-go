@@ -51,7 +51,7 @@ func (t *Ticket_825) Get_testcases() []dao.TestCase {
 
 // Enter your ticket information here
 func (t *Ticket_825) Set_values() {
-	t.Ticket_no = 1 // Enter your ticket id
+	t.Ticket_no = 825 // Enter your ticket id
 	t.Ticket_description = "Synchronize hostlock state after reboot."
 }
 
