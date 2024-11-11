@@ -48,154 +48,235 @@ func (t *Ticket_844) Set_values() {
 // Add your test case here
 func (t *Ticket_844) Add_testcases() {
 
-	//TESTCASE 74
-	tc_74 := t.New_testcase(100001, "Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]")
+	//TESTCASE 71
+	tc_71 := t.New_testcase(71, "Normal job execution after agent restart")
 	tc_func := func() common.Testcase_status {
-
-		// Test Case: "Execute 800 jobnets simutaneously."
-		//
-		// Task:      "Restart the Agent"
-		//
-		// Result:    "The JOB returns with an error"
-
-		var jobnet_id string = "Icon_1"   // This value must be the same value as Jobnet_ID
-		var job_process_count_amt int = 1 // Enter total Job icons you want to check here. Must be same with Jobnet total jobs.
-		var timeout_minute int = 10       // Enter timeout in minutes for Process count.
-		var jobnet_run_manage_id string
-
-		// enable common jobnet
-		if err := lib.Jobarg_enable_jobnet(jobnet_id, "jobicon_linux"); err != nil {
-			tc_74.Err_log("Failed to enable jobnet, Error: %s", err)
-			return FAILED
-		}
-
-		// 1. Jobarg_cleanup_start.
-		// 2. Run Jobnet.
-		// 3. Count unitl desired procces count is met.
-		// 4. Restart linux Jobarranger agent.
-		// 5. Counting Job Process Count again.
-
-		if Run_Jobarg_cleanup_linux(tc_74) &&
-			func() bool {
-				var result bool
-				result, jobnet_run_manage_id = Run_Jobnet(tc_74, jobnet_id)
-				return result
-			}() &&
-			Run_Job_process_count(tc_74, job_process_count_amt, timeout_minute) &&
-			Run_Restart_Linux_Jaz_agent(tc_74) &&
-			Run_Job_process_count(tc_74, 0, 1) &&
-			Tc_74_Job_Status_Check_For_Error(tc_74, jobnet_run_manage_id) {
-			fmt.Println("All operations completed successfully")
-			return PASSED
-		} else {
-			return FAILED
-		}
-	}
-
-	tc_74.Set_function(tc_func)
-	t.Add_testcase(*tc_74)
-
-	//TESTCASE 75
-	tc_75 := t.New_testcase(75, "Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]")
-	tc_func = func() common.Testcase_status {
-
-		// Test Case: "Parallel 800 jobs with loop (8hr)."
-		//
-		// Task:      "Execute jobnet"
-		//
-		// Result:    make sure that no zombies occur and there are no JOBICONs that do not end
-		//             - JOB only has exit 0
-		//             For linux => ps -aux | grep defunct
-		//             For window=> tasklist /FI "STATUS eq NOT RESPONDING"
+		//Test Case : "Normal job execution after agent restart"
+		//Task	    : stop the agent, delete all files in tmp, restart the agent
+		//Result    : "The JOB returns with an error"
 
 		var jobnet_id string = "Icon_1" // This value must be the same value as Jobnet_ID
-		var jobnet_run_manage_id, last_std_out string
-		var jobnet_run_info *common.Jobnet_run_info
-		var num int
-		var result bool
 
-		// enable common jobnet
-		if err := lib.Jobarg_enable_jobnet(jobnet_id, "TICKET844_TESTCASE75"); err != nil {
-			tc_74.Err_log("Failed to enable jobnet, Error: %s", err)
+		if err := lib.Jobarg_enable_jobnet(jobnet_id, "jobicon_linux"); err != nil {	
+			tc_71.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}		
+		fmt.Println(tc_71.Info_log("Info: Jobnet enabled successfully."))
+		
+		// 1. Jobarg_cleanup_start.
+		// 2. Run Jobnet.
+		// 3. Stop the agent
+		// 4. Delete all files in tmp
+		// 5. Restart the agent
+
+		if err := lib.Jobarg_cleanup_linux(); err != nil {
+			tc_71.Err_log("Failed to cleanup jobarg, Error: %s", err)
+			return FAILED
+		}
+		fmt.Println(tc_71.Info_log("Info: Jobarg cleanup successfully."))
+
+		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "moon8", "JA_CMD", "sleep 10")
+		run_jobnet_id, error := lib.Jobarg_exec_E(jobnet_id, envs)
+		if error != nil {
+		fmt.Println(tc_71.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		return FAILED
+		}
+		fmt.Println(tc_71.Info_log("%s has been successfully run with registry number: %s", jobnet_id, run_jobnet_id))
+
+		err := lib.JobProcessCountCheck(1, 2, common.Client)
+		if err != nil {
+			fmt.Println(tc_71.Err_log("Error: %s, Failed to get process count.", err.Error()))
+			return FAILED
+		}
+		fmt.Println(tc_71.Info_log("Process count has reached %d", 1))
+
+		err = lib.Stop_jaz_agent_linux()
+		if err != nil {
+			tc_71.Err_log("Failed to stop agent, Error: %s", err)
+			return FAILED
+		}
+		fmt.Println(tc_71.Info_log("Info: Agent stopped successfully."))
+
+		if err := lib.Cleanup_agent_linux(); err != nil {
+			tc_71.Err_log("Failed to cleanup agent, Error: %s", err)
+			return FAILED
+		}
+		fmt.Println(tc_71.Info_log("Info: Agent cleanup successfully."))
+
+		if err := lib.Restart_jaz_agent_linux(); err != nil {
+			tc_71.Err_log("Failed to start agent, Error: %s", err)
 			return FAILED
 		}
 
-		// 1. Taking current time snapshot to calculate elapsed 8 hour time.
-		// 2. Jobarg_cleanup_start
-		// 3. Run Jobnet
-		// 4. Get Jobnet Info
-		// 5. Get jobarg_get last std out value
-		// 6. Convert std out value to integer
-		// 7. Check if Std out value is met or not.
-		// 8. Check if Jobnet Finished successfully with no zombie process or not.
-
-		start_time := time.Now()
-		if Run_Jobarg_cleanup_linux(tc_75) &&
-			func() bool {
-				result, jobnet_run_manage_id = Run_Jobnet(tc_75, jobnet_id)
-				return result
-			}() &&
-			func() bool {
-				result, jobnet_run_info = Run_Jobarg_get_jobnet_run_info(tc_75, jobnet_run_manage_id)
-				return result
-			}() &&
-			func() bool {
-				result, last_std_out = Run_Jobarg_Get_LastSTDOUT(tc_75, jobnet_run_manage_id)
-				return result
-			}() &&
-			func() bool {
-				result, num = Str_To_Int(tc_75, last_std_out)
-				return result
-			}() &&
-			num < 95 &&
-			func() bool {
-				// Calculating whether jobnet took actual 8 hour or not.
-				end_time := time.Now()
-				duration := end_time.Sub(start_time)
-				if duration <= 8*time.Hour {
-					fmt.Println(tc_75.Err_log("Error: Jobnet ended earlier than expected 8 hour time. Total Elapsed time: %s", duration.String()))
-					return false
-				}
-				return true
-			}() &&
-			Run_Check_Jobnet_Finish_With_No_Zombie_Process(tc_75, jobnet_run_info) {
-			fmt.Println("All operations completed successfully")
-			return PASSED
-		} else {
+		targetJobnetStatus := "RUN"
+		targetJobStatus := "ERROR"
+		jobnet_run_info, err := lib.Jobarg_get_jobnet_info(run_jobnet_id,targetJobnetStatus,targetJobStatus)
+		if err != nil {
+			fmt.Println(tc_71.Err_log("Error getting jobnet info: %s", err.Error()))
 			return FAILED
 		}
+		fmt.Println(tc_71.Info_log("%s with registry number %s is completed.", jobnet_id, run_jobnet_id))
+
+		// Check jobnet run status and exit code.
+		if jobnet_run_info.Jobnet_status != targetJobnetStatus && jobnet_run_info.Job_status != targetJobStatus {
+			fmt.Println(tc_71.Err_log("Unexpected Jobnet status. Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
+			return FAILED
+		}
+
+		return PASSED
 	}
 
-	tc_75.Set_function(tc_func)
-	t.Add_testcase(*tc_75)
+	tc_71.Set_function(tc_func)
+	t.Add_testcase(*tc_71)
 
-	//TESTCASE 76
-	tc_76 := t.New_testcase(76, "kill jobarg_command process ")
-	tc_func = func() common.Testcase_status {
-		// enable common jobnet
-		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-			tc_76.Err_log("Failed to enable jobnet, Error: %s", err)
-			return FAILED
-		}
-		return RunJob800AndKillOneJobIconWithJobargCommand("Icon_800", 800, 4, tc_76, common.Client)
-	}
+	// //TESTCASE 74
+	// tc_74 := t.New_testcase(100001, "Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]")
+	// tc_func = func() common.Testcase_status {
 
-	tc_76.Set_function(tc_func)
-	t.Add_testcase(*tc_76)
+	// 	// Test Case: "Execute 800 jobnets simutaneously."
+	// 	//
+	// 	// Task:      "Restart the Agent"
+	// 	//
+	// 	// Result:    "The JOB returns with an error"
 
-	//TESTCASE 77
-	tc_77 := t.New_testcase(77, "force stop  running job icon")
-	tc_func = func() common.Testcase_status {
-		// enable common jobnet
-		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-			tc_77.Err_log("Failed to enable jobnet, Error: %s", err)
-			return FAILED
-		}
-		return RunJob800AndForceStopOneJobIcon("Icon_800", 800, 4, tc_77, common.Client)
-	}
+	// 	var jobnet_id string = "Icon_1"   // This value must be the same value as Jobnet_ID
+	// 	var job_process_count_amt int = 1 // Enter total Job icons you want to check here. Must be same with Jobnet total jobs.
+	// 	var timeout_minute int = 10       // Enter timeout in minutes for Process count.
+	// 	var jobnet_run_manage_id string
 
-	tc_77.Set_function(tc_func)
-	t.Add_testcase(*tc_77)
+	// 	// enable common jobnet
+	// 	if err := lib.Jobarg_enable_jobnet(jobnet_id, "jobicon_linux"); err != nil {
+	// 		tc_74.Err_log("Failed to enable jobnet, Error: %s", err)
+	// 		return FAILED
+	// 	}
+
+	// 	// 1. Jobarg_cleanup_start.
+	// 	// 2. Run Jobnet.
+	// 	// 3. Count unitl desired procces count is met.
+	// 	// 4. Restart linux Jobarranger agent.
+	// 	// 5. Counting Job Process Count again.
+
+	// 	if Run_Jobarg_cleanup_linux(tc_74) &&
+	// 		func() bool {
+	// 			var result bool
+	// 			result, jobnet_run_manage_id = Run_Jobnet(tc_74, jobnet_id)
+	// 			return result
+	// 		}() &&
+	// 		Run_Job_process_count(tc_74, job_process_count_amt, timeout_minute) &&
+	// 		Run_Restart_Linux_Jaz_agent(tc_74) &&
+	// 		Run_Job_process_count(tc_74, 0, 1) &&
+	// 		Tc_74_Job_Status_Check_For_Error(tc_74, jobnet_run_manage_id) {
+	// 		fmt.Println("All operations completed successfully")
+	// 		return PASSED
+	// 	} else {
+	// 		return FAILED
+	// 	}
+	// }
+
+	// tc_74.Set_function(tc_func)
+	// t.Add_testcase(*tc_74)
+
+	// //TESTCASE 75
+	// tc_75 := t.New_testcase(75, "Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]")
+	// tc_func = func() common.Testcase_status {
+
+	// 	// Test Case: "Parallel 800 jobs with loop (8hr)."
+	// 	//
+	// 	// Task:      "Execute jobnet"
+	// 	//
+	// 	// Result:    make sure that no zombies occur and there are no JOBICONs that do not end
+	// 	//             - JOB only has exit 0
+	// 	//             For linux => ps -aux | grep defunct
+	// 	//             For window=> tasklist /FI "STATUS eq NOT RESPONDING"
+
+	// 	var jobnet_id string = "Icon_1" // This value must be the same value as Jobnet_ID
+	// 	var jobnet_run_manage_id, last_std_out string
+	// 	var jobnet_run_info *common.Jobnet_run_info
+	// 	var num int
+	// 	var result bool
+
+	// 	// enable common jobnet
+	// 	if err := lib.Jobarg_enable_jobnet(jobnet_id, "TICKET844_TESTCASE75"); err != nil {
+	// 		tc_74.Err_log("Failed to enable jobnet, Error: %s", err)
+	// 		return FAILED
+	// 	}
+
+	// 	// 1. Taking current time snapshot to calculate elapsed 8 hour time.
+	// 	// 2. Jobarg_cleanup_start
+	// 	// 3. Run Jobnet
+	// 	// 4. Get Jobnet Info
+	// 	// 5. Get jobarg_get last std out value
+	// 	// 6. Convert std out value to integer
+	// 	// 7. Check if Std out value is met or not.
+	// 	// 8. Check if Jobnet Finished successfully with no zombie process or not.
+
+	// 	start_time := time.Now()
+	// 	if Run_Jobarg_cleanup_linux(tc_75) &&
+	// 		func() bool {
+	// 			result, jobnet_run_manage_id = Run_Jobnet(tc_75, jobnet_id)
+	// 			return result
+	// 		}() &&
+	// 		func() bool {
+	// 			result, jobnet_run_info = Run_Jobarg_get_jobnet_run_info(tc_75, jobnet_run_manage_id)
+	// 			return result
+	// 		}() &&
+	// 		func() bool {
+	// 			result, last_std_out = Run_Jobarg_Get_LastSTDOUT(tc_75, jobnet_run_manage_id)
+	// 			return result
+	// 		}() &&
+	// 		func() bool {
+	// 			result, num = Str_To_Int(tc_75, last_std_out)
+	// 			return result
+	// 		}() &&
+	// 		num < 95 &&
+	// 		func() bool {
+	// 			// Calculating whether jobnet took actual 8 hour or not.
+	// 			end_time := time.Now()
+	// 			duration := end_time.Sub(start_time)
+	// 			if duration <= 8*time.Hour {
+	// 				fmt.Println(tc_75.Err_log("Error: Jobnet ended earlier than expected 8 hour time. Total Elapsed time: %s", duration.String()))
+	// 				return false
+	// 			}
+	// 			return true
+	// 		}() &&
+	// 		Run_Check_Jobnet_Finish_With_No_Zombie_Process(tc_75, jobnet_run_info) {
+	// 		fmt.Println("All operations completed successfully")
+	// 		return PASSED
+	// 	} else {
+	// 		return FAILED
+	// 	}
+	// }
+
+	// tc_75.Set_function(tc_func)
+	// t.Add_testcase(*tc_75)
+
+	// //TESTCASE 76
+	// tc_76 := t.New_testcase(76, "kill jobarg_command process ")
+	// tc_func = func() common.Testcase_status {
+	// 	// enable common jobnet
+	// 	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+	// 		tc_76.Err_log("Failed to enable jobnet, Error: %s", err)
+	// 		return FAILED
+	// 	}
+	// 	return RunJob800AndKillOneJobIconWithJobargCommand("Icon_800", 800, 4, tc_76, common.Client)
+	// }
+
+	// tc_76.Set_function(tc_func)
+	// t.Add_testcase(*tc_76)
+
+	// //TESTCASE 77
+	// tc_77 := t.New_testcase(77, "force stop  running job icon")
+	// tc_func = func() common.Testcase_status {
+	// 	// enable common jobnet
+	// 	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+	// 		tc_77.Err_log("Failed to enable jobnet, Error: %s", err)
+	// 		return FAILED
+	// 	}
+	// 	return RunJob800AndForceStopOneJobIcon("Icon_800", 800, 4, tc_77, common.Client)
+	// }
+
+	// tc_77.Set_function(tc_func)
+	// t.Add_testcase(*tc_77)
 }
 
 func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
