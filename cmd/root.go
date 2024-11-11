@@ -11,6 +11,7 @@ import (
 	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"github.com/zukigit/remote_run-go/src/tickets"
+	"gopkg.in/yaml.v3"
 
 	"github.com/spf13/cobra"
 )
@@ -66,13 +67,31 @@ func add_run_testcases(testcase_number uint) {
 	}
 }
 
+func save_runtks_records() {
+	yaml_data, err := yaml.Marshal(run_tickets)
+	if err != nil {
+		fmt.Println("Failed in getting password, Error:", err.Error())
+		os.Exit(1)
+	}
+
+	err = os.WriteFile(common.Filepath+".yml", yaml_data, 0644)
+	if err != nil {
+		fmt.Printf("Error writing YAML to file: %v\n", err)
+		return
+	}
+}
+
 func run_tc() {
 	for _, testcase := range run_testcases {
 		dao.Run_testcase(testcase)
 	}
 
 	if len(run_testcases) > 0 {
-		fmt.Println(lib.Formatted_log(common.INFO, "Logged File: %s", common.Log_filepath))
+		dao.Update_testcase_results_in_tickets(run_tickets)
+		save_runtks_records()
+
+		fmt.Println(lib.Formatted_log(common.INFO, "Logged File: %s.log", common.Filepath))
+		fmt.Println(lib.Formatted_log(common.INFO, "Yaml File: %s.yml", common.Filepath))
 	} else {
 		fmt.Println("There is no testcase to run.")
 	}
@@ -104,8 +123,8 @@ var rootCmd = &cobra.Command{
 		common.Set_client()
 		defer common.Client.Close()
 
-		common.Log_filepath = lib.Get_log_filepath()
-		common.Set_sugar(common.Log_filepath)
+		common.Filepath = lib.Get_filepath()
+		common.Set_sugar(common.Filepath + ".log")
 		defer common.Sugar.Sync()
 
 		// Initialize DB Connection
@@ -148,7 +167,7 @@ func init() {
 
 // Add your tickets here
 func add_tickets(t *[]dao.Ticket) {
-	// *t = append(*t, new(tickets.Ticket_000))
+	*t = append(*t, new(tickets.Ticket_000))
 	*t = append(*t, new(tickets.Ticket_1318))
 	*t = append(*t, new(tickets.Ticket_811))
 	*t = append(*t, new(tickets.Ticket_800))
@@ -160,4 +179,10 @@ func add_tickets(t *[]dao.Ticket) {
 	*t = append(*t, new(tickets.Ticket_1089))
 	*t = append(*t, new(tickets.Ticket_1264))
 	*t = append(*t, new(tickets.Ticket_1292))
+	*t = append(*t, new(tickets.Ticket_968))
+	*t = append(*t, new(tickets.Ticket_940))
+	*t = append(*t, new(tickets.Ticket_943))
+	*t = append(*t, new(tickets.Ticket_952))
+	*t = append(*t, new(tickets.Ticket_919))
+
 }

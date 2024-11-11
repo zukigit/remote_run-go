@@ -8,9 +8,10 @@ import (
 )
 
 type Ticket_1292 struct {
-	no          uint
-	description string
-	testcases   []dao.TestCase
+	Ticket_no                                   uint
+	Ticket_description                          string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
+	Testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_1292) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -18,25 +19,37 @@ func (t *Ticket_1292) New_testcase(testcase_id uint, testcase_description string
 }
 
 func (t *Ticket_1292) Get_no() uint {
-	return t.no
+	return t.Ticket_no
+}
+
+func (t *Ticket_1292) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = passed_count
+}
+
+func (t *Ticket_1292) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_1292) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
 }
 
 func (t *Ticket_1292) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
 }
 
 func (t *Ticket_1292) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+	t.Testcases = append(t.Testcases, tc)
 }
 
 func (t *Ticket_1292) Get_testcases() []dao.TestCase {
-	return t.testcases
+	return t.Testcases
 }
 
 // Enter your ticket information here
 func (t *Ticket_1292) Set_values() {
-	t.no = 1292 // Enter your ticket id
-	t.description = "Issue 1292 - Ja_purge is not working when the jobnet is aborted and it has job icons in ready state."
+	t.Ticket_no = 1292 // Enter your ticket id
+	t.Ticket_description = "Issue 1292 - Ja_purge is not working when the jobnet is aborted and it has job icons in ready state."
 }
 
 // Add your test case here

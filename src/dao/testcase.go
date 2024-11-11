@@ -8,44 +8,67 @@ import (
 )
 
 type TestCase struct {
-	testcase_no uint
-	ticket_no   uint
-	description string
-	status      *common.Testcase_status
-	function    func() common.Testcase_status
+	Testcase_no          uint
+	Testcase_description string
+	Pre_operation        *[]string
+	Operation            *[]string
+	Expected_results     *[]string
+	Testcase_status      *common.Testcase_status
+	function             func() common.Testcase_status
+	ticket_no            *uint
 }
 
 func New_testcase(testcase_id uint, testcase_description string) *TestCase {
 	status := FAILED
+	ticket_no := uint(0)
+	pre_opt := []string{}
+	opt := []string{}
+	expt_res := []string{}
+
 	return &TestCase{
-		testcase_no: testcase_id,
-		description: testcase_description,
-		status:      &status,
+		Testcase_no:          testcase_id,
+		Testcase_description: testcase_description,
+		Testcase_status:      &status,
+		Pre_operation:        &pre_opt,
+		Operation:            &opt,
+		Expected_results:     &expt_res,
+		ticket_no:            &ticket_no,
+	}
+}
+
+func (t *TestCase) Add_doc(doc_type common.Doc_data_type, doc string) {
+	switch doc_type {
+	case common.PRE_OPT:
+		*t.Pre_operation = append(*t.Pre_operation, doc)
+	case common.OPT:
+		*t.Operation = append(*t.Operation, doc)
+	case common.EXPT_RES:
+		*t.Expected_results = append(*t.Expected_results, doc)
 	}
 }
 
 func (t *TestCase) Get_no() uint {
-	return t.testcase_no
+	return t.Testcase_no
 }
 
 func (t *TestCase) Get_ticket_no() uint {
-	return t.ticket_no
+	return *t.ticket_no
 }
 
 func (t *TestCase) Set_ticket_no(ticket_no uint) {
-	t.ticket_no = ticket_no
+	*t.ticket_no = ticket_no
 }
 
 func (t *TestCase) Get_dsctn() string {
-	return t.description
+	return t.Testcase_description
 }
 
 func (t *TestCase) Set_status(status common.Testcase_status) {
-	*t.status = status
+	*t.Testcase_status = status
 }
 
 func (t *TestCase) Get_status() common.Testcase_status {
-	return *t.status
+	return *t.Testcase_status
 }
 
 func (t *TestCase) Set_function(function func() common.Testcase_status) {
