@@ -427,6 +427,26 @@ func RunScheduleLoadSpan(jobnetId string, processCount int, processCheckTimeout 
 	*/
 	lib.Jobarg_cleanup_linux()
 
+	currentDate := time.Now()
+
+	// Format the date to YYYYMMDD
+	formattedDate := currentDate.Format("20060102")
+
+	// Print the formatted date
+	// fmt.Println(formattedDate)
+
+	setCurrentDateQuery := fmt.Sprintf("UPDATE ja_calendar_detail_table SET operating_date = '%s' WHERE calendar_id = 'COMMON_CALENDAR';", formattedDate)
+	_, current_date_error := lib.ExecuteQuery(lib.DBQuery(setCurrentDateQuery))
+	if current_date_error != nil {
+		fmt.Println(testcase.Err_log("Error set calendar detail : %s", current_date_error))
+	}
+
+	setPublicFlagQuery := "UPDATE ja_calendar_control_table SET valid_flag  = 1 WHERE calendar_id = 'COMMON_CALENDAR';"
+	_, set_public_err := lib.ExecuteQuery(lib.DBQuery(setPublicFlagQuery))
+	if set_public_err != nil {
+		fmt.Println(testcase.Err_log("Error set public flag : %s", set_public_err))
+	}
+
 	/*
 		enable the jobnet
 	*/
@@ -573,7 +593,7 @@ func RunScheduleLoadSpan(jobnetId string, processCount int, processCheckTimeout 
 	time.Sleep(30 * time.Second)
 
 	//schedule enable query
-	enableQuery := `UPDATE ja_schedule_control_table SET valid_flag = 1 WHERE valid_flag = 0;`
+	enableQuery := `UPDATE ja_schedule_control_table SET valid_flag = 1 WHERE schedule_id  = 'COMMON_SCHEDULE';`
 	_, enable_err := lib.ExecuteQuery(lib.DBQuery(enableQuery))
 
 	if enable_err != nil {
