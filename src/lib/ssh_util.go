@@ -50,6 +50,23 @@ func GetSSHClient(hostIP string, port int, username string, password string) *ss
 	return client
 }
 
+// CheckSSHforRebootingAfterDelay checks if the system is up using SSH connection after waiting for a specified timeAmount.
+func CheckSSHforRebootingAfterDelay(client *ssh.Client, timeAmount int) bool {
+	// Wait for the specified timeAmount (in seconds) before checking SSH
+	time.Sleep(time.Duration(timeAmount) * time.Second)
+
+	// Try to create an SSH session
+	session, err := client.NewSession()
+	if err != nil {
+		// If session creation fails, assume the system might be rebooting
+		return true
+	}
+
+	// If session creation succeeds, close the session and return false
+	defer session.Close()
+	return false
+}
+
 func ConnectWithRetry(hostIP string, port int, username string, password string, maxRetries int) *ssh.Client {
 	var client *ssh.Client
 

@@ -117,6 +117,7 @@ func (t *Ticket_825) Add_testcases() {
 		fmt.Println(tc_3.Info_log("JAZ Server has been disabled."))
 
 		return UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter("Icon_1", tc_3)
+
 	}
 	tc_3.Set_function(tc_func)
 	t.Add_testcase(*tc_3)
@@ -138,6 +139,7 @@ func (t *Ticket_825) Add_testcases() {
 		fmt.Println(tc_4.Info_log("JAZ Server has been disabled."))
 
 		return UpdateHostLockAfterRetryCountwithEnvironmentVariableForceReboot("Icon_1", tc_4)
+
 	}
 	tc_4.Set_function(tc_func)
 	t.Add_testcase(*tc_4)
@@ -191,9 +193,18 @@ func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testc
 	}
 	fmt.Println(testcase.Info_log("Reboot Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Reboot after completing jobs. Waiting for Reboot..."))
+	fmt.Println(testcase.Info_log("Waiting for Reboot..."))
 
-	sleepDuration := 6 * time.Minute
+	result := lib.CheckSSHforRebootingAfterDelay(common.Client, 210)
+	if result {
+		fmt.Println(testcase.Info_log("SSH connection failed. The system might be rebooting."))
+	} else {
+
+		fmt.Println(testcase.Err_log("Does not reboot"))
+		return FAILED
+	}
+
+	sleepDuration := 1 * time.Minute
 	time.Sleep(sleepDuration)
 
 	common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
@@ -207,10 +218,8 @@ func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testc
 
 	fmt.Print(testcase.Info_log("Successfully rebooted hostname : %s", result2))
 
-	// defer client.Close()
-
 	pattern := "[WARN] In ja_job_exec_close() agent close failed. retry count :[29]"
-	timeout := 30 * time.Second // Timeout duration
+	timeout := 2 * time.Minute  // Timeout duration
 	interval := 1 * time.Second // Polling interval
 
 	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
@@ -225,7 +234,7 @@ func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testc
 		fmt.Println(testcase.Err_log("Faild to restart the JAZ server, Error: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("JAZ server has been restarted."))
+	fmt.Println(testcase.Info_log("JAZ server has been restarted.Waiting for Jobnet status ..."))
 
 	// /***************
 	// Expected Results
@@ -286,9 +295,18 @@ func UpdateHostLockAfterRetryCountwithHostNameForceReboot(jobnetId string, testc
 	}
 	fmt.Println(testcase.Info_log("Reboot Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Force Reboot started. Waiting for Reboot..."))
+	fmt.Println(testcase.Info_log("Waiting for Reboot..."))
 
-	sleepDuration := 3 * time.Minute
+	result := lib.CheckSSHforRebootingAfterDelay(common.Client, 10)
+	if result {
+		fmt.Println(testcase.Info_log("SSH connection failed. The system might be rebooting."))
+	} else {
+
+		fmt.Println(testcase.Err_log("Does not reboot"))
+		return FAILED
+	}
+
+	sleepDuration := 1 * time.Minute
 	time.Sleep(sleepDuration)
 
 	common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
@@ -302,12 +320,8 @@ func UpdateHostLockAfterRetryCountwithHostNameForceReboot(jobnetId string, testc
 
 	fmt.Print(testcase.Info_log("Successfully rebooted hostname : %s", result2))
 
-	// defer client.Close()
-
-	//------------------------
-
 	pattern := "[WARN] In ja_job_exec_close() agent close failed. retry count :[29]"
-	timeout := 2 * time.Second  // Timeout duration
+	timeout := 2 * time.Minute  // Timeout duration
 	interval := 1 * time.Second // Polling interval
 
 	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
@@ -322,7 +336,7 @@ func UpdateHostLockAfterRetryCountwithHostNameForceReboot(jobnetId string, testc
 		fmt.Println(testcase.Err_log("Faild to restart the JAZ server, Error: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("JAZ server has been restarted."))
+	fmt.Println(testcase.Info_log("JAZ server has been restarted.Waiting for Jobnet status ..."))
 
 	// /***************
 	// Expected Results
@@ -382,9 +396,18 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter(jobnetId st
 	}
 	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Reboot after completing jobs started. Waiting for Reboot..."))
+	fmt.Println(testcase.Info_log("Waiting for Reboot..."))
 
-	sleepDuration := 6 * time.Minute
+	result := lib.CheckSSHforRebootingAfterDelay(common.Client, 210)
+	if result {
+		fmt.Println(testcase.Info_log("SSH connection failed. The system might be rebooting."))
+	} else {
+
+		fmt.Println(testcase.Err_log("Does not reboot"))
+		return FAILED
+	}
+
+	sleepDuration := 1 * time.Minute
 	time.Sleep(sleepDuration)
 
 	common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
@@ -398,10 +421,8 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter(jobnetId st
 
 	fmt.Print(testcase.Info_log("Successfully rebooted hostname : %s", result2))
 
-	// defer client.Close()
-
 	pattern := "[WARN] In ja_job_exec_close() agent close failed. retry count :[29]"
-	timeout := 30 * time.Second // Timeout duration
+	timeout := 2 * time.Minute  // Timeout duration
 	interval := 1 * time.Second // Polling interval
 
 	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
@@ -416,7 +437,7 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter(jobnetId st
 		fmt.Println(testcase.Err_log("Faild to restart the JAZ server, Error: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("JAZ server has been restarted."))
+	fmt.Println(testcase.Info_log("JAZ server has been restarted.Waiting for Jobnet status ..."))
 
 	// /***************
 	// Expected Results
@@ -482,9 +503,18 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableForceReboot(jobnetId st
 	}
 	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Force Reboot started. Waiting for Reboot..."))
+	fmt.Println(testcase.Info_log("Waiting for Reboot..."))
 
-	sleepDuration := 3 * time.Minute
+	result := lib.CheckSSHforRebootingAfterDelay(common.Client, 10)
+	if result {
+		fmt.Println(testcase.Info_log("SSH connection failed. The system might be rebooting."))
+	} else {
+
+		fmt.Println(testcase.Err_log("Does not reboot"))
+		return FAILED
+	}
+
+	sleepDuration := 1 * time.Minute
 	time.Sleep(sleepDuration)
 
 	common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
@@ -499,7 +529,7 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableForceReboot(jobnetId st
 	fmt.Print(testcase.Info_log("Successfully rebooted hostname : %s", result2))
 
 	pattern := "[WARN] In ja_job_exec_close() agent close failed. retry count :[29]"
-	timeout := 2 * time.Second  // Timeout duration
+	timeout := 2 * time.Minute  // Timeout duration
 	interval := 1 * time.Second // Polling interval
 
 	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
@@ -514,7 +544,7 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableForceReboot(jobnetId st
 		fmt.Println(testcase.Err_log("Faild to restart the JAZ server, Error: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("JAZ server has been restarted."))
+	fmt.Println(testcase.Info_log("JAZ server has been restarted.Waiting for Jobnet status ..."))
 
 	// /***************
 	// Expected Results
