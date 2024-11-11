@@ -62,14 +62,18 @@ func (t *Ticket_1091) Add_testcases() {
 		//  - The following log must be printed and no CRIT logs and no error logs should be printed.
 		//  - "[INFO] In ja_send_ipchange_request(), Server Ip is up to date in host_name."
 
-		var jobnet_id string = "Icon_1"                      // This value must be Jobnet_ID that you want to run.
-		var jobnet_name string = "jobicon_linux_and_windows" // This value must be Jobnet_Name that you want to run.
-		var linux_hostname string = "oss.linux"              // This value must be hostname of linux agent you want to run. Default is oss.linux
-		var window_hostname string = "DESKTOP-8KPOJCT"       // This value must be hostname of window agent you want to run. Default is oss.linux2
+		var jobnet_id string = "Icon_1"                  // This value must be Jobnet_ID that you want to run.
+		var jobnet_name string = "jobicon_linux_2_hosts" // This value must be Jobnet_Name that you want to run.
+		// var jobnet_name string = "jobicon_linux_and_windows"
+
+		var hostname_1 string = "oss.linux"                  // This value must be hostname of first agent you want to run. (Must Only be Linux hostname)
+		var hostname_2 string = "oss.linux2"                 // This value must be hostname of second agent you want to run.(Must be Window hostname if your jobnet_name is "jobicon_linux_and_windows")
 		var timeout_time int = 60                            // This is timeout value in seconds for waiting for the log to appear.
+		var execute_command_linux string = "sleep 120"       // Execute command for linux
+		var execute_command_window string = "timeout /t 120" // Execute command for window
 		var result bool
 
-		envs, err := lib.Get_str_str_map("JA_HOSTNAME1", linux_hostname, "JA_HOSTNAME2", window_hostname, "JA_CMD1", "sleep 120", "JA_CMD2", "timeout /t 120")
+		envs, err := lib.Get_str_str_map("JA_HOSTNAME1", hostname_1, "JA_HOSTNAME2", hostname_2, "JA_CMD1", execute_command_linux, "JA_CMD2", execute_command_window, "JA_CMD", execute_command_linux)
 
 		if err != nil {
 			fmt.Print("Environments values that is being set are wrong. Please reset them again.")
@@ -86,8 +90,11 @@ func (t *Ticket_1091) Add_testcases() {
 		// 8. Restart linux Jobarg_Server
 		// 9. Looping until timeout for the log to write.
 
-		if Run_Jobarg_cleanup_linux(tc_99) &&
-			Run_Jobarg_cleanup_window(tc_99) &&
+		if func() bool {
+			Run_Jobarg_cleanup_window(tc_99)
+			return true
+		}() &&
+			Run_Jobarg_cleanup_linux(tc_99) &&
 			Run_Clear_Linux_Agent_log(tc_99) &&
 			Run_Clear_Linux_Server_log(tc_99) &&
 			Run_enable_jobnet(tc_99, jobnet_id, jobnet_name) &&
@@ -96,10 +103,11 @@ func (t *Ticket_1091) Add_testcases() {
 				return result
 			}() &&
 			//Run_Job_process_count(tc_99, 1, 10) && // Process count is commented out since it's impossible/hard to count window process.
-			Run_sleep() && //Instead, a simple sleep is here.
+			Run_Timeout(tc_99, 10) && //Instead, a simple sleep is here.
 			Run_Restart_Linux_Jaz_server(tc_99) &&
 			func() bool {
 				var executeResult string
+				var index int = 0
 				timeoutDuration := time.Duration(timeout_time) * time.Second
 				timeout := time.Now().Add(timeoutDuration)
 				for time.Now().Before(timeout) {
@@ -107,7 +115,8 @@ func (t *Ticket_1091) Add_testcases() {
 					if executeResult != "" && executeResult != " " {
 						break
 					}
-					fmt.Print(tc_99.Info_log("Info: Executing the command Again."))
+					fmt.Println(tc_99.Info_log("Info: Executing the command Again. Retry count %d", index))
+					index++
 					time.Sleep(1 * time.Second)
 				}
 				if executeResult == "" || executeResult == " " {
@@ -142,10 +151,12 @@ func (t *Ticket_1091) Add_testcases() {
 		//  - The jobnet should be ended with green and the following log must be printed and no CRIT logs and no error logs should be printed.
 		//  - "[INFO] In ja_send_ipchange_request(), Server Ip is up to date in host_name."
 
-		linux_hostnames := [...]string{"oss.linux", "oss.linux", "oss.linux", "oss.linux", "oss.linux", "oss.linux"} // Multiple Hostnames of linux agents you want to run must be inputed here. Maximum supported up to 6 linux agents.
-		var jobnet_id string = "Icon_1"                                                                              // This value must be Jobnet_ID that you want to run.
-		var jobnet_name string = "jobicon_linux_" + strconv.Itoa(len(linux_hostnames)) + "_hosts"                    // This value must be Jobnet_Name that you want to run.
-		var timeout_time int = 60                                                                                    // This is timeout value in seconds for waiting for the log to appear.
+		linux_hostnames := [...]string{"oss.linux", "oss.linux2"} // Multiple Hostnames of linux agents you want to run must be inputed here. Maximum supported up to 2 to 6 linux agents.
+		//linux_hostnames := [...]string{"oss.linux", "oss.linux2", "oss.linux3", "oss.linux4", "oss.linux5", "oss.linux6"}
+
+		var jobnet_id string = "Icon_1"                                                           // This value must be Jobnet_ID that you want to run.
+		var jobnet_name string = "jobicon_linux_" + strconv.Itoa(len(linux_hostnames)) + "_hosts" // This value must be Jobnet_Name that you want to run.
+		var timeout_time int = 60                                                                 // This is timeout value in seconds for waiting for the log to appear.
 		var jobnet_run_manage_id string
 		var result bool
 
@@ -183,7 +194,7 @@ func (t *Ticket_1091) Add_testcases() {
 				return result
 			}() &&
 			// Run_Job_process_count(tc_100, 1, 10) && // Process count is commented out since it's impossible/hard to count processes of multiple agents
-			Run_sleep() && //Instead, a simple sleep is here.
+			Run_Timeout(tc_100, 10) && //Instead, a simple sleep is here.
 			Run_Linux_Command(tc_100, "rm -rf /var/lib/jobarranger/tmp/serverIPs/serverIPs.json") &&
 			Run_Restart_Linux_Jaz_server(tc_100) &&
 			func() bool {
@@ -217,9 +228,4 @@ func (t *Ticket_1091) Add_testcases() {
 	}
 	tc_100.Set_function(tc_func)
 	t.Add_testcase(*tc_100)
-}
-
-func Run_sleep() bool {
-	time.Sleep(time.Duration(10) * time.Second)
-	return true
 }
