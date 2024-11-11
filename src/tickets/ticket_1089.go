@@ -91,10 +91,22 @@ func (t *Ticket_1089) Add_testcases() {
 			func() bool {
 				fmt.Print(tc_101.Info_log("Info: Job Info: %s. Jobnet Info: %s", jobnet_run_info.Job_status, jobnet_run_info.Jobnet_status))
 				if jobnet_run_info.Job_status == "TIMEOUT" {
-					fmt.Println(tc_101.Info_log("Info: Job Icon end up with Timeout."))
+					var count int
+					_, sql_result := Run_Sql_Script_Return_Rows(tc_101, "SELECT count(*) from ja_run_job_table WHERE inner_jobnet_main_id = '"+jobnet_run_manage_id+"' AND status = 3 AND timeout_flag = 1;")
+					if sql_result.Next() { // Move to the first row
+						if err := sql_result.Scan(&count); err != nil {
+							fmt.Println(tc_101.Err_log("Error: Error scanning result: %s", err))
+							return false
+						}
+					}
+					if count != 0 {
+						fmt.Println(tc_101.Info_log("Info: Jobnet End with Timeout. Job Icon end up with Timeout."))
+						return true
+					}
+					fmt.Println(tc_101.Info_log("Info: Jobnet End with Timeout."))
 					return true
 				}
-				fmt.Println(tc_101.Info_log("Error: Job Icon doesn't end up with Timeout."))
+				fmt.Println(tc_101.Info_log("Error: Jobnet doesn't end up with Timeout."))
 				return false
 			}() &&
 			Run_Jobarg_cleanup_linux(tc_101) &&

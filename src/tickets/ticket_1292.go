@@ -104,7 +104,12 @@ func (t *Ticket_1292) Add_testcases() {
 			func() bool {
 				var count int
 				_, sql_result := Run_Sql_Script_Return_Rows(tc_127, "SELECT * FROM ja_run_jobnet_table WHERE inner_jobnet_id = '"+jobnet_manage_id+"';")
-				sql_result.Scan(&count)
+				if sql_result.Next() { // Move to the first row
+					if err := sql_result.Scan(&count); err != nil {
+						fmt.Println(tc_127.Err_log("Error: Error scanning result: %s", err))
+						return false
+					}
+				}
 				if count > 0 {
 					fmt.Println(tc_127.Err_log("Error: Database is not empty!!!"))
 					return false
