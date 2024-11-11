@@ -11,9 +11,10 @@ import (
 )
 
 type Ticket_919 struct {
-	no          uint
-	description string
-	testcases   []dao.TestCase
+	Ticket_no                                   uint
+	Ticket_description                          string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
+	Testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_919) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -21,24 +22,36 @@ func (t *Ticket_919) New_testcase(testcase_id uint, testcase_description string)
 }
 
 func (t *Ticket_919) Get_no() uint {
-	return t.no
+	return t.Ticket_no
 }
 
 func (t *Ticket_919) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
+}
+
+func (t *Ticket_919) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = passed_count
+}
+
+func (t *Ticket_919) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_919) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
 }
 
 func (t *Ticket_919) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+	t.Testcases = append(t.Testcases, tc)
 }
 
 func (t *Ticket_919) Get_testcases() []dao.TestCase {
-	return t.testcases
+	return t.Testcases
 }
 
 func (t *Ticket_919) Set_values() {
-	t.no = 919
-	t.description = "Add retry process to DB deadlock situations."
+	t.Ticket_no = 919
+	t.Ticket_description = "Add retry process to DB deadlock situations."
 }
 func (t *Ticket_919) Add_testcases() {
 

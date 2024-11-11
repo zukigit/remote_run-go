@@ -19,9 +19,10 @@ import (
 )
 
 type Ticket_840 struct {
-	no          uint
-	description string
-	testcases   []dao.TestCase
+	Ticket_no                                   uint
+	Ticket_description                          string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
+	Testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_840) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -29,25 +30,37 @@ func (t *Ticket_840) New_testcase(testcase_id uint, testcase_description string)
 }
 
 func (t *Ticket_840) Get_no() uint {
-	return t.no
+	return t.Ticket_no
 }
 
 func (t *Ticket_840) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
+}
+
+func (t *Ticket_840) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = passed_count
+}
+
+func (t *Ticket_840) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_840) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
 }
 
 func (t *Ticket_840) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+	t.Testcases = append(t.Testcases, tc)
 }
 
 func (t *Ticket_840) Get_testcases() []dao.TestCase {
-	return t.testcases
+	return t.Testcases
 }
 
 // Enter your ticket information here
 func (t *Ticket_840) Set_values() {
-	t.no = 840 // Enter your ticket id
-	t.description = "(Fujitsu) Fwait icon can't execute well on SJIS environment"
+	t.Ticket_no = 840 // Enter your ticket id
+	t.Ticket_description = "(Fujitsu) Fwait icon can't execute well on SJIS environment"
 }
 
 // OS Types
@@ -169,7 +182,7 @@ func (t *Ticket_840) Add_testcases() {
 
 // this function is for the testcase of rebooting the server
 func rebootIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase_status {
-	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_id(), env.Encoding, env.OSType, testcase.Get_dsctn())
+	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_no(), env.Encoding, env.OSType, testcase.Get_dsctn())
 
 	// set AllowRoot to 1 for reboot
 	err := lib.Ja_set_agent_config_linux("AllowRoot", "1")
@@ -278,7 +291,7 @@ func rebootIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 
 // This function checks the testcase for waiting file creation with FWait Icon
 func fileWaitTestcase(testcase *dao.TestCase, env Environment) common.Testcase_status {
-	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_id(), env.Encoding, env.OSType, testcase.Get_dsctn())
+	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_no(), env.Encoding, env.OSType, testcase.Get_dsctn())
 
 	// File to be waited for creation or checked for existence (must be japanese name)
 	fileName := "日本語ファイル.txt"
@@ -381,7 +394,7 @@ func fileWaitTestcase(testcase *dao.TestCase, env Environment) common.Testcase_s
 // This function checks the testcase for file existence with FWait Icon
 // It can check for both conditions: file exisis, and file does not exist
 func fileCheckTestcase(testcase *dao.TestCase, env Environment, shouldFileExist bool) common.Testcase_status {
-	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_id(), env.Encoding, env.OSType, testcase.Get_dsctn())
+	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_no(), env.Encoding, env.OSType, testcase.Get_dsctn())
 
 	// File to be waited for creation or checked for existence (must be japanese name)
 	fileName := "日本語ファイル.txt"
@@ -502,7 +515,7 @@ func fileCheckTestcase(testcase *dao.TestCase, env Environment, shouldFileExist 
 }
 
 func normalIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase_status {
-	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_id(), env.Encoding, env.OSType, testcase.Get_dsctn())
+	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_no(), env.Encoding, env.OSType, testcase.Get_dsctn())
 
 	// File to be waited for creation or checked for existence (must be japanese name)
 	fileName := "日本語ファイル.txt"
@@ -626,7 +639,7 @@ func normalIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 }
 
 func fcopyIconTestcase(testcase *dao.TestCase, env Environment, envs map[string]string) common.Testcase_status {
-	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_id(), env.Encoding, env.OSType, testcase.Get_dsctn())
+	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_no(), env.Encoding, env.OSType, testcase.Get_dsctn())
 
 	// File to be waited for creation or checked for existence (must be japanese name)
 	fileName := "日本語ファイル.txt"

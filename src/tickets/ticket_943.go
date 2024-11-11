@@ -10,9 +10,10 @@ import (
 )
 
 type Ticket_943 struct {
-	no          uint
-	description string
-	testcases   []dao.TestCase
+	Ticket_no                                   uint
+	Ticket_description                          string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
+	Testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_943) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -20,24 +21,36 @@ func (t *Ticket_943) New_testcase(testcase_id uint, testcase_description string)
 }
 
 func (t *Ticket_943) Get_no() uint {
-	return t.no
+	return t.Ticket_no
 }
 
 func (t *Ticket_943) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
+}
+
+func (t *Ticket_943) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = passed_count
+}
+
+func (t *Ticket_943) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_943) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
 }
 
 func (t *Ticket_943) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+	t.Testcases = append(t.Testcases, tc)
 }
 
 func (t *Ticket_943) Get_testcases() []dao.TestCase {
-	return t.testcases
+	return t.Testcases
 }
 
 func (t *Ticket_943) Set_values() {
-	t.no = 943
-	t.description = "Issue 943 - 「cannot connect the host」error occurs"
+	t.Ticket_no = 943
+	t.Ticket_description = "Issue 943 - 「cannot connect the host」error occurs"
 }
 
 func (t *Ticket_943) Add_testcases() {
