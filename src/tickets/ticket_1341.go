@@ -15,9 +15,10 @@ import (
 )
 
 type Ticket_1341 struct {
-	no          uint
-	description string
-	testcases   []dao.TestCase
+	no                                          uint
+	description                                 string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
+	testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_1341) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -26,6 +27,18 @@ func (t *Ticket_1341) New_testcase(testcase_id uint, testcase_description string
 
 func (t *Ticket_1341) Get_no() uint {
 	return t.no
+}
+
+func (t *Ticket_1341) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = passed_count
+}
+
+func (t *Ticket_1341) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_1341) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
 }
 
 func (t *Ticket_1341) Get_dsctn() string {
