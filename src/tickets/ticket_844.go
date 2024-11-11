@@ -57,16 +57,10 @@ func (t *Ticket_844) Add_testcases() {
 		// Task:      "Restart the Agent"
 		//
 		// Result:    "The JOB returns with an error"
-
-		var jobnet_id string = "Icon_1"          // This value must be Jobnet_ID that you want to run. For example, Icon_800, Icon_100, Icon_10, Icon_1
-		var jobnet_name string = "jobicon_linux" // This value must be Jobnet_Name that you want to run.
-		// Since jobnet_name is default value, you don't need to set it, unless you want to change it for testing purpose.
-
-		var execute_command string = "sleep 120" // Enter command you want to execute for this 1000 parallel jobnets.
-		// For exmaple, "sleep 1000", "hostname", "sleep 120".
-
-		var job_process_count_amt int = 1 // Enter total Job icons you want to check here. Must be same with Jobnet total jobs.
-		var timeout_minute int = 10       // Enter timeout in minutes for Process count.
+		var jobnet_id string = "Icon_1"                 // This value must be Jobnet_ID that you want to enable
+		var jobnet_name string = "TICKET844_TESTCASE74" // This value must be Jobnet_Name that you want to enable.
+		var job_process_count_amt int = 800             // Enter total Job icons you want to check here. Must be same with Jobnet total jobs.
+		var timeout_minute int = 30                     // Enter timeout in minutes for Process count.
 		var jobnet_run_manage_id string
 
 		// 1. Enable 1 Icon jobnet.
@@ -79,14 +73,14 @@ func (t *Ticket_844) Add_testcases() {
 		// 8. Restart linux Jobarranger agent.
 		// 9. Counting Job Process Count again.
 
-		if Run_enable_jobnet(tc_74, "Icon_1", jobnet_name) &&
+		if Run_enable_jobnet(tc_74, jobnet_id, jobnet_name) &&
 			Run_enable_jobnet(tc_74, "Icon_10", "Icon_10") &&
 			Run_enable_jobnet(tc_74, "Icon_100", "Icon_100") &&
 			Run_enable_jobnet(tc_74, "Icon_800", "Icon_800") &&
 			Run_Jobarg_cleanup_linux(tc_74) &&
 			func() bool {
 				var result bool
-				result, jobnet_run_manage_id = Run_Jobnet_Exec(tc_74, jobnet_id, execute_command)
+				result, jobnet_run_manage_id = Run_Jobnet(tc_74, "Icon_800")
 				return result
 			}() &&
 			Run_Job_process_count(tc_74, job_process_count_amt, timeout_minute) &&

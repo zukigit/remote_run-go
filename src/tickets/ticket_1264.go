@@ -2,12 +2,9 @@ package tickets
 
 import (
 	"fmt"
-	"io"
-	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/pkg/sftp"
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
 )
@@ -68,8 +65,16 @@ func (t *Ticket_1264) Add_testcases() {
 	tc_125 := t.New_testcase(125, "Default Case Check and Abnormal Case Check")
 	tc_func := func() common.Testcase_status {
 
-		var result bool
+		var result bool = true // Default value, Do not Change.
+
 		var current_pwd, jobnet_manage_id string
+
+		// 1. Run jobarg_cleanup_linux, and make backup for config files.
+		// 2. Find out the current working directory for jobarg_json_parse
+		// 3. File transfer jobarg_json_parse file to client linux with SFTP and give it execute file permission
+		// 4. Modify the config file vlaue parameters.
+		// 5. Run jobnet and check if jobnet run successfully or not.
+		// 6. Remove jobarg_json_parse and restore back to original config files.
 
 		if Run_Jobarg_cleanup_linux(tc_125) &&
 			Run_Linux_Command(tc_125, "cp /etc/jobarranger/jobarg_server.conf /etc/jobarranger/jobarg_server.conf.bk") &&
@@ -82,56 +87,10 @@ func (t *Ticket_1264) Add_testcases() {
 				return result
 			}() &&
 			func() bool {
-
-				//common.Set_passwd()
-				//common.Set_client()
-
-				// Create an SFTP client
-				sftpClient, err := sftp.NewClient(common.Client)
-				if err != nil {
-					fmt.Println(tc_125.Err_log("Error: Failed to create SFTP client: %s", err))
-					return false
-				}
-				defer sftpClient.Close()
-				//defer common.Client.Close()
-
 				// Specify the local and remote file paths
 				localFilePath := filepath.ToSlash(filepath.Join(strings.TrimSpace(strings.Trim(current_pwd, "\n")), "exported_jobnets", "jobarg_json_parse")) // Replace with the desired full file path on the Window
 				remoteFilePath := "/usr/local/bin/jobarg_json_parse"                                                                                          // Replace with the desired full file path on the Linux
-
-				// Open the local file
-				localFile, err := os.Open(localFilePath)
-				if err != nil {
-					fmt.Println(tc_125.Err_log("Error: Failed to open local file: %s", err))
-					return false
-				}
-				defer localFile.Close()
-
-				// Create the remote file
-				remoteFile, err := sftpClient.Create(remoteFilePath)
-				if err != nil {
-					fmt.Println(tc_125.Err_log("Error: Failed to create remote file: %s", err))
-					return false
-				}
-				defer remoteFile.Close()
-
-				// Copy the file from local to remote
-				bytes, err := io.ReadAll(localFile)
-				if err != nil {
-					fmt.Println(tc_125.Err_log("Error: Failed to read local file: %s", err))
-					return false
-				}
-				_, err = remoteFile.Write(bytes)
-				if err != nil {
-					fmt.Println(tc_125.Err_log("Error: Failed to write to remote file: %s", err))
-					return false
-				}
-
-				fmt.Println(tc_125.Info_log("Info: File transferred successfully!"))
-
-				defer remoteFile.Close()
-
-				return true
+				return Run_SFTP_File_Transfer(tc_125, localFilePath, remoteFilePath)
 			}() &&
 			Run_Linux_Command(tc_125, "chmod +x /usr/local/bin/jobarg_json_parse") &&
 			func() bool {
@@ -198,7 +157,6 @@ func (t *Ticket_1264) Add_testcases() {
 				return result
 			}() {
 			fmt.Println("All operations completed successfully")
-			return PASSED
 		}
 		fmt.Println(tc_125.Info_log("Info: Resting config files back to normal."))
 		if Run_Linux_Command(tc_125, "rm -rf /usr/local/bin/jobarg_json_parse") &&
@@ -217,9 +175,12 @@ func (t *Ticket_1264) Add_testcases() {
 			Run_Restart_Linux_Jaz_server(tc_125) {
 			Run_Linux_Command(tc_125, "systemctl restart zabbix-server zabbix-agent jobarg-server php-fpm httpd apache2")
 			Run_Jobarg_cleanup_linux(tc_125)
+			if result {
+				return PASSED
+			}
 			return FAILED
 		}
-		fmt.Println(tc_125.Info_log("Error: Resting config files back to normal settings. Please reset the config files manually."))
+		fmt.Println(tc_125.Info_log("Error: Failed at restting config files back to normal settings. Please reset the config files manually."))
 		return MUST_CHECK
 	}
 	tc_125.Set_function(tc_func)

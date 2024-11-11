@@ -1,32 +1,32 @@
 package tickets
 
 import (
+	"database/sql"
 	"fmt"
+	"io"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/pkg/sftp"
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"golang.org/x/crypto/ssh"
 )
 
-// A Collection of all run jobnet functions that write logs and perform tasks.
+// A Collection of all common testcase functions that write logs and perform tasks.
 // Return True and False and some certain values depending on fail or pass.
-// Don't want to directly modify the library since it should be left as template to be used.
 //
-// All of these functions receive testcase parameter
+// Most of these functions receive testcase parameter
 // which means you must use them in testcase functions.
 //
-// Feel free to come and modify as you need.
-//
 // Purpose:
-//      - Don't want to write the same code and logs over again and again.
-//      - Especially logs. I hate copying and pasting logs.
-//      - Don't wanna write logs over and over again.
-//      - No more repeation, easy to use.
-//      - Just call the function, pass the parameter and that'll do the job for you.
+//      - Don't want to write the same code that write logs statements over again and again.
+//      - I hate copying and pasting code.
+//      - Perhaps this could be used as common library as testcase functions but I'm not still sure.
+//      - For now, I'm using it.
 //
 // Author:
 //      - Myint Myat Thu
@@ -412,6 +412,38 @@ func Run_Window_Command_Str(testcase *dao.TestCase, executeCommand string) (bool
 	return true, executeResult
 }
 
+// To execute Database Sql Script.
+//
+// Returns
+//
+//   - True if worked
+//   - False if it didn't
+func Run_Sql_Script(testcase *dao.TestCase, execute_Sql_Script string) bool {
+	_, err := lib.ExecuteQuery(lib.DBQuery(execute_Sql_Script))
+	if err != nil {
+		fmt.Println(testcase.Err_log("Error: Failed at executing following Sql script: %s Error: %s", execute_Sql_Script, err.Error()))
+		return false
+	}
+	fmt.Println(testcase.Info_log("Info: Sql script ran successfully: %s", execute_Sql_Script))
+	return true
+}
+
+// To execute Database Sql Script and get rows effected.
+//
+// Returns
+//
+//   - True and returns sql.result if worked
+//   - False and returns sql.result if worked
+func Run_Sql_Script_Return_Rows(testcase *dao.TestCase, execute_Sql_Script string) (bool, *sql.Rows) {
+	rows, err := lib.GetData(lib.DBQuery(execute_Sql_Script))
+	if err != nil {
+		fmt.Println(testcase.Err_log("Error: Failed at executing following Sql script: %s Error: %s", execute_Sql_Script, err.Error()))
+		return false, rows
+	}
+	fmt.Println(testcase.Info_log("Info: Sql script ran successfully: %s", execute_Sql_Script))
+	return true, rows
+}
+
 // To convert from string to int
 //
 // Returns
@@ -570,4 +602,80 @@ func Jobarg_get_jobnet_run_info_with_timer(registry_number string) (*common.Jobn
 
 	fmt.Println()
 	return common.New_jobnet_run_info(jobnet_status, job_status, std_out, std_error, exit_cd), nil
+}
+
+func Run_SFTP_File_Transfer(testcase *dao.TestCase, localFilePath string, remoteFilePath string) bool {
+	//common.Set_passwd()
+	//common.Set_client()
+
+	// Create an SFTP client
+	sftpClient, err := sftp.NewClient(common.Client)
+	if err != nil {
+		fmt.Println(testcase.Err_log("Error: Failed to create SFTP client: %s", err))
+		return false
+	}
+	defer sftpClient.Close()
+	//defer common.Client.Close()
+
+	// Open the local file
+	localFile, err := os.Open(localFilePath)
+	if err != nil {
+		fmt.Println(testcase.Err_log("Error: Failed to open local file: %s", err))
+		return false
+	}
+	defer localFile.Close()
+
+	// Create the remote file
+	remoteFile, err := sftpClient.Create(remoteFilePath)
+	if err != nil {
+		fmt.Println(testcase.Err_log("Error: Failed to create remote file: %s", err))
+		return false
+	}
+	defer remoteFile.Close()
+
+	// Copy the file from local to remote
+	bytes, err := io.ReadAll(localFile)
+	if err != nil {
+		fmt.Println(testcase.Err_log("Error: Failed to read local file: %s", err))
+		return false
+	}
+	_, err = remoteFile.Write(bytes)
+	if err != nil {
+		fmt.Println(testcase.Err_log("Error: Failed to write to remote file: %s", err))
+		return false
+	}
+
+	fmt.Println(testcase.Info_log("Info: File transferred successfully!"))
+
+	defer remoteFile.Close()
+
+	return true
+}
+
+// Put the Go program in timeout in seconds.
+func Run_Timeout(testcase *dao.TestCase, timeout int) bool {
+	var index int
+	// taking current time snapshot
+	start := time.Now()
+
+	timeout_seconds := timeout % 60       // Remaining seconds
+	timeout_minute := (timeout / 60) % 60 // Remaining minutes
+	timeout_hour := timeout / 3600        // Total hours
+
+	for i := 0; i < timeout; i++ {
+
+		// Calculating elapsed time.
+		elapsed := time.Since(start)
+
+		// Extract hours, minutes, and seconds from elapsed time
+		hours := int(elapsed.Hours())
+		minutes := int(elapsed.Minutes()) % 60
+		seconds := int(elapsed.Seconds()) % 60
+
+		lib.Spinner_log(index, lib.Formatted_log(common.INFO, "Program in timeout. Elapsed Time: %02d:%02d:%02d|%02d:%02d:%02d", timeout_hour, timeout_minute, timeout_seconds, hours, minutes, seconds))
+
+		time.Sleep(1 * time.Second)
+		index++
+	}
+	return true
 }
