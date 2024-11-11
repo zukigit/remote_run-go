@@ -10,9 +10,10 @@ import (
 )
 
 type Ticket_775 struct {
-	no          uint
-	description string
-	testcases   []dao.TestCase
+	Ticket_no                                   uint
+	Ticket_description                          string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
+	Testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_775) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -20,25 +21,37 @@ func (t *Ticket_775) New_testcase(testcase_id uint, testcase_description string)
 }
 
 func (t *Ticket_775) Get_no() uint {
-	return t.no
+	return t.Ticket_no
+}
+
+func (t *Ticket_775) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = passed_count
+}
+
+func (t *Ticket_775) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_775) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
 }
 
 func (t *Ticket_775) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
 }
 
 func (t *Ticket_775) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+	t.Testcases = append(t.Testcases, tc)
 }
 
 func (t *Ticket_775) Get_testcases() []dao.TestCase {
-	return t.testcases
+	return t.Testcases
 }
 
 // Enter your ticket information here
 func (t *Ticket_775) Set_values() {
-	t.no = 775 // Enter your ticket id
-	t.description = "Agent crash on executing 24-byte length of characters"
+	t.Ticket_no = 775 // Enter your ticket id
+	t.Ticket_description = "Agent crash on executing 24-byte length of characters"
 }
 
 // Add your test case here
