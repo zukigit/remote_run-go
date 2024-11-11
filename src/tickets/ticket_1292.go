@@ -103,7 +103,7 @@ func (t *Ticket_1292) Add_testcases() {
 			Run_Timeout(tc_127, 5*60) &&
 			func() bool {
 				var count int
-				_, sql_result := Run_Sql_Script_Return_Rows(tc_127, "SELECT * FROM ja_run_jobnet_table WHERE inner_jobnet_id = '"+jobnet_manage_id+"';")
+				_, sql_result := Run_Sql_Script_Return_Rows(tc_127, "SELECT count(*) FROM ja_run_jobnet_table WHERE inner_jobnet_id = '"+jobnet_manage_id+"';")
 				if sql_result.Next() { // Move to the first row
 					if err := sql_result.Scan(&count); err != nil {
 						fmt.Println(tc_127.Err_log("Error: Error scanning result: %s", err))
