@@ -1,0 +1,8 @@
+20241019010747 [INFO] [1318] [2] running...
+20241019010810 [INFO] [1318] [2] Clean up agent service success.
+20241019010810 [INFO] [1318] [2] Icon_800 has been successfully run with registry number: 1600000000000000076
+20241019011018 [INFO] [1318] [2] Process count has reached 800
+20241019011020 [INFO] [1318] [2] Successful stop the agent.
+20241019011350 [INFO] [1318] [2] In Db count has reach the limit 800
+20241019011350 [INFO] [1318] [2] There is no zombie process.
+20241019011350 [INFO] [1318] [2] finished!
