@@ -11,9 +11,10 @@ import (
 )
 
 type Ticket_919 struct {
-	no          uint
-	description string
-	testcases   []dao.TestCase
+	Ticket_no                                   uint
+	Ticket_description                          string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
+	Testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_919) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -21,24 +22,36 @@ func (t *Ticket_919) New_testcase(testcase_id uint, testcase_description string)
 }
 
 func (t *Ticket_919) Get_no() uint {
-	return t.no
+	return t.Ticket_no
+}
+
+func (t *Ticket_919) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = passed_count
+}
+
+func (t *Ticket_919) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_919) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
 }
 
 func (t *Ticket_919) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
 }
 
 func (t *Ticket_919) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+	t.Testcases = append(t.Testcases, tc)
 }
 
 func (t *Ticket_919) Get_testcases() []dao.TestCase {
-	return t.testcases
+	return t.Testcases
 }
 
 func (t *Ticket_919) Set_values() {
-	t.no = 919
-	t.description = "Add retry process to DB deadlock situations."
+	t.Ticket_no = 919
+	t.Ticket_description = "Add retry process to DB deadlock situations."
 }
 func (t *Ticket_919) Add_testcases() {
 
@@ -94,14 +107,12 @@ func (t *Ticket_919) Add_testcases() {
 		return PASSED
 	}
 
-	// Attach the function to the test case
 	tc_1.Set_function(tc_func)
 	t.Add_testcase(*tc_1)
 }
 func (t *Ticket_919) lockTable(tc *dao.TestCase) error {
 	var err error
 
-	// Lock the table (MySQL or PostgreSQL)
 	if common.Is_mysql {
 		fmt.Println("Using MySQL - Locking table...")
 		_, err = common.DB.Exec("BEGIN;")
@@ -149,10 +160,9 @@ func (t *Ticket_919) lockTable(tc *dao.TestCase) error {
 func (t *Ticket_919) checkLog(tc_1 *dao.TestCase) common.Testcase_status {
 	const logFilePath = "/var/log/jobarranger/jobarg_agentd.log"
 	const logFileWarning = `retry count`
-	const maxRetries = 10                  // Maximum number of retries
-	const retryInterval = 10 * time.Second // Retry interval
+	const maxRetries = 10
+	const retryInterval = 10 * time.Second
 
-	// Try to find the log warning within the retries
 	for i := 0; i < maxRetries; i++ {
 		cmd := fmt.Sprintf(`cat %s | grep "%s"`, logFilePath, logFileWarning)
 		tc_1.Info_log("Executing command: %s", cmd)
@@ -166,12 +176,10 @@ func (t *Ticket_919) checkLog(tc_1 *dao.TestCase) common.Testcase_status {
 			return PASSED
 		}
 
-		// If the warning log is not found, retry after the interval
 		tc_1.Info_log("Warning log not found. Retrying in %v...", retryInterval)
 		time.Sleep(retryInterval)
 	}
 
-	// After retries, if log is not found, return FAILED
 	tc_1.Err_log("Warning log not found after retries, returning FAILED.")
 	return FAILED
 }
