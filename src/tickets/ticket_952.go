@@ -10,9 +10,10 @@ import (
 )
 
 type Ticket_952 struct {
-	no          uint
-	description string
-	testcases   []dao.TestCase
+	Ticket_no                                   uint
+	Ticket_description                          string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
+	Testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_952) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -20,24 +21,36 @@ func (t *Ticket_952) New_testcase(testcase_id uint, testcase_description string)
 }
 
 func (t *Ticket_952) Get_no() uint {
-	return t.no
+	return t.Ticket_no
+}
+
+func (t *Ticket_952) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = 43
+}
+
+func (t *Ticket_952) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_952) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
 }
 
 func (t *Ticket_952) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
 }
 
 func (t *Ticket_952) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+	t.Testcases = append(t.Testcases, tc)
 }
 
 func (t *Ticket_952) Get_testcases() []dao.TestCase {
-	return t.testcases
+	return t.Testcases
 }
 
 func (t *Ticket_952) Set_values() {
-	t.no = 952
-	t.description = " Commands are executed  if STD_OUT option is checked in Window agent. (Window agent only)"
+	t.Ticket_no = 952
+	t.Ticket_description = " Commands are executed  if STD_OUT option is checked in Window agent. (Window agent only)"
 }
 func (t *Ticket_952) Add_testcases() {
 	tc_1 := t.New_testcase(1, "Check if commands are executed when STD_OUT is checked.")
@@ -98,7 +111,7 @@ func (t *Ticket_952) logError(tc *dao.TestCase, format string, args ...interface
 }
 
 func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_status {
-	const defaultTestFolderPath = `C:\Users\26-00317\Desktop\test_folder` //change default
+	const defaultTestFolderPath = `C:\test_folder` //change default
 
 	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "C01-DAT0387", "JA_CMD", fmt.Sprintf("echo mkdir %s", defaultTestFolderPath))
 	if err != nil {
