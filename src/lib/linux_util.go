@@ -12,10 +12,17 @@ import (
 
 func Ja_set_config_linux(key string, value string, config_file_path string) error {
 	cmd := fmt.Sprintf(`sed -i 's/^#*\(%s=\).*/\1%s/' %s`, key, value, config_file_path)
-
 	_, err := Ssh_exec_to_str(cmd)
 
 	return err
+}
+
+// Replace the string instead of appending it. Also return command as string.
+func Ja_set_config_linux_str_replace(key string, value string, config_file_path string) (error, string) {
+	cmd := fmt.Sprintf(`sed -i 's/^#*\(%s\).*/%s/' %s`, key, value, config_file_path)
+	_, err := Ssh_exec_to_str(cmd)
+
+	return err, cmd
 }
 
 // To use this function, you must have jobarg_agentd default filepath.
@@ -52,12 +59,20 @@ func Stop_jaz_server() error {
 	return err
 }
 
+func Clear_linux_jaz_agent_log() error {
+	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_agentd.log")
+	return err
+}
 func Disable_jaz_server() error {
 	_, err := Ssh_exec_to_str("systemctl disable jobarg-server")
 
 	return err
 }
 
+func Clear_linux_jaz_server_log() error {
+	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_server.log")
+	return err
+}
 func Start_jaz_server() error {
 	_, err := Ssh_exec_to_str("systemctl start jobarg-server")
 
