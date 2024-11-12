@@ -73,6 +73,7 @@ func Clear_linux_jaz_server_log() error {
 	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_server.log")
 	return err
 }
+
 func Start_jaz_server() error {
 	_, err := Ssh_exec_to_str("systemctl start jobarg-server")
 
@@ -493,7 +494,6 @@ func WaitForPatternInLogFile(client *ssh.Client, filePath, pattern string, timeo
 		}
 	}
 }
-
 func Delete_agent_log() error {
 	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_agentd.log")
 
@@ -504,5 +504,4 @@ func Delete_server_log() error {
 	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_server.log")
 
 	return err
-
 }
