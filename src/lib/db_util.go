@@ -19,7 +19,37 @@ const (
 	AbortSingleFWaitJobQuery DBQuery = `UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_job_id = (
 		SELECT inner_job_id FROM ja_run_icon_fwait_table WHERE inner_jobnet_id = $1 limit 1
 	)`
-	AbortJobnetQuery DBQuery = "UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = $1"
+
+	CheckJobStatusCountQuery DBQuery = "SELECT count(*) FROM ja_run_job_table where status = 4 and job_type = 4 and inner_jobnet_main_id = $1"
+	AbortExtJobQuery         DBQuery = `UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = ?`
+	AbortJobnetQuery         DBQuery = "UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE inner_jobnet_id = $1"
+	AbortSingleJOBIconQuery  DBQuery = "UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_jobnet_id = $1"
+	CheckJobnetDoneWithRed   DBQuery = "select * from ja_run_jobnet_table where status = 2 or status = 6"
+	CheckAllRunCount         DBQuery = `SELECT (
+		(SELECT COUNT(*) FROM ja_run_jobnet_table) +
+		(SELECT COUNT(*) FROM ja_run_jobnet_summary_table) +
+		(SELECT COUNT(*) FROM ja_run_flow_table) +
+		(SELECT COUNT(*) FROM ja_value_after_jobnet_table) +
+		(SELECT COUNT(*) FROM ja_value_before_jobnet_table) +
+		(SELECT COUNT(*) FROM ja_run_value_before_table) +
+		(SELECT COUNT(*) FROM ja_run_value_after_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_task_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_value_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_release_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_calc_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_reboot_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_fwait_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_info_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_zabbix_link_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_agentless_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_jobnet_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_end_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_extjob_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_job_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_if_table) +
+		(SELECT COUNT(*) FROM ja_run_icon_fcopy_table) +
+		(SELECT COUNT(*) FROM ja_run_job_table)
+	) AS total_count;`
 )
 
 // Converts the parameter in postgresql query to a compatible version for mysql
@@ -90,8 +120,69 @@ func GetData(query DBQuery, args ...interface{}) (*sql.Rows, error) {
 	return rows, nil
 }
 
+// This function will execute the query that will get exactly one row
+func GetSingleRow(query DBQuery, args []interface{}, dest ...interface{}) error {
+	// Prepare the query with arguments, then scan the result into the provided destination variables
+	return common.DB.QueryRow(string(query), args...).Scan(dest...)
+}
+
 func DBexec(unfmt string, arg ...any) (sql.Result, error) {
 	query := fmt.Sprintf(unfmt, arg...)
 
 	return common.DB.Exec(query)
+}
+
+// Check count of the query
+func JobProcessDBCountCheck(targetProcessCount int, timeoutDuration int, inner_jobnet_main_id string, query DBQuery, args ...interface{}) error {
+
+	// set timeout
+	timeout := time.After(time.Duration(timeoutDuration) * time.Minute)
+	c := 0
+	for {
+		select {
+		case <-timeout:
+			return fmt.Errorf("timeout after %d minutes", timeoutDuration)
+		default:
+			// Convert query parameters (assuming convertParamPostgresToMysql is a valid function)
+			queryStr := ConvertParamPostgresToMysql(string(query))
+
+			// Execute query
+			rows, err := common.DB.Query(queryStr, inner_jobnet_main_id)
+			if err != nil {
+				return fmt.Errorf("query execution error: %w", err)
+			}
+			// Ensure rows are closed after processing to avoid resource leaks
+			defer rows.Close()
+
+			// Variable to hold the count
+			var count int
+
+			// Fetch the first row
+			if rows.Next() {
+				err = rows.Scan(&count)
+				if err != nil {
+					return fmt.Errorf("error scanning row: %w", err)
+				}
+			} else {
+				// Handle case where no rows are returned
+				return fmt.Errorf("no records found")
+			}
+
+			// Check if the count matches the targetProcessCount
+			if count == targetProcessCount {
+				fmt.Println("Count : ", count)
+				return nil
+			} else if count > targetProcessCount {
+				fmt.Println("Actual count is greater than the target count ", c, ". Count :", count)
+				c++
+			} else if count < targetProcessCount {
+				fmt.Println("Actual count is less than the target count ", c, ". Count :", count)
+				c++
+			}
+
+			// Sleep for 30 second before retrying
+			time.Sleep(30 * time.Second)
+
+		}
+	}
 }
