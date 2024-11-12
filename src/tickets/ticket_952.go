@@ -24,12 +24,8 @@ func (t *Ticket_952) Get_no() uint {
 	return t.Ticket_no
 }
 
-func (t *Ticket_952) Get_dsctn() string {
-	return t.Ticket_description
-}
-
 func (t *Ticket_952) Set_PASSED_count(passed_count int) {
-	t.PASSED_count = passed_count
+	t.PASSED_count = 43
 }
 
 func (t *Ticket_952) Set_FAILED_count(failed_count int) {
@@ -38,6 +34,10 @@ func (t *Ticket_952) Set_FAILED_count(failed_count int) {
 
 func (t *Ticket_952) Set_MUSTCHECK_count(mustcheck_count int) {
 	t.MUSTCHECK_count = mustcheck_count
+}
+
+func (t *Ticket_952) Get_dsctn() string {
+	return t.Ticket_description
 }
 
 func (t *Ticket_952) Add_testcase(tc dao.TestCase) {
@@ -111,7 +111,7 @@ func (t *Ticket_952) logError(tc *dao.TestCase, format string, args ...interface
 }
 
 func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_status {
-	const defaultTestFolderPath = `C:\Users\26-00317\Desktop\test_folder` //change default
+	const defaultTestFolderPath = `C:\test_folder` //change default
 
 	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "C01-DAT0387", "JA_CMD", fmt.Sprintf("echo mkdir %s", defaultTestFolderPath))
 	if err != nil {

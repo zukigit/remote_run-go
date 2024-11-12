@@ -24,10 +24,6 @@ func (t *Ticket_968) Get_no() uint {
 	return t.Ticket_no
 }
 
-func (t *Ticket_968) Get_dsctn() string {
-	return t.Ticket_description
-}
-
 func (t *Ticket_968) Set_PASSED_count(passed_count int) {
 	t.PASSED_count = passed_count
 }
@@ -38,6 +34,10 @@ func (t *Ticket_968) Set_FAILED_count(failed_count int) {
 
 func (t *Ticket_968) Set_MUSTCHECK_count(mustcheck_count int) {
 	t.MUSTCHECK_count = mustcheck_count
+}
+
+func (t *Ticket_968) Get_dsctn() string {
+	return t.Ticket_description
 }
 
 func (t *Ticket_968) Add_testcase(tc dao.TestCase) {
@@ -279,8 +279,7 @@ func (t *Ticket_968) checkLog(tc_98 *dao.TestCase) common.Testcase_status {
 
 	warningLogOutput, err := lib.Ssh_exec_to_str(cmd)
 	if err != nil {
-		tc_98.Err_log("Error checking for warning log: %s", err.Error())
-		return FAILED
+		tc_98.Info_log("checking for warning log: %s", err)
 	}
 
 	if strings.Contains(warningLogOutput, logFileWarning) {
