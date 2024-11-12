@@ -91,13 +91,13 @@ func (t *Ticket_1341) Add_testcases() {
 	tc_3.Set_function(tc_func)
 	t.Add_testcase(*tc_3)
 
-	// tc_4 := t.New_testcase(164, "JaRunInterval Test with Database. JaRun")
-	// tc_func = func() common.Testcase_status {
-	// 	searchTerm :=  "select inner_job_id, inner_jobnet_id, method_flag, job_type, test_flag from ja_run_job_table where status = 2 and method_flag in"
-	// 	return JaRunIntervalTestWithDatabase("Icon_1", 0, 30, tc_4, common.Client, searchTerm)
-	// }
-	// tc_4.Set_function(tc_func)
-	// t.Add_testcase(*tc_4)
+	tc_4 := t.New_testcase(164, "JaRunInterval Test with Database. JaRun")
+	tc_func = func() common.Testcase_status {
+		searchTerm := "select inner_job_id, inner_jobnet_id, method_flag, job_type, test_flag from ja_run_job_table where status = 2 and method_flag in"
+		return JaRunIntervalTestWithDatabase("Icon_1", 0, 30, tc_4, common.Client, searchTerm)
+	}
+	tc_4.Set_function(tc_func)
+	t.Add_testcase(*tc_4)
 }
 
 func JaRunLoopNormalTest(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
