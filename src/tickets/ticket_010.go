@@ -9,50 +9,50 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-type Ticket_001 struct {
+type Ticket_010 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
 	Testcases                                   []dao.TestCase
 }
 
-func (t *Ticket_001) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
+func (t *Ticket_010) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
 	return dao.New_testcase(testcase_id, testcase_description)
 }
 
-func (t *Ticket_001) Get_no() uint {
+func (t *Ticket_010) Get_no() uint {
 	return t.Ticket_no
 }
 
-func (t *Ticket_001) Get_dsctn() string {
+func (t *Ticket_010) Get_dsctn() string {
 	return t.Ticket_description
 }
-func (t *Ticket_001) Set_PASSED_count(passed_count int) {
+func (t *Ticket_010) Set_PASSED_count(passed_count int) {
 	t.PASSED_count = passed_count
 }
 
-func (t *Ticket_001) Set_FAILED_count(failed_count int) {
+func (t *Ticket_010) Set_FAILED_count(failed_count int) {
 	t.FAILED_count = failed_count
 }
 
-func (t *Ticket_001) Set_MUSTCHECK_count(mustcheck_count int) {
+func (t *Ticket_010) Set_MUSTCHECK_count(mustcheck_count int) {
 	t.MUSTCHECK_count = mustcheck_count
 }
-func (t *Ticket_001) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_010) Add_testcase(tc dao.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_001) Get_testcases() []dao.TestCase {
+func (t *Ticket_010) Get_testcases() []dao.TestCase {
 	return t.Testcases
 }
 
 // Enter your ticket information here
-func (t *Ticket_001) Set_values() {
-	t.Ticket_no = 001 // Enter your ticket id
+func (t *Ticket_010) Set_values() {
+	t.Ticket_no = 010 // Enter your ticket id
 	t.Ticket_description = "Transaction files delete"
 }
 
-func (t *Ticket_001) Add_testcases() {
+func (t *Ticket_010) Add_testcases() {
 	// TESTCASE 74 (Transaction files delete)
 
 	tc_74 := t.New_testcase(1, "Transaction file delete wile 800 parallel jobnets are running ")

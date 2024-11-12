@@ -145,7 +145,7 @@ func RunJobnet(jobnetId string, processCount int, processCheckTimeout int, testc
 	fmt.Println(testcase.Info_log("Jobnet %s with registry number %s is completed.", jobnetId, run_jobnet_id))
 
 	// Check jobnet run status and exit code
-	fmt.Println(jobnet_run_info.Jobnet_status)
+	// fmt.Println(jobnet_run_info.Jobnet_status)
 	if jobnet_run_info.Jobnet_status != targetJobnetStatus || jobnet_run_info.Job_status != targetJobStatus {
 		fmt.Println(testcase.Err_log("Unexpected Jobnet or Job status. Jobnet_status: %s, Job_status: %s, Exit_cd: %d",
 			jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
