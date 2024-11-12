@@ -61,9 +61,90 @@ func (t *Ticket_844) Set_values() {
 // Add your test case here
 func (t *Ticket_844) Add_testcases() {
 
+	//TESTCASE 71
+	tc_71 := t.New_testcase(71, "Normal job execution after agent restart")
+	tc_func := func() common.Testcase_status {
+		//Test Case : "Normal job execution after agent restart"
+		//Task	    : stop the agent, delete all files in tmp, restart the agent
+		//Result    : "The JOB returns with an error"
+
+		var jobnet_id string = "Icon_1" // This value must be the same value as Jobnet_ID
+
+		if err := lib.Jobarg_enable_jobnet(jobnet_id, "jobicon_linux"); err != nil {	
+			tc_71.Err_log("Failed to enable jobnet, Error: %s", err)
+			return FAILED
+		}		
+		fmt.Println(tc_71.Info_log("Info: Jobnet enabled successfully."))
+		
+		// 1. Jobarg_cleanup_start.
+		// 2. Run Jobnet.
+		// 3. Stop the agent
+		// 4. Delete all files in tmp
+		// 5. Restart the agent
+
+		if err := lib.Jobarg_cleanup_linux(); err != nil {
+			tc_71.Err_log("Failed to cleanup jobarg, Error: %s", err)
+			return FAILED
+		}
+		fmt.Println(tc_71.Info_log("Info: Jobarg cleanup successfully."))
+
+		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "moon8", "JA_CMD", "sleep 10")
+		run_jobnet_id, error := lib.Jobarg_exec_E(jobnet_id, envs)
+		if error != nil {
+		fmt.Println(tc_71.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		return FAILED
+		}
+		fmt.Println(tc_71.Info_log("%s has been successfully run with registry number: %s", jobnet_id, run_jobnet_id))
+
+		err := lib.JobProcessCountCheck(1, 2, common.Client)
+		if err != nil {
+			fmt.Println(tc_71.Err_log("Error: %s, Failed to get process count.", err.Error()))
+			return FAILED
+		}
+		fmt.Println(tc_71.Info_log("Process count has reached %d", 1))
+
+		err = lib.Stop_jaz_agent_linux()
+		if err != nil {
+			tc_71.Err_log("Failed to stop agent, Error: %s", err)
+			return FAILED
+		}
+		fmt.Println(tc_71.Info_log("Info: Agent stopped successfully."))
+
+		if err := lib.Cleanup_agent_linux(); err != nil {
+			tc_71.Err_log("Failed to cleanup agent, Error: %s", err)
+			return FAILED
+		}
+		fmt.Println(tc_71.Info_log("Info: Agent cleanup successfully."))
+
+		if err := lib.Restart_jaz_agent_linux(); err != nil {
+			tc_71.Err_log("Failed to start agent, Error: %s", err)
+			return FAILED
+		}
+
+		targetJobnetStatus := "RUN"
+		targetJobStatus := "ERROR"
+		jobnet_run_info, err := lib.Jobarg_get_jobnet_info(run_jobnet_id,targetJobnetStatus,targetJobStatus)
+		if err != nil {
+			fmt.Println(tc_71.Err_log("Error getting jobnet info: %s", err.Error()))
+			return FAILED
+		}
+		fmt.Println(tc_71.Info_log("%s with registry number %s is completed.", jobnet_id, run_jobnet_id))
+
+		// Check jobnet run status and exit code.
+		if jobnet_run_info.Jobnet_status != targetJobnetStatus && jobnet_run_info.Job_status != targetJobStatus {
+			fmt.Println(tc_71.Err_log("Unexpected Jobnet status. Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
+			return FAILED
+		}
+
+		return PASSED
+	}
+
+	tc_71.Set_function(tc_func)
+	t.Add_testcase(*tc_71)
+
 	//TESTCASE 74
 	tc_74 := t.New_testcase(100001, "Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]")
-	tc_func := func() common.Testcase_status {
+	tc_func = func() common.Testcase_status {
 
 		// Test Case: "Execute 800 jobnets simutaneously."
 		//

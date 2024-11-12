@@ -107,14 +107,12 @@ func (t *Ticket_919) Add_testcases() {
 		return PASSED
 	}
 
-	// Attach the function to the test case
 	tc_1.Set_function(tc_func)
 	t.Add_testcase(*tc_1)
 }
 func (t *Ticket_919) lockTable(tc *dao.TestCase) error {
 	var err error
 
-	// Lock the table (MySQL or PostgreSQL)
 	if common.Is_mysql {
 		fmt.Println("Using MySQL - Locking table...")
 		_, err = common.DB.Exec("BEGIN;")
@@ -162,10 +160,9 @@ func (t *Ticket_919) lockTable(tc *dao.TestCase) error {
 func (t *Ticket_919) checkLog(tc_1 *dao.TestCase) common.Testcase_status {
 	const logFilePath = "/var/log/jobarranger/jobarg_agentd.log"
 	const logFileWarning = `retry count`
-	const maxRetries = 10                  // Maximum number of retries
-	const retryInterval = 10 * time.Second // Retry interval
+	const maxRetries = 10
+	const retryInterval = 10 * time.Second
 
-	// Try to find the log warning within the retries
 	for i := 0; i < maxRetries; i++ {
 		cmd := fmt.Sprintf(`cat %s | grep "%s"`, logFilePath, logFileWarning)
 		tc_1.Info_log("Executing command: %s", cmd)
@@ -179,12 +176,10 @@ func (t *Ticket_919) checkLog(tc_1 *dao.TestCase) common.Testcase_status {
 			return PASSED
 		}
 
-		// If the warning log is not found, retry after the interval
 		tc_1.Info_log("Warning log not found. Retrying in %v...", retryInterval)
 		time.Sleep(retryInterval)
 	}
 
-	// After retries, if log is not found, return FAILED
 	tc_1.Err_log("Warning log not found after retries, returning FAILED.")
 	return FAILED
 }
