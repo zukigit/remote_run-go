@@ -83,18 +83,18 @@ func (t *Ticket_1341) Add_testcases() {
 	tc_2.Set_function(tc_func)
 	t.Add_testcase(*tc_2)
 
-	tc_3 := t.New_testcase(162, "JaRunInterval Test with Database. JaJob")
+	tc_3 := t.New_testcase(162, "JaRunInterval Test with Database. JaRun")
 	tc_func = func() common.Testcase_status {
 		searchTerm := "select inner_job_id, inner_jobnet_id, method_flag, job_type, test_flag, inner_jobnet_main_id from ja_run_job_table where status = 1 and method_flag <> 3"
-		return JaRunIntervalTestWithDatabase("Icon_1", 0, 30, tc_3, common.Client, searchTerm)
+		return JaRunIntervalTestWithDatabase("Icon_1", 0, 30, tc_3, common.Client, searchTerm, "jarun")
 	}
 	tc_3.Set_function(tc_func)
 	t.Add_testcase(*tc_3)
 
-	tc_4 := t.New_testcase(164, "JaRunInterval Test with Database. JaRun")
+	tc_4 := t.New_testcase(164, "JaRunInterval Test with Database. JaJob")
 	tc_func = func() common.Testcase_status {
-		searchTerm := "select inner_job_id, inner_jobnet_id, method_flag, job_type, test_flag from ja_run_job_table where status = 2 and method_flag in"
-		return JaRunIntervalTestWithDatabase("Icon_1", 0, 30, tc_4, common.Client, searchTerm)
+		searchTerm := "select inner_job_id, inner_jobnet_id, job_type, method_flag, timeout_flag, start_time from ja_run_job_table"
+		return JaRunIntervalTestWithDatabase("Icon_1", 0, 30, tc_4, common.Client, searchTerm, "jajob")
 	}
 	tc_4.Set_function(tc_func)
 	t.Add_testcase(*tc_4)
@@ -154,7 +154,7 @@ func JaRunLoopNormalTestWithJaRunInterval(jobnetId string, processCount int, pro
 		fmt.Println(testcase.Err_log("Error Jaz server restart : %s", _err_restart))
 	}
 
-	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss-redhat9psql", "JA_CMD", "hostname")
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "hostname")
 	run_jobnet_id, err := lib.Jobarg_exec_E(jobnetId, envs)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error executing job %s: %s", jobnetId, err))
@@ -281,15 +281,29 @@ func ExtractJobStartTimes(logData string) (string, string, error) {
 	}
 }
 
-func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client, searchTerm string) common.Testcase_status {
+func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client, searchTerm string, jatype string) common.Testcase_status {
 
-	configPath := "/etc/jobarranger/jobarg_server.conf"
-	cmdGetInterval := fmt.Sprintf("grep -i 'JaRunInterval=' %s", configPath)
+	var getInterval string
+	var err error
 
-	// Execute the command remotely using SSH
-	getInterval, err := lib.GetOutputStrFromSSHCommand(client, cmdGetInterval)
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error get interval value : %s", err))
+	if jatype == "jarun" {
+		configPath := "/etc/jobarranger/jobarg_server.conf"
+		cmdGetInterval := fmt.Sprintf("grep -i 'JaRunInterval=' %s", configPath)
+
+		// Execute the command remotely using SSH
+		getInterval, err = lib.GetOutputStrFromSSHCommand(client, cmdGetInterval)
+		if err != nil {
+			fmt.Println(testcase.Err_log("Error get run interval value : %s", err))
+		}
+	} else {
+		configPath := "/etc/jobarranger/jobarg_server.conf"
+		cmdGetInterval := fmt.Sprintf("grep -i 'JaJobInterval=' %s", configPath)
+
+		// Execute the command remotely using SSH
+		getInterval, err = lib.GetOutputStrFromSSHCommand(client, cmdGetInterval)
+		if err != nil {
+			fmt.Println(testcase.Err_log("Error get job interval value : %s", err))
+		}
 	}
 
 	// Trim the output to remove extra whitespace
