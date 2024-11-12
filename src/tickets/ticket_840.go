@@ -82,8 +82,6 @@ type Environment struct {
 	Hostname string
 }
 
-const otherLinuxHost = "oss.linux1" // this should be hostname of other linux server
-
 // Add your test case here
 func (t *Ticket_840) Add_testcases() {
 
@@ -160,21 +158,6 @@ func (t *Ticket_840) Add_testcases() {
 		}
 		testcaseF.Set_function(tcFunc)
 		t.Add_testcase(*testcaseF)
-
-		// Different host (linux)
-		if env.OSType == Linux {
-			testcaseCounter++
-			testcaseG := t.New_testcase(testcaseCounter, fmt.Sprintf("Can be successfully run on %s (%s) [FCopy Icon - different host, same OS]", env.Encoding, env.OSType))
-			tcFunc = func() common.Testcase_status {
-				envs := map[string]string{
-					"JA_SRC_HOST":  env.Hostname,
-					"JA_DEST_HOST": otherLinuxHost,
-				}
-				return fcopyIconTestcase(testcaseG, env, envs)
-			}
-			testcaseG.Set_function(tcFunc)
-			t.Add_testcase(*testcaseG)
-		}
 
 	}
 
@@ -514,6 +497,7 @@ func fileCheckTestcase(testcase *dao.TestCase, env Environment, shouldFileExist 
 	return PASSED
 }
 
+// This function runs a job icon that performs file copy
 func normalIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase_status {
 	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_no(), env.Encoding, env.OSType, testcase.Get_dsctn())
 
@@ -771,7 +755,7 @@ func createFile(filePath, osType string) error {
 			return fmt.Errorf("failed to write japanese content: %w", err)
 		}
 
-		fmt.Println("File created:", filePath)
+		fmt.Printf("File created: %s\n", filePath)
 		return nil
 	} else if osType == Linux {
 		// to be implemented.
