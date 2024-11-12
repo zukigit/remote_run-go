@@ -11,69 +11,17 @@ import (
 	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"github.com/zukigit/remote_run-go/src/tickets"
+	"gopkg.in/yaml.v3"
 
 	"github.com/spf13/cobra"
 )
 
 var tkts, run_tickets []dao.Ticket
+var run_testcases []dao.TestCase
 
 func set_ticket_values(t []dao.Ticket) {
 	for _, ticket := range t {
 		ticket.Set_values()
-	}
-}
-
-func enable_common_jobnets() {
-	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
-	}
-
-	if err := lib.Jobarg_enable_jobnet("Icon_2", "Icon_2"); err != nil {
-		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
-	}
-
-	if err := lib.Jobarg_enable_jobnet("Icon_10", "Icon_10"); err != nil {
-		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
-	}
-
-	if err := lib.Jobarg_enable_jobnet("Icon_100", "Icon_100"); err != nil {
-		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
-	}
-
-	if err := lib.Jobarg_enable_jobnet("Icon_200", "Icon_200"); err != nil {
-		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
-	}
-
-	if err := lib.Jobarg_enable_jobnet("Icon_400", "Icon_400"); err != nil {
-		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
-	}
-
-	if err := lib.Jobarg_enable_jobnet("Icon_500", "Icon_500"); err != nil {
-		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
-	}
-
-	if err := lib.Jobarg_enable_jobnet("Icon_510", "Icon_510"); err != nil {
-		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
-	}
-
-	if err := lib.Jobarg_enable_jobnet("Icon_800", "Icon_800"); err != nil {
-		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
-	}
-
-	if err := lib.Jobarg_enable_jobnet("Icon_1000", "Icon_1000"); err != nil {
-		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
-	}
-
-	if err := lib.Jobarg_enable_jobnet("Icon_1020", "Icon_1020"); err != nil {
-		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
-	}
-
-	if err := lib.Jobarg_enable_jobnet("Icon_2040", "Icon_2040"); err != nil {
-		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
-	}
-
-	if err := lib.Jobarg_enable_jobnet("Icon_3000", "Icon_3000"); err != nil {
-		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
 	}
 }
 
@@ -102,40 +50,50 @@ func add_run_tickets(ticket_number uint) {
 	}
 }
 
-// Add your tickets here
-func add_testcases() {
-	for _, tkt := range tkts {
-		tkt.Add_testcases()
-	}
-}
+func add_run_testcases(testcase_number uint) {
+	for _, ticket := range run_tickets {
+		ticket.Add_testcases()
 
-func run_tc_(t dao.Ticket) {
-	lib.Logi(fmt.Sprintf("Ticket[%d] %s\n", t.Get_no(), t.Get_dsctn()))
-	lib.Logi("\nTest_cases:\n")
-	lib.Logi(fmt.Sprintf("%s\n", common.Endtestcase_string))
-	dao.Run_testcase(t)
-	dao.Set_total_tc_results(t)
-	lib.Logi("\nTotal_result:\n")
+		for _, testcase := range ticket.Get_testcases() {
+			if testcase_number == 0 || testcase_number == testcase.Get_no() {
+				testcase.Set_ticket_no(ticket.Get_no())
+				run_testcases = append(run_testcases, testcase)
 
-	if dao.Tc_unkown_cnt > 0 {
-		lib.Logi(fmt.Sprintf("PASSED: %d, FAILED: %d, MUST_CHECK: %d, UNKNOWN: %d\n", dao.Tc_passed_cnt, dao.Tc_failed_cnt, dao.Tc_chk_cnt, dao.Tc_unkown_cnt))
-	} else {
-		lib.Logi(fmt.Sprintf("PASSED: %d, FAILED: %d, MUST_CHECK: %d\n", dao.Tc_passed_cnt, dao.Tc_failed_cnt, dao.Tc_chk_cnt))
-	}
-	lib.Logi(fmt.Sprintf("%s\n", common.Endticket_string))
-}
-
-func run_tc(t []dao.Ticket) {
-	for _, ticket := range t {
-		if common.Specific_testcase_no == 0 {
-			run_tc_(ticket)
-		} else {
-			for _, tc := range ticket.Get_testcases() {
-				if tc.Get_id() == common.Specific_testcase_no {
-					run_tc_(ticket)
+				if testcase_number != 0 {
+					return
 				}
 			}
 		}
+	}
+}
+
+func save_runtks_records() {
+	yaml_data, err := yaml.Marshal(run_tickets)
+	if err != nil {
+		fmt.Println("Failed in getting password, Error:", err.Error())
+		os.Exit(1)
+	}
+
+	err = os.WriteFile(common.Filepath+".yml", yaml_data, 0644)
+	if err != nil {
+		fmt.Printf("Error writing YAML to file: %v\n", err)
+		return
+	}
+}
+
+func run_tc() {
+	for _, testcase := range run_testcases {
+		dao.Run_testcase(testcase)
+	}
+
+	if len(run_testcases) > 0 {
+		dao.Update_testcase_results_in_tickets(run_tickets)
+		save_runtks_records()
+
+		fmt.Println(lib.Formatted_log(common.INFO, "Logged File: %s.log", common.Filepath))
+		fmt.Println(lib.Formatted_log(common.INFO, "Yaml File: %s.yml", common.Filepath))
+	} else {
+		fmt.Println("There is no testcase to run.")
 	}
 }
 
@@ -161,36 +119,30 @@ var rootCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		common.Log_filename = lib.Get_log_filename()
 		common.Set_passwd()
 		common.Set_client()
 		defer common.Client.Close()
 
-		common.Set_db_hostname()
-		common.Set_default_db_port()
+		common.Filepath = lib.Get_filepath()
+		common.Set_sugar(common.Filepath + ".log")
+		defer common.Sugar.Sync()
 
 		// Initialize DB Connection
+		common.Set_db_hostname()
+		common.Set_default_db_port()
 		lib.ConnectDB("zabbix", "zabbix", "zabbix")
 		defer common.DB.Close()
 
-		common.Set_log_file(common.Log_filename)
-		defer common.Log_file.Close()
-
-		common.Set_ticket_logs_headers()
+		lib.Enable_common_jobnets()
 
 		add_tickets(&tkts)
 		set_ticket_values(tkts)
-		add_testcases()
 		check_duplicated_ticket()
-		add_run_tickets(common.Specific_ticket_no)
-		enable_common_jobnets()
-		run_tc(run_tickets) // run test cases
 
-		if len(run_tickets) > 0 {
-			fmt.Println(lib.Formatted_log(common.INFO, "Logged Filename: %s", common.Log_filename))
-		} else {
-			fmt.Println("There is no ticket to run.")
-		}
+		add_run_tickets(common.Specific_ticket_no)
+		add_run_testcases(common.Specific_testcase_no)
+
+		run_tc() // run test cases
 	},
 }
 
@@ -215,7 +167,7 @@ func init() {
 
 // Add your tickets here
 func add_tickets(t *[]dao.Ticket) {
-	// *t = append(*t, new(tickets.Ticket_000))
+	*t = append(*t, new(tickets.Ticket_000))
 	*t = append(*t, new(tickets.Ticket_1318))
 	*t = append(*t, new(tickets.Ticket_811))
 	*t = append(*t, new(tickets.Ticket_800))
@@ -223,4 +175,14 @@ func add_tickets(t *[]dao.Ticket) {
 	*t = append(*t, new(tickets.Ticket_844))
 	*t = append(*t, new(tickets.Ticket_794))
 	*t = append(*t, new(tickets.Ticket_775))
+	*t = append(*t, new(tickets.Ticket_825))
+	*t = append(*t, new(tickets.Ticket_1234))
+	*t = append(*t, new(tickets.Ticket_1341))
+	*t = append(*t, new(tickets.Ticket_962))
+	*t = append(*t, new(tickets.Ticket_923))
+	*t = append(*t, new(tickets.Ticket_968))
+	*t = append(*t, new(tickets.Ticket_940))
+	*t = append(*t, new(tickets.Ticket_943))
+	*t = append(*t, new(tickets.Ticket_919))
+	*t = append(*t, new(tickets.Ticket_952))
 }
