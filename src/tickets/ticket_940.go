@@ -116,12 +116,10 @@ func (t *Ticket_940) applyConfigAndRunTests(tc *dao.TestCase, configs []string, 
 		return status
 	}
 
-	// Restart server
 	if err := lib.Restart_jaz_server(); err != nil {
 		return t.logError(tc, "Failed to restart: %s", err)
 	}
 
-	// Check logs for timeout warnings (there must be more than 3 or 4 logs)
 	logFilePath := "/var/log/jobarranger/jobarg_server.log"
 	cmd := fmt.Sprintf(`cat %s | grep "Process is taking"`, logFilePath)
 
@@ -134,12 +132,9 @@ func (t *Ticket_940) applyConfigAndRunTests(tc *dao.TestCase, configs []string, 
 
 	tc.Info_log("Command output: %s", output)
 
-	// Count the number of "Process is taking" logs
 	logCount := countOccurrences(output, "Process is taking")
 
-	// If there are more than 3 or 4 logs, consider it PASSED
 	if logCount > 0 {
-		// Remove configurations that were added
 		for _, config := range configs {
 			if err := t.removeConfig(config, configFilePath); err != nil {
 				return t.logError(tc, "Failed to remove config %s, Error: %s", config, err)
@@ -162,13 +157,11 @@ func countOccurrences(str, substr string) int {
 	return count
 }
 
-// Function to log errors and return FAILED status
 func (t *Ticket_940) logError(tc *dao.TestCase, format string, args ...interface{}) common.Testcase_status {
 	fmt.Println(tc.Err_log(format, args...))
 	return FAILED
 }
 
-// Remove configuration from the config file
 func (t *Ticket_940) removeConfig(config, configFilePath string) error {
 	removeCmd := fmt.Sprintf(`sed -i '/%s/d' %s`, config, configFilePath)
 	_, err := lib.Ssh_exec_to_str(removeCmd)
@@ -176,7 +169,7 @@ func (t *Ticket_940) removeConfig(config, configFilePath string) error {
 }
 
 func (t *Ticket_940) runIcon100(tc *dao.TestCase, job string) common.Testcase_status {
-	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 5")
+	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 30")
 	if err != nil {
 		return t.logError(tc, "Error retrieving environment variables: %s", err)
 	}

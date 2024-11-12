@@ -3,6 +3,7 @@ package tickets
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
@@ -57,10 +58,10 @@ func (t *Ticket_943) Add_testcases() {
 
 	tc_func := func() common.Testcase_status {
 		job := "Icon_1"
-		if err := lib.Jobarg_cleanup_windows(); err != nil {
+		if err := lib.Jobarg_cleanup_linux(); err != nil {
 			return t.logError(tc_1, "Error during cleanup: %s", err)
 		}
-		if err := lib.Jobarg_enable_jobnet("Icon_1", "943a"); err != nil {
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "943"); err != nil {
 			return t.logError(tc_1, "Error during enabling jobnet: %s", err)
 		}
 
@@ -79,18 +80,19 @@ func (t *Ticket_943) Add_testcases() {
 
 	tc_func2 := func() common.Testcase_status {
 		job := "Icon_1"
-		if err := lib.Jobarg_cleanup_windows(); err != nil {
+		if err := lib.Jobarg_cleanup_linux(); err != nil {
 			return t.logError(tc_2, "Error during cleanup: %s", err)
 		}
-		if err := lib.Jobarg_enable_jobnet("Icon_1", "943a"); err != nil {
+		if err := lib.Jobarg_enable_jobnet("Icon_1", "943"); err != nil {
 			return t.logError(tc_2, "Error during enabling jobnet: %s", err)
 		}
 		status := t.runJob2(tc_2, job)
 		if status != PASSED {
+			resetHostname(tc_2)
 			return status
 		}
-
-		t.resetHostname(tc_2)
+		LogFound(tc_2)
+		resetHostname(tc_2)
 		return PASSED
 
 	}
@@ -100,7 +102,7 @@ func (t *Ticket_943) Add_testcases() {
 }
 
 func (t *Ticket_943) runJob(tc *dao.TestCase, job string) common.Testcase_status {
-	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 20")
+	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 120")
 	if err != nil {
 		return t.logError(tc, "Error retrieving environment variables: %s", err)
 	}
@@ -115,7 +117,6 @@ func (t *Ticket_943) runJob(tc *dao.TestCase, job string) common.Testcase_status
 	if err != nil {
 		return t.logError(tc, "Error retrieving run info for job %s: %s", job, err)
 	}
-	fmt.Printf("Jobnet Run Info: %+v\n", jobnet_run_info)
 
 	if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" {
 		tc.Info_log("%s completed successfully.", job)
@@ -125,7 +126,8 @@ func (t *Ticket_943) runJob(tc *dao.TestCase, job string) common.Testcase_status
 	return t.logError(tc, "%s failed. Jobnet_status: %s, Job_status: %s, Exit_cd: %d", job, jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd)
 }
 func (t *Ticket_943) runJob2(tc *dao.TestCase, job string) common.Testcase_status {
-	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 30")
+	lib.Delete_server_log()
+	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 120")
 	if err != nil {
 		return t.logError(tc, "Error retrieving environment variables: %s", err)
 	}
@@ -136,18 +138,13 @@ func (t *Ticket_943) runJob2(tc *dao.TestCase, job string) common.Testcase_statu
 	}
 	fmt.Printf("Executed job: %s with run_jobnet_id: %s\n", job, run_jobnet_id)
 
-	status := t.modifyHostnameForTestcase(tc)
-	if status != PASSED {
-		return status
-	}
+	status, err := modifyHostnameForTestcaseWhenInRunningState(tc, run_jobnet_id)
 
-	if status := t.LogFound(tc); status != PASSED {
-
-		t.resetHostname(tc)
-		return status
+	if err != nil {
+		tc.Err_log("Failed at modifyHostnameForTestcaseWhenInRunningState(tc, run_jobnet_id)")
+		return FAILED
 	}
-	t.resetHostname(tc)
-	return FAILED
+	return status
 
 }
 
@@ -175,23 +172,34 @@ func (t *Ticket_943) logError(tc *dao.TestCase, format string, args ...interface
 	return FAILED
 }
 
-func (t *Ticket_943) LogFound(tc *dao.TestCase) common.Testcase_status {
+func LogFound(tc_1 *dao.TestCase) bool {
+	const logFilePath = "/var/log/jobarranger/jobarg_server.log"
+	const logFileWarning = `"jarun_status_check()"`
+	const maxRetries = 10
+	const retryInterval = 10 * time.Second
 
-	cmd := fmt.Sprintf(`cat %s | grep "%s"`, logFilePath, logFileWarning)
-	tc.Info_log("Executing command: %s", cmd)
+	for i := 0; i < maxRetries; i++ {
+		cmd := fmt.Sprintf(`cat %s | grep %s`, logFilePath, logFileWarning)
+		fmt.Println(tc_1.Info_log("Executing command: %s", cmd))
 
-	warningLogOutput, err := lib.Ssh_exec_to_str(cmd)
-	fmt.Println(err)
+		warningLogOutput, err := lib.Ssh_exec_to_str(cmd)
 
-	if strings.Contains(warningLogOutput, logFileWarning) {
-		tc.Info_log("Warning log found, returning PASSED.")
-		return PASSED
+		fmt.Println(tc_1.Info_log("checking for warning log: %s", err))
 
+		if warningLogOutput != "" || warningLogOutput == " " {
+			fmt.Println(tc_1.Info_log("Warning log found, returning Passed."))
+			return true
+		}
+
+		fmt.Println(tc_1.Info_log("Warning log not found. Retrying in %v...", retryInterval))
+		time.Sleep(retryInterval)
 	}
-	return FAILED
+
+	fmt.Println(tc_1.Err_log("Warning log not found after retries, returning FAILED."))
+	return false
 }
 
-func (t *Ticket_943) modifyHostnameForTestcase(tc *dao.TestCase) common.Testcase_status {
+func modifyHostnameForTestcase(tc *dao.TestCase) common.Testcase_status {
 	var changeHostCmd string
 
 	// Check if it's MySQL
@@ -199,7 +207,8 @@ func (t *Ticket_943) modifyHostnameForTestcase(tc *dao.TestCase) common.Testcase
 		changeHostCmd = `UPDATE hosts SET host = 'new.hostname' WHERE host = 'oss.linux';`
 		_, err := common.DB.Exec(changeHostCmd)
 		if err != nil {
-			return t.logError(tc, "Failed to change hostname in MySQL database: %s", err)
+			tc.Err_log("Failed to change hostname in MySQL database: %s", err)
+			return FAILED
 		}
 		tc.Info_log("Hostname successfully changed in MySQL database.")
 
@@ -208,18 +217,20 @@ func (t *Ticket_943) modifyHostnameForTestcase(tc *dao.TestCase) common.Testcase
 		changeHostCmd = `UPDATE hosts SET host = 'new.hostname' WHERE host = 'oss.linux';`
 		_, err := common.DB.Exec(changeHostCmd)
 		if err != nil {
-			return t.logError(tc, "Failed to change hostname in PostgreSQL database: %s", err)
+			tc.Err_log("Failed to change hostname in PostgreSQL database: %s", err)
+			return FAILED
 		}
 		tc.Info_log("Hostname successfully changed in PostgreSQL database.")
 	} else {
 		// Handle unsupported database types
-		return t.logError(tc, "Unsupported database type.")
+		tc.Err_log("Unsupported database type.")
+		return FAILED
 	}
 
 	return PASSED
 }
 
-func (t *Ticket_943) resetHostname(tc *dao.TestCase) common.Testcase_status {
+func resetHostname(tc *dao.TestCase) common.Testcase_status {
 	var resetHostCmd string
 
 	if common.Is_mysql {
@@ -227,7 +238,8 @@ func (t *Ticket_943) resetHostname(tc *dao.TestCase) common.Testcase_status {
 		resetHostCmd = `UPDATE hosts SET host = 'oss.linux' WHERE host = 'new.hostname';`
 		_, err := common.DB.Exec(resetHostCmd)
 		if err != nil {
-			return t.logError(tc, "Failed to reset hostname in MySQL database: %s", err)
+			tc.Err_log("Failed to reset hostname in MySQL database: %s", err.Error())
+			return FAILED
 		}
 		tc.Info_log("Hostname successfully reset in MySQL database.")
 
@@ -235,12 +247,47 @@ func (t *Ticket_943) resetHostname(tc *dao.TestCase) common.Testcase_status {
 		resetHostCmd = `UPDATE hosts SET host = 'oss.linux' WHERE host = 'new.hostname';`
 		_, err := common.DB.Exec(resetHostCmd)
 		if err != nil {
-			return t.logError(tc, "Failed to reset hostname in PostgreSQL database: %s", err)
+			tc.Err_log("Failed to reset hostname in PostgreSQL database: %s", err.Error())
+			return FAILED
 		}
 		tc.Info_log("Hostname successfully reset in PostgreSQL database.")
 	} else {
-		return t.logError(tc, "Unsupported database type for resetting hostname.")
+		tc.Err_log("Unsupported database type for resetting hostname.")
+		return FAILED
 	}
 
 	return PASSED
+}
+
+func modifyHostnameForTestcaseWhenInRunningState(tc *dao.TestCase, registry_number string) (common.Testcase_status, error) {
+	var jobnet_status, job_status string
+	var err error
+	var index int
+
+	for {
+		jobnet_status, err = lib.Jobarg_get_JA_JOBNETSTATUS(registry_number)
+		if err != nil {
+			return FAILED, err
+		}
+
+		job_status, err = lib.Jobarg_get_JA_JOBSTATUS(registry_number)
+		if err != nil {
+			return FAILED, err
+		}
+
+		if jobnet_status == common.RUN && job_status == common.NORMAL {
+			modifyHostnameForTestcase(tc)
+			if LogFound(tc) {
+				resetHostname(tc)
+				return PASSED, nil
+			}
+			break
+		}
+		lib.Spinner_log(index, lib.Formatted_log(common.INFO, "Getting jobnet[%s] run info but jobnet is not in running state. jobnet_status: %s, job_status: %s", registry_number, jobnet_status, job_status))
+		time.Sleep(1 * time.Second)
+		index++
+	}
+
+	fmt.Println()
+	return FAILED, nil
 }
