@@ -134,8 +134,9 @@ func Jobarg_get_jobnet_info(registry_number string, targetJobnetStatus string, t
 			}
 			// Check if the jobnet status matches the target statuses
 			if jobnet_status == targetJobnetStatus && job_status == targetJobStatus {
+				goto FetchInfo
 				// Jobnet has reached the desired status, exit loop
-				goto FetchInfo // Use a labeled statement to exit the loop and fetch info
+				// Use a labeled statement to exit the loop and fetch info
 			}
 
 			// Log progress and wait before the next check
