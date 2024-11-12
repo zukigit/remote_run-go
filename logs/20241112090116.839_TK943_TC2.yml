@@ -1,0 +1,18 @@
+- ticket_no: 943
+  ticket_description: Issue 943 - 「cannot connect the host」error occurs
+  passed_count: 1
+  failed_count: 1
+  mustcheck_count: 0
+  testcases:
+    - testcase_no: 1
+      testcase_description: 1. Create jobnet that has job icon with HOSTNAME from checkbox and variable and sleep 120s.
+      pre_operation: []
+      operation: []
+      expected_results: []
+      testcase_status: FAILED
+    - testcase_no: 2
+      testcase_description: 1. Create jobnet that has job icon with HOSTNAME from checkbox and variable and sleep 120s.
+      pre_operation: []
+      operation: []
+      expected_results: []
+      testcase_status: PASSED
