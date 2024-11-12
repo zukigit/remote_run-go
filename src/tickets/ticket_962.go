@@ -9,10 +9,24 @@ import (
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
+
 type Ticket_962 struct {
 	no          uint
 	description string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
 	testcases   []dao.TestCase
+}
+
+func (t *Ticket_962) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = passed_count
+}
+
+func (t *Ticket_962) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_962) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
 }
 
 func (t *Ticket_962) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -43,7 +57,7 @@ func (t *Ticket_962) Set_values() {
 
 // Add your test case here
 func (t *Ticket_962) Add_testcases() {
-	// t.addTestcase85()
+	t.addTestcase85()
 	t.addTestcase86()
 }
 
