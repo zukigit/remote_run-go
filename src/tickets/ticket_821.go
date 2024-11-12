@@ -13,9 +13,10 @@ import (
 )
 
 type Ticket_821 struct {
-	no          uint
-	description string
-	testcases   []dao.TestCase
+	Ticket_no                                   uint
+	Ticket_description                          string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
+	Testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_821) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -23,25 +24,37 @@ func (t *Ticket_821) New_testcase(testcase_id uint, testcase_description string)
 }
 
 func (t *Ticket_821) Get_no() uint {
-	return t.no
+	return t.Ticket_no
+}
+
+func (t *Ticket_821) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = passed_count
+}
+
+func (t *Ticket_821) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_821) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
 }
 
 func (t *Ticket_821) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
 }
 
 func (t *Ticket_821) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+	t.Testcases = append(t.Testcases, tc)
 }
 
 func (t *Ticket_821) Get_testcases() []dao.TestCase {
-	return t.testcases
+	return t.Testcases
 }
 
 // Enter your ticket information here
 func (t *Ticket_821) Set_values() {
-	t.no = 821 // Enter your ticket id
-	t.description = "[Not Customer] Skip設定が入っているときの変数処理"
+	t.Ticket_no = 821 // Enter your ticket id
+	t.Ticket_description = "[Not Customer] Skip設定が入っているときの変数処理"
 }
 
 // Add your test case here
@@ -139,7 +152,7 @@ func CheckJobnetSuccess(jobnetId string, testcase *dao.TestCase, sshClient *ssh.
 		return FAILED
 	}
 	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
-	fmt.Println(testcase.Info_log("Wating for the job complete..."))
+	fmt.Println(testcase.Info_log("Waiting for the job complete..."))
 	sleepDuration := 3 * time.Minute
 	time.Sleep(sleepDuration)
 
@@ -239,7 +252,7 @@ func CheckJobarrangerAgentfolderandFileCreationProcess(jobnetId string, testcase
 	}
 	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Wating for the .job file create in jobs folder..."))
+	fmt.Println(testcase.Info_log("Waiting for the .job file create in jobs folder..."))
 	sleepDuration := 1 * time.Minute
 	time.Sleep(sleepDuration)
 
@@ -324,7 +337,7 @@ func CheckJobarrangerserverProcess(jobnetId string, testcase *dao.TestCase, sshC
 	}
 	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Wating for the .job file create in jobs folder..."))
+	fmt.Println(testcase.Info_log("Waiting for the .job file create in jobs folder..."))
 	sleepDuration := 1 * time.Minute
 	time.Sleep(sleepDuration)
 
@@ -351,6 +364,12 @@ func ChecktheDatarecoveryProcess(jobnetId string, testcase *dao.TestCase, sshCli
 	Pre-Operation State
 	******************/
 	lib.Jobarg_cleanup_linux()
+	configFilePath := "/etc/jobarranger/jobarg_server.conf"
+	err := lib.UpdateDebugLevel(common.Client, configFilePath, 3)
+	if err != nil {
+		fmt.Println(testcase.Err_log("Error updating DebugLevel: %v", err))
+	}
+	lib.Restart_jaz_server()
 	// Restart the jobarg agent
 	if err := lib.Restart_jaz_agent_linux(); err != nil {
 		fmt.Println(testcase.Err_log("Faild to restart the JAZ agent, Error: %s", err.Error()))
@@ -385,7 +404,7 @@ func ChecktheDatarecoveryProcess(jobnetId string, testcase *dao.TestCase, sshCli
 	}
 	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Wating for the .job file create in agent jobs folder..."))
+	fmt.Println(testcase.Info_log("Waiting for the .job file create in agent jobs folder..."))
 	sleepDuration := 1 * time.Minute
 	time.Sleep(sleepDuration)
 
@@ -404,7 +423,7 @@ func ChecktheDatarecoveryProcess(jobnetId string, testcase *dao.TestCase, sshCli
 	logFilePath := "/var/log/jobarranger/jobarg_server.log"
 	lib.ClearLogFile(common.Client, logFilePath)
 
-	_, err := lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
+	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error:%s", err))
 	} else {
@@ -436,7 +455,7 @@ func ChecktheDatarecoveryProcess(jobnetId string, testcase *dao.TestCase, sshCli
 	}
 	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Wating for the .job file create in server job folder..."))
+	fmt.Println(testcase.Info_log("Waiting for the .job file create in server job folder..."))
 	sleepDuration = 1 * time.Minute
 	time.Sleep(sleepDuration)
 
@@ -515,8 +534,8 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, ssh
 	/******************
 	Pre-Operation State
 	******************/
-	configFilePath := "/etc/jobarranger/jobarg_agentd.conf"
-	err := lib.UpdateDebugLevel(common.Client, configFilePath, 3)
+	configFilePath := "/etc/jobarranger/jobarg_server.conf"
+	err := lib.UpdateDebugLevel(common.Client, configFilePath, 4)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error updating DebugLevel: %v", err))
 	}
@@ -562,9 +581,13 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, ssh
 	}
 	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
+	fmt.Println(testcase.Info_log("Sleep the 1 minute to wait the next running job"))
+
+	sleepDuration := 1 * time.Minute
+	time.Sleep(sleepDuration)
+
 	//defaulQuery := `select * from ja_run_job_table jrjt where jrjt.job_id ='NORMAL-JOB' and jrjt.status =2 and jrjt.job_type = 4`
-	defaulQuery := `SELECT job_id, status, job_type FROM ja_run_job_table WHERE job_id='NORMAL-JOB' AND status=2 AND job_type=4
-`
+	defaulQuery := `SELECT job_id, status, job_type FROM ja_run_job_table WHERE job_id='NORMAL-JOB' AND status=2 AND job_type=4`
 	timeout := 2 * time.Minute
 	interval := 1 * time.Second
 
@@ -588,7 +611,7 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, ssh
 	}
 
 	fmt.Println(testcase.Info_log("Wait for the log info from agent log ..."))
-	sleepDuration := 2 * time.Minute
+	sleepDuration = 2 * time.Minute
 	time.Sleep(sleepDuration)
 
 	pattern = "[WARN] In ja_job_exec_close() agent close failed. retry count :[20]"
@@ -611,24 +634,9 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, ssh
 	} else {
 		lib.StartDatabaseService(common.Client, "mysqld")
 	}
-	fmt.Println(testcase.Info_log("Checking index file remain in server side ..."))
+	fmt.Println(testcase.Info_log("Waiting and Checking index file remain in server side ..."))
 	sleepDuration = 3 * time.Minute
 	time.Sleep(sleepDuration)
-
-	dirPath = "/var/log/jobarranger/job"
-	// Call the function to check if any .job files exist in the specified directory.
-	exists, err := lib.CheckRemoteIndexFileExists(common.Client, dirPath)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return FAILED
-	}
-
-	if exists {
-		fmt.Println(testcase.Err_log("Index file remain"))
-		return FAILED
-	} else {
-		fmt.Println(testcase.Info_log("Index file does not remain in %s ", dirPath))
-	}
 
 	/////////////////////////////////////
 
@@ -661,6 +669,77 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, ssh
 		fmt.Println(testcase.Err_log("STD_OUT and LOOPCNT data not found."))
 		return FAILED
 	}
+
+	dbQuery := fmt.Sprintf(`SELECT inner_job_id, before_value, value_name, COUNT(*) as count, MIN(seq_no) as min_seq_no
+FROM ja_run_value_before_table
+WHERE inner_jobnet_id = '%s'
+  AND (value_name = 'LOOPCNT' OR value_name = 'STD_OUT')
+GROUP BY inner_job_id, before_value, value_name
+HAVING COUNT(*) > 1
+ORDER BY min_seq_no ASC;`, run_jobnet_id)
+
+	rows, err := lib.GetData(lib.DBQuery(dbQuery))
+	if err != nil {
+		// If there was an error executing the query, print an error message
+		fmt.Println(testcase.Err_log("Error executing query: %v\n", err))
+		configFilePath = "/etc/jobarranger/jobarg_server.conf"
+		err = lib.UpdateDebugLevel(common.Client, configFilePath, 3)
+		if err != nil {
+			fmt.Println(testcase.Err_log("Error updating DebugLevel: %v", err))
+		}
+		return FAILED
+	}
+	// Ensure the rows are closed after processing
+	defer rows.Close()
+
+	if !rows.Next() {
+		fmt.Println(testcase.Info_log("Data duplicate does not occur in the database"))
+	} else {
+		fmt.Println(testcase.Err_log("Duplicate data found"))
+		configFilePath = "/etc/jobarranger/jobarg_server.conf"
+		err = lib.UpdateDebugLevel(common.Client, configFilePath, 3)
+		if err != nil {
+			fmt.Println(testcase.Err_log("Error updating DebugLevel: %v", err))
+		}
+		return FAILED
+	}
+
+	fmt.Println(testcase.Info_log("Wait for the duplicate data message in the serverlog"))
+
+	pattern = "Duplicate Data"
+	timeout = 30 * time.Second // Timeout duration
+	interval = 1 * time.Second // Polling interval
+	logFilePath = "/var/log/jobarranger/jobarg_server.log"
+
+	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
+	if err != nil {
+		fmt.Println(testcase.Err_log("Error:%s", err))
+	} else {
+		fmt.Println(testcase.Info_log("Duplicate Data found in server log"))
+	}
+
+	configFilePath = "/etc/jobarranger/jobarg_server.conf"
+	err = lib.UpdateDebugLevel(common.Client, configFilePath, 3)
+	if err != nil {
+		fmt.Println(testcase.Err_log("Error updating DebugLevel: %v", err))
+	}
+
+	dirPath = "/var/log/jobarranger/job"
+	// Call the function to check if any .job files exist in the specified directory.
+	exists, err := lib.CheckRemoteIndexFileExists(common.Client, dirPath)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return FAILED
+	}
+
+	if exists {
+		fmt.Println(testcase.Err_log("Index file remain"))
+		return FAILED
+	} else {
+		fmt.Println(testcase.Info_log("Index file does not remain in %s ", dirPath))
+	}
+
+	// lib.Jobarg_cleanup_linux()
 
 	return PASSED
 }
