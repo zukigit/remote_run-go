@@ -58,11 +58,11 @@ func (t *Ticket_775) Set_values() {
 func (t *Ticket_775) Add_testcases() {
 	// TESTCASE 001
 
-	charaterString24 := "1233ffweldfdkl12sderfdes"
-	charaterString40 := "1233ffweldfdkl12sderfdes1233ffweldfdkl12"
-	charaterString72 := "1233ffweldfdkl12sderfdes1233ffweldfdkl121233ffweldfdkl12sderfdes1233ffwe"
-	charaterString136 := "1233ffweldfdkl12sderfdes1233ffweldfdkl121233ffweldfdkl12sderfdes1233ffwe1233ffweldfdkl12sderfdes1233ffweldfdkl121233ffweldfdkl12sderfdes"
-	charaterString264 := "1233ffweldfdkl12sderfdes1233ffweldfdkl121233ffweldfdkl12sderfdes1233ffwe1233ffweldfdkl12sderfdes1233ffweldfdkl121233ffweldfdkl12sderfdes1233ffweldfdkl12sderfdes1233ffweldfdkl121233ffweldfdkl12sderfdes1233ffwe1233ffweldfdkl12sderfdes1233ffweldfdkl121233ffweldfdkl12"
+	charaterString24 := "abc123$%&こんにちはＨｅｌｌｏ*&+_1"
+	charaterString40 := "abc123$%&こんにちはＨｅｌｌｏ*&+_1abc123こんにちはＨｅｌｌｏ"
+	charaterString72 := "abc123$%&こんにちはＨｅｌｌｏ*&+_1abc123こんにちはＨｅｌｌｏabc123$%&こんにちはＨｅｌｌｏ*&+こんにちはＨｅｌｌｏ"
+	charaterString136 := "abc123$%&こんにちはＨｅｌｌｏ*&+_1abc123こんにちはＨｅｌｌｏabc123$%&こんにちはＨｅｌｌｏ*&+こんにちはＨｅｌｌｏabc123$%&こんにちはＨｅｌｌｏ*&+_1abc123こんにちはＨｅｌｌｏabc123$%&こんにちはＨｅｌｌｏ*&+_1"
+	charaterString264 := "abc123$%&こんにちはＨｅｌｌｏ*&+_1abc123こんにちはＨｅｌｌｏabc123$%&こんにちはＨｅｌｌｏ*&+こんにちはＨｅｌｌｏabc123$%&こんにちはＨｅｌｌｏ*&+こんにちはＨｅｌｌｏabc123$%&こんにちはＨｅｌｌｏ*&+_1abc123$%&こんにちはＨｅｌｌｏ*&+_1abc123こんにちはＨｅｌｌｏabc123$%&こんにちはＨｅｌｌｏ*&+こんにちはＨｅｌｌｏabc123$%&こんにちはＨｅｌｌｏ*&+_1abc123こんにちはＨｅｌｌｏabc123$%&こんにちはＨｅｌｌｏ*&+_1"
 
 	addTestCase := func(id int, description string, jobnetId string, jobname string, charcommand string) {
 		tc := t.New_testcase(uint(id), description) // Convert id to uint
@@ -92,7 +92,9 @@ func (t *Ticket_775) Add_testcases() {
 
 func executejobnet(jobnetId string, charcommand string, tc *dao.TestCase) common.Testcase_status {
 
-	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", charcommand)
+	runcharcommand := fmt.Sprintf("echo %s", charcommand)
+
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", runcharcommand)
 
 	run_jobnet_id, error := lib.Jobarg_exec_E(jobnetId, envs)
 
@@ -109,10 +111,12 @@ func executejobnet(jobnetId string, charcommand string, tc *dao.TestCase) common
 		tc.Err_log("Error: %s", error.Error())
 		return FAILED
 	}
-	output_command := jobnet_run_info.Std_error
+	output_command := jobnet_run_info.Std_out
 
 	if strings.Contains(output_command, charcommand) {
 		fmt.Println(tc.Info_log("Characters are match in STD_ERR"))
+		fmt.Println(tc.Info_log("Original Text: %q", charcommand))
+		fmt.Println(tc.Info_log("Job Output: %q", output_command))
 		return PASSED
 	} else {
 		tc.Err_log("Error: %s", "Characters are not match in STD_ERR")
