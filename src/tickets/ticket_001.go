@@ -27,7 +27,17 @@ func (t *Ticket_001) Get_no() uint {
 func (t *Ticket_001) Get_dsctn() string {
 	return t.Ticket_description
 }
+func (t *Ticket_001) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = passed_count
+}
 
+func (t *Ticket_001) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_001) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
+}
 func (t *Ticket_001) Add_testcase(tc dao.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
