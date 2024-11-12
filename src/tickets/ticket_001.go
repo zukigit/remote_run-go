@@ -10,9 +10,10 @@ import (
 )
 
 type Ticket_001 struct {
-	no          uint
-	description string
-	testcases   []dao.TestCase
+	Ticket_no                                   uint
+	Ticket_description                          string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
+	Testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_001) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -20,25 +21,25 @@ func (t *Ticket_001) New_testcase(testcase_id uint, testcase_description string)
 }
 
 func (t *Ticket_001) Get_no() uint {
-	return t.no
+	return t.Ticket_no
 }
 
 func (t *Ticket_001) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
 }
 
 func (t *Ticket_001) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+	t.Testcases = append(t.Testcases, tc)
 }
 
 func (t *Ticket_001) Get_testcases() []dao.TestCase {
-	return t.testcases
+	return t.Testcases
 }
 
 // Enter your ticket information here
 func (t *Ticket_001) Set_values() {
-	t.no = 001 // Enter your ticket id
-	t.description = "Transaction files delete"
+	t.Ticket_no = 001 // Enter your ticket id
+	t.Ticket_description = "Transaction files delete"
 }
 
 func (t *Ticket_001) Add_testcases() {

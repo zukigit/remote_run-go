@@ -8,11 +8,18 @@ require (
 )
 
 require (
+	github.com/pkg/sftp v1.13.7
 	github.com/spf13/cobra v1.8.1
+	go.uber.org/zap v1.27.0
 	golang.org/x/sys v0.25.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
-require filippo.io/edwards25519 v1.1.0 // indirect
+require (
+	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/kr/fs v0.1.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
+)
 
 require (
 	github.com/go-sql-driver/mysql v1.8.1
