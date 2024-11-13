@@ -441,6 +441,21 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 			// Compare the values
 			if duration >= time.Duration(getInterval)*time.Second {
 				fmt.Println("logIntervalValue is equal to or greater than getIntervalValue")
+				log_statement_cmd := fmt.Sprintf("sed -i 's/^log_statement\\s*=.*$/log_statement = none/' %s", defaultConfig)
+				_, log_statement_err := lib.GetOutputStrFromSSHCommand(client, log_statement_cmd)
+				if log_statement_err != nil {
+					fmt.Println("Error setting log_statement to none:", log_statement_err)
+				} else {
+					fmt.Println("log_statement has been set to none successfully.")
+				}
+
+				time.Sleep(5 * time.Second)
+				reloadCmd := `bash -c 'systemctl restart postgresql'`
+				_, err_restart := lib.GetOutputStrFromSSHCommand(client, reloadCmd)
+				if err_restart != nil {
+					fmt.Println("Error reloading PostgreSQL:", err_restart)
+					return FAILED
+				}
 				lib.Restart_jaz_server()
 				return PASSED
 			} else {
@@ -466,14 +481,51 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 			return FAILED
 		}
 
-		log_sed_cmd := fmt.Sprintf(
-			"sed -i -e '/^\\[mysqld\\]/a general_log = 1' -e '/^\\[mysqld\\]/a general_log_file = /var/log/mysql/general.log' %s",
-			config,
-		)
-		output, _log_sed_err := lib.Ssh_exec(log_sed_cmd)
-		fmt.Println("Log statement output:", output)
-		if _log_sed_err != nil {
-			fmt.Println(testcase.Err_log("Error log statement : %s", _log_sed_err))
+		// Command to check if [mysqld] exists in the config file
+		checkMysqldCmd := "grep '^\\[mysqld\\]' /etc/my.cnf "
+		check_block, checkErr := lib.Ssh_exec_to_str(checkMysqldCmd)
+
+		fmt.Println(checkErr)
+
+		// If [mysqld] block is not found
+		if check_block == "" {
+			// Insert [mysqld] block at the beginning of the file
+			insertMysqldCmd := fmt.Sprintf(
+				"sudo sed -i '1i\\\n[mysqld]\\ngeneral_log = 1\\ngeneral_log_file = /var/log/mysql/general.log' %s",
+				config,
+			)
+			_, insertErr := lib.Ssh_exec(insertMysqldCmd)
+			if insertErr != nil {
+				fmt.Println("Error inserting [mysqld] block at the beginning:", insertErr)
+			} else {
+				fmt.Println("[mysqld] block added successfully at the beginning of the file.")
+			}
+		} else {
+			// [mysqld] section exists, check for general_log and general_log_file
+			checkLogSettingsCmd := fmt.Sprintf(
+				"grep -q '^general_log' %s && grep -q '^general_log_file' %s",
+				config,
+				config,
+			)
+			_, checkLogSettingsErr := lib.Ssh_exec(checkLogSettingsCmd)
+
+			// If the general_log and general_log_file are not present
+			if checkLogSettingsErr != nil {
+				// Append general_log and general_log_file under the existing [mysqld] section
+				appendMysqldCmd := fmt.Sprintf(
+					"sudo sed -i '/^\\[mysqld\\]/a\\\ngeneral_log = 1\\ngeneral_log_file = /var/log/mysql/general.log' %s",
+					config,
+				)
+				_, appendErr := lib.Ssh_exec(appendMysqldCmd)
+				if appendErr != nil {
+					fmt.Println("Error appending settings under the [mysqld] section:", appendErr)
+				} else {
+					fmt.Println("Settings successfully appended under the [mysqld] section.")
+				}
+			} else {
+				// general_log and general_log_file already exist, so do nothing
+				fmt.Println("[mysqld] section already contains general_log and general_log_file. No changes made.")
+			}
 		}
 
 		// Optionally, reload PostgreSQL after the change
@@ -517,7 +569,19 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 			// Compare the values
 			if duration >= time.Duration(getInterval)*time.Second {
 				fmt.Println("logIntervalValue is equal to or greater than getIntervalValue")
+				closeGencmd := "sudo sed -i '/^general_log/ s/^/#/' /etc/my.cnf && sudo sed -i '/^general_log_file/ s/^/#/' /etc/my.cnf"
+				_, close_gen_err := lib.Ssh_exec(closeGencmd)
+				if close_gen_err != nil {
+					fmt.Println(testcase.Err_log("Error close gen cmd : %s", close_gen_err))
+				}
+
+				time.Sleep(5 * time.Second)
 				lib.Restart_jaz_server()
+				reloadCmd := `bash -c 'systemctl restart mysqld'`
+				_, err_restart := lib.GetOutputStrFromSSHCommand(client, reloadCmd)
+				if err_restart != nil {
+					fmt.Println("Error reloading mysql :", err_restart)
+				}
 				return PASSED
 			} else {
 				fmt.Println("logIntervalValue is less than getIntervalValue")
