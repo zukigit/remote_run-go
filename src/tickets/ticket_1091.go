@@ -222,7 +222,7 @@ func (t *Ticket_1091) Add_testcases() {
 				timeout := time.Now().Add(timeoutDuration)
 				for time.Now().Before(timeout) {
 					result, executeResult = Run_Linux_Command_Str(tc_99, "cat /var/log/jobarranger/jobarg_server.log | grep 'In ja_send_ipchange_request(), Server Ip is up to date in'")
-					if executeResult != "" && executeResult != " " && result != false {
+					if !result || (executeResult != "" && executeResult != " ") {
 						break
 					}
 					time.Sleep(1 * time.Second)
