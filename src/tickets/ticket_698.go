@@ -12,10 +12,10 @@ import (
 )
 
 type Ticket_698 struct {
-	no                                          uint
-	description                                 string
+	Ticket_no                                   uint
+	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	testcases                                   []dao.TestCase
+	Testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_698) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -23,7 +23,7 @@ func (t *Ticket_698) New_testcase(testcase_id uint, testcase_description string)
 }
 
 func (t *Ticket_698) Get_no() uint {
-	return t.no
+	return t.Ticket_no
 }
 
 func (t *Ticket_698) Set_PASSED_count(passed_count int) {
@@ -39,21 +39,21 @@ func (t *Ticket_698) Set_MUSTCHECK_count(mustcheck_count int) {
 }
 
 func (t *Ticket_698) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
 }
 
 func (t *Ticket_698) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+	t.Testcases = append(t.Testcases, tc)
 }
 
 func (t *Ticket_698) Get_testcases() []dao.TestCase {
-	return t.testcases
+	return t.Testcases
 }
 
 // Enter your ticket information here
 func (t *Ticket_698) Set_values() {
-	t.no = 698 // Enter your ticket id
-	t.description = "Reconnect and retry case for connection agent(Job Icon, File Transfer, Reboot)"
+	t.Ticket_no = 698 // Enter your ticket id
+	t.Ticket_description = "Reconnect and retry case for connection agent(Job Icon, File Transfer, Reboot)"
 }
 
 func (t *Ticket_698) Add_testcases() {
@@ -348,7 +348,7 @@ func CheckWhetherTheJobIconRunsNormally(jobnetId string, testcase *dao.TestCase,
 	}
 	fmt.Println(testcase.Info_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
 
-	if testcase.Get_id() == 4 {
+	if testcase.Get_ticket_no() == 4 {
 		folderPath := "/tmp/"
 		configFilePath := folderPath
 		if !strings.HasSuffix(folderPath, "/") {
@@ -427,7 +427,7 @@ func AgentConnectionReconnection(jobnetId string, sleepCount int, testcase *dao.
 	}
 	fmt.Println(testcase.Info_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
 
-	if testcase.Get_id() == 5 || testcase.Get_id() == 6 {
+	if testcase.Get_ticket_no() == 5 || testcase.Get_ticket_no() == 6 {
 		folderPath := "/tmp/"
 		configFilePath := folderPath
 		if !strings.HasSuffix(folderPath, "/") {

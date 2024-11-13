@@ -281,6 +281,7 @@ func Jobarg_server_check_log(searchLog string) ([]string, error) {
 	}
 
 	return filteredLogs, nil
+}
 
 func Enable_common_jobnets() {
 	if err := Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {

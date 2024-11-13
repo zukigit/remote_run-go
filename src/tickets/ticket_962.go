@@ -9,12 +9,11 @@ import (
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
-
 type Ticket_962 struct {
-	no          uint
-	description string
+	Ticket_no                                   uint
+	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	testcases   []dao.TestCase
+	Testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_962) Set_PASSED_count(passed_count int) {
@@ -34,25 +33,25 @@ func (t *Ticket_962) New_testcase(testcase_id uint, testcase_description string)
 }
 
 func (t *Ticket_962) Get_no() uint {
-	return t.no
+	return t.Ticket_no
 }
 
 func (t *Ticket_962) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
 }
 
 func (t *Ticket_962) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+	t.Testcases = append(t.Testcases, tc)
 }
 
 func (t *Ticket_962) Get_testcases() []dao.TestCase {
-	return t.testcases
+	return t.Testcases
 }
 
 // Enter your ticket information here
 func (t *Ticket_962) Set_values() {
-	t.no = 962 // Enter your ticket id
-	t.description = "Check process for jobarg_session's processes"
+	t.Ticket_no = 962 // Enter your ticket id
+	t.Ticket_description = "Check process for jobarg_session's processes"
 }
 
 // Add your test case here
@@ -62,7 +61,7 @@ func (t *Ticket_962) Add_testcases() {
 }
 
 // General jobnet setup function
-func (t *Ticket_962) setupJobnet(jobnetID, cmd string,tc *dao.TestCase) (string, error) {
+func (t *Ticket_962) setupJobnet(jobnetID, cmd string, tc *dao.TestCase) (string, error) {
 	// Cleanup jobarg
 	if err := lib.Jobarg_cleanup_linux(); err != nil {
 		return "", fmt.Errorf("failed to cleanup jobarg, error: %s", err)
@@ -102,7 +101,7 @@ func (t *Ticket_962) addTestcase85() {
 		// Check jobnet status
 		targetJobnetStatus := "END"
 		targetJobStatus := "NORMAL"
-		jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(runJobnetID, targetJobnetStatus, targetJobStatus)
+		jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(runJobnetID, targetJobnetStatus, targetJobStatus, 5)
 		if err != nil {
 			tc.Err_log("Error getting jobnet info: %s", err.Error())
 			return FAILED
@@ -127,7 +126,7 @@ func (t *Ticket_962) addTestcase86() {
 		jobnetID := "Icon_1"
 
 		// Set up the jobnet
-		runJobnetID, err := t.setupJobnet(jobnetID, "agentless",tc)
+		runJobnetID, err := t.setupJobnet(jobnetID, "agentless", tc)
 		if err != nil {
 			tc.Err_log(err.Error())
 			return FAILED
@@ -169,7 +168,7 @@ func (t *Ticket_962) addTestcase86() {
 		// Check jobnet run status
 		targetJobnetStatus := "RUN"
 		targetJobStatus := "ERROR"
-		jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(runJobnetID, targetJobnetStatus, targetJobStatus)
+		jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(runJobnetID, targetJobnetStatus, targetJobStatus, 5)
 		if err != nil {
 			tc.Err_log("Error getting jobnet info: %s", err.Error())
 			return FAILED
