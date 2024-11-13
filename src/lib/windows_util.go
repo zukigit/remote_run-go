@@ -12,6 +12,8 @@ import (
 
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/mgr"
+
+	"os/exec"
 )
 
 func Check_service_status_windows(service string) (bool, error) {
@@ -108,6 +110,17 @@ func Restart_jaz_agent_windows() error {
 
 func Stop_jaz_agent_windows() error {
 	return Stop_service_windows("Job Arranger Agent")
+}
+
+func Execute_cmd_window(command string) ([]byte, error) {
+	cmd := exec.Command("cmd", "/C", command)
+
+	return cmd.CombinedOutput()
+}
+
+func Execute_cmd_window_str(command string) (string, error) {
+	output, err := Execute_cmd_window(command)
+	return string(output), err
 }
 
 // To use this function, you must have jobarg_agentd default filepath.

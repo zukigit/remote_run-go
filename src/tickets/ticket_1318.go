@@ -7,9 +7,10 @@ import (
 )
 
 type Ticket_1318 struct {
-	no          uint
-	description string
-	testcases   []dao.TestCase
+	Ticket_no                                   uint
+	Ticket_description                          string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
+	Testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_1318) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
@@ -17,24 +18,36 @@ func (t *Ticket_1318) New_testcase(testcase_id uint, testcase_description string
 }
 
 func (t *Ticket_1318) Get_no() uint {
-	return t.no
+	return t.Ticket_no
+}
+
+func (t *Ticket_1318) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = passed_count
+}
+
+func (t *Ticket_1318) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_1318) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
 }
 
 func (t *Ticket_1318) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
 }
 
 func (t *Ticket_1318) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+	t.Testcases = append(t.Testcases, tc)
 }
 
 func (t *Ticket_1318) Get_testcases() []dao.TestCase {
-	return t.testcases
+	return t.Testcases
 }
 
 func (t *Ticket_1318) Set_values() {
-	t.no = 1318
-	t.description = "Fixed for negative JOB_EXT_CD return value."
+	t.Ticket_no = 1318
+	t.Ticket_description = "Fixed for negative JOB_EXT_CD return value."
 }
 
 // Add your testcase here
@@ -95,6 +108,7 @@ func (t *Ticket_1318) Add_testcases() {
 	tc_func = func() common.Testcase_status {
 
 		// Set joabrg agent config value
+		tc_169.Add_doc(common.PRE_OPT, "Change jobarg-agent's config ExtUnsignedFlag=1")
 		err := lib.Ja_set_agent_config_windows("ExtUnsignedFlag", "1")
 		if err != nil {
 			tc_169.Err_log("Failed to set joabrg agent config value. Error: %s", err.Error())
@@ -102,6 +116,7 @@ func (t *Ticket_1318) Add_testcases() {
 		}
 
 		// Restart jobarg-agentd
+		tc_169.Add_doc(common.PRE_OPT, "Restart jobarg-agentd service")
 		err = lib.Restart_jaz_agent_windows()
 		if err != nil {
 			tc_169.Err_log("Failed to restart windows service. Error: %s", err.Error())
@@ -109,6 +124,7 @@ func (t *Ticket_1318) Add_testcases() {
 		}
 
 		// Enable jobnet
+		tc_169.Add_doc(common.PRE_OPT, "Enable jobnet for windows agent.")
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_windows"); err != nil {
 			tc_169.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
@@ -117,6 +133,7 @@ func (t *Ticket_1318) Add_testcases() {
 		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.windows", "JA_CMD", "exit -100000;")
 
 		// Run jobnet
+		tc_169.Add_doc(common.PRE_OPT, "Run jobnet. JA_HOSTNAME: oss.windows, JA_CMD: exit -100000;.")
 		run_jobnet_id, error := lib.Jobarg_exec_E("Icon_1", envs)
 		if error != nil {
 			tc_169.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id)
@@ -131,6 +148,7 @@ func (t *Ticket_1318) Add_testcases() {
 		}
 
 		// Check jobnet run status and exit code.
+		tc_169.Add_doc(common.PRE_OPT, "JObnet status must be END, job status must be normal and exitcode must be 4294867296.")
 		if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Exit_cd == 4294867296 {
 			return PASSED
 		}
