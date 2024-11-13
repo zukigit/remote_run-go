@@ -67,11 +67,16 @@ func Jobarg_get_LASTSTDERR(registry_number string) (string, error) {
 }
 
 // Jobarg_get_jobnet_run_info waits util the jobnet is done or get error and returns Jobnet run info.
+//
+// Modified: Added a elapsed time counter.
 func Jobarg_get_jobnet_run_info(registry_number string) (*common.Jobnet_run_info, error) {
 	var jobnet_status, job_status, std_out, std_error string
 	var err error
 	var index int
 	var exit_cd int64
+
+	// taking current time snapshot
+	start := time.Now()
 
 	for {
 		jobnet_status, err = Jobarg_get_JA_JOBNETSTATUS(registry_number)
@@ -87,7 +92,18 @@ func Jobarg_get_jobnet_run_info(registry_number string) (*common.Jobnet_run_info
 		if jobnet_status == common.END || (jobnet_status == common.RUN && job_status == common.ERROR) || jobnet_status == common.ENDERR || jobnet_status == common.RUNERR {
 			break
 		}
-		Spinner_log(index, Formatted_log(common.INFO, "Getting jobnet[%s] run info but jobnet is not finished yet. jobnet_status: %s, job_status: %s", registry_number, jobnet_status, job_status))
+
+		// Calculating elapsed time.
+		elapsed := time.Since(start)
+		// Extract hours, minutes, and seconds from elapsed time
+		hours := int(elapsed.Hours())
+		minutes := int(elapsed.Minutes()) % 60
+		seconds := int(elapsed.Seconds()) % 60
+
+		// Print in HH:MM:SS format with \r to overwrite the line
+		//fmt.Printf("\r%02d:%02d:%02d", hours, minutes, seconds)
+
+		Spinner_log(index, Formatted_log(common.INFO, "Getting jobnet[%s] run info but jobnet is not finished yet. jobnet_status: %s, job_status: %s Elapsed Time: %02d:%02d:%02d", registry_number, jobnet_status, job_status, hours, minutes, seconds))
 		time.Sleep(1 * time.Second)
 		index++
 	}
