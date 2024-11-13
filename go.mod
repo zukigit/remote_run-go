@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/pkg/sftp v1.13.7
 	github.com/spf13/cobra v1.8.1
 	go.uber.org/zap v1.27.0
 	golang.org/x/sys v0.25.0
@@ -16,6 +17,7 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/kr/fs v0.1.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 )
 

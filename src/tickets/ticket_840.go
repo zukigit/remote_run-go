@@ -251,7 +251,7 @@ func rebootIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 	// Wait jobnet finishes and get jobnet run info.
 	targetJobnetStatus := "END"
 	targetJobStatus := "NORMAL"
-	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus)
+	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus, 10)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error getting jobnet info: %s", err.Error()))
 		return FAILED
@@ -345,7 +345,7 @@ func fileWaitTestcase(testcase *dao.TestCase, env Environment) common.Testcase_s
 	// Wait jobnet finishes and get jobnet run info.
 	targetJobnetStatus := "END"
 	targetJobStatus := "NORMAL"
-	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus)
+	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus, 5)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error getting jobnet info: %s", err.Error()))
 		return FAILED
@@ -459,7 +459,7 @@ func fileCheckTestcase(testcase *dao.TestCase, env Environment, shouldFileExist 
 	// Wait jobnet finishes and get jobnet run info.
 	targetJobnetStatus := "END"
 	targetJobStatus := "NORMAL"
-	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus)
+	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus, 5)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error getting jobnet info: %s", err.Error()))
 		return FAILED
@@ -586,7 +586,7 @@ func normalIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 	// Wait jobnet finishes and get jobnet run info.
 	targetJobnetStatus := "END"
 	targetJobStatus := "NORMAL"
-	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus)
+	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus, 5)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error getting jobnet info: %s", err.Error()))
 		return FAILED
@@ -716,7 +716,7 @@ WHERE
 	// Wait jobnet finishes and get jobnet run info.
 	targetJobnetStatus := "END"
 	targetJobStatus := "NORMAL"
-	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus)
+	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus, 5)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error getting jobnet info: %s", err.Error()))
 		return FAILED
