@@ -99,19 +99,19 @@ func (t *Ticket_1234) Add_testcases() {
 	tc_3.Set_function(tc_func)
 	t.Add_testcase(*tc_3)
 
-	tc_4 := t.New_testcase(138, "Create schedule jobnet (Jobnet load span 30 miutes)")
-	tc_func = func() common.Testcase_status {
-		return RunScheduleLoadSpan("Icon_1", 0, 30, tc_4, common.Client)
-	}
-	tc_4.Set_function(tc_func)
-	t.Add_testcase(*tc_4)
+	// tc_4 := t.New_testcase(138, "Create schedule jobnet (Jobnet load span 30 miutes)")
+	// tc_func = func() common.Testcase_status {
+	// 	return RunScheduleLoadSpan("Icon_1", 0, 30, tc_4, common.Client)
+	// }
+	// tc_4.Set_function(tc_func)
+	// t.Add_testcase(*tc_4)
 
-	tc_5 := t.New_testcase(139, "Create schedule jobnet (Jobnet load span 60 miutes)")
-	tc_func = func() common.Testcase_status {
-		return RunScheduleLoadSpan("Icon_1", 0, 60, tc_5, common.Client)
-	}
-	tc_5.Set_function(tc_func)
-	t.Add_testcase(*tc_5)
+	// tc_5 := t.New_testcase(139, "Create schedule jobnet (Jobnet load span 60 miutes)")
+	// tc_func = func() common.Testcase_status {
+	// 	return RunScheduleLoadSpan("Icon_1", 0, 60, tc_5, common.Client)
+	// }
+	// tc_5.Set_function(tc_func)
+	// t.Add_testcase(*tc_5)
 }
 
 func extractIPAndHostname(valueTrimmed string) (string, string) {

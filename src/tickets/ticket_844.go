@@ -70,12 +70,12 @@ func (t *Ticket_844) Add_testcases() {
 
 		var jobnet_id string = "Icon_1" // This value must be the same value as Jobnet_ID
 
-		if err := lib.Jobarg_enable_jobnet(jobnet_id, "jobicon_linux"); err != nil {	
+		if err := lib.Jobarg_enable_jobnet(jobnet_id, "jobicon_linux"); err != nil {
 			tc_71.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
-		}		
+		}
 		fmt.Println(tc_71.Info_log("Info: Jobnet enabled successfully."))
-		
+
 		// 1. Jobarg_cleanup_start.
 		// 2. Run Jobnet.
 		// 3. Stop the agent
@@ -91,8 +91,8 @@ func (t *Ticket_844) Add_testcases() {
 		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "moon8", "JA_CMD", "sleep 10")
 		run_jobnet_id, error := lib.Jobarg_exec_E(jobnet_id, envs)
 		if error != nil {
-		fmt.Println(tc_71.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
-		return FAILED
+			fmt.Println(tc_71.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+			return FAILED
 		}
 		fmt.Println(tc_71.Info_log("%s has been successfully run with registry number: %s", jobnet_id, run_jobnet_id))
 
@@ -123,7 +123,7 @@ func (t *Ticket_844) Add_testcases() {
 
 		targetJobnetStatus := "RUN"
 		targetJobStatus := "ERROR"
-		jobnet_run_info, err := lib.Jobarg_get_jobnet_info(run_jobnet_id,targetJobnetStatus,targetJobStatus)
+		jobnet_run_info, err := lib.Jobarg_get_jobnet_info(run_jobnet_id, targetJobnetStatus, targetJobStatus, 10)
 		if err != nil {
 			fmt.Println(tc_71.Err_log("Error getting jobnet info: %s", err.Error()))
 			return FAILED

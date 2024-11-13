@@ -59,23 +59,39 @@ func Stop_jaz_server() error {
 	return err
 }
 
+func Sleep_linux(sleepCount int) error {
+	_, err := Ssh_exec_to_str("sleep " + strconv.Itoa(sleepCount))
+  return err
+}
+
 func Clear_linux_jaz_agent_log() error {
 	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_agentd.log")
 	return err
 }
+
 func Disable_jaz_server() error {
 	_, err := Ssh_exec_to_str("systemctl disable jobarg-server")
+	return err
+}
+
+func Clean_jaz_server_log() error {
+	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_server.log")
 
 	return err
+}
+
+func Clean_jaz_agent_log() error {
+	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_agent.log")
+  return err
 }
 
 func Clear_linux_jaz_server_log() error {
 	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_server.log")
 	return err
 }
+
 func Start_jaz_server() error {
 	_, err := Ssh_exec_to_str("systemctl start jobarg-server")
-
 	return err
 }
 
@@ -493,7 +509,6 @@ func WaitForPatternInLogFile(client *ssh.Client, filePath, pattern string, timeo
 		}
 	}
 }
-
 func Delete_agent_log() error {
 	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_agentd.log")
 
@@ -504,5 +519,4 @@ func Delete_server_log() error {
 	_, err := Ssh_exec_to_str("> /var/log/jobarranger/jobarg_server.log")
 
 	return err
-
 }

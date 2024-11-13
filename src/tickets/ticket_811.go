@@ -319,7 +319,7 @@ func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout in
 	// Wait jobnet finishes and get jobnet run info.
 	targetJobnetStatus := "ENDERR"
 	targetJobStatus := "ERROR"
-	jobnet_run_info, err := lib.Jobarg_get_jobnet_info(run_jobnet_id, targetJobnetStatus, targetJobStatus)
+	jobnet_run_info, err := lib.Jobarg_get_jobnet_info(run_jobnet_id, targetJobnetStatus, targetJobStatus, 1)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error getting jobnet info: %s", err.Error()))
 		return FAILED
@@ -400,7 +400,7 @@ func RunJobnetAndAbortJobIcon(jobnetId string, processCount int, processCheckTim
 	// Wait jobnet finishes and get jobnet run info.
 	targetJobnetStatus := "RUN"
 	targetJobStatus := "ERROR"
-	jobnet_run_info, err := lib.Jobarg_get_jobnet_info(run_jobnet_id, targetJobnetStatus, targetJobStatus)
+	jobnet_run_info, err := lib.Jobarg_get_jobnet_info(run_jobnet_id, targetJobnetStatus, targetJobStatus, 1)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error getting jobnet info: %s", err.Error()))
 		return FAILED

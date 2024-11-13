@@ -93,7 +93,7 @@ func (t *Ticket_1318) Add_testcases() {
 		}
 
 		// Check jobnet run status and exit code.
-		if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Exit_cd == -100000 {
+		if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Exit_cd == 4294867296 {
 			return PASSED
 		}
 

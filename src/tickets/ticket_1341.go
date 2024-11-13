@@ -83,18 +83,18 @@ func (t *Ticket_1341) Add_testcases() {
 	tc_2.Set_function(tc_func)
 	t.Add_testcase(*tc_2)
 
-	tc_3 := t.New_testcase(162, "JaRunInterval Test with Database. JaJob")
+	tc_3 := t.New_testcase(162, "JaRunInterval Test with Database. JaRun")
 	tc_func = func() common.Testcase_status {
 		searchTerm := "select inner_job_id, inner_jobnet_id, method_flag, job_type, test_flag, inner_jobnet_main_id from ja_run_job_table where status = 1 and method_flag <> 3"
-		return JaRunIntervalTestWithDatabase("Icon_1", 0, 30, tc_3, common.Client, searchTerm)
+		return JaRunIntervalTestWithDatabase("Icon_1", 0, 30, tc_3, common.Client, searchTerm, "jarun")
 	}
 	tc_3.Set_function(tc_func)
 	t.Add_testcase(*tc_3)
 
-	tc_4 := t.New_testcase(164, "JaRunInterval Test with Database. JaRun")
+	tc_4 := t.New_testcase(164, "JaRunInterval Test with Database. JaJob")
 	tc_func = func() common.Testcase_status {
-		searchTerm := "select inner_job_id, inner_jobnet_id, method_flag, job_type, test_flag from ja_run_job_table where status = 2 and method_flag in"
-		return JaRunIntervalTestWithDatabase("Icon_1", 0, 30, tc_4, common.Client, searchTerm)
+		searchTerm := "select inner_job_id, inner_jobnet_id, job_type, method_flag, timeout_flag, start_time from ja_run_job_table"
+		return JaRunIntervalTestWithDatabase("Icon_1", 0, 30, tc_4, common.Client, searchTerm, "jajob")
 	}
 	tc_4.Set_function(tc_func)
 	t.Add_testcase(*tc_4)
@@ -154,7 +154,7 @@ func JaRunLoopNormalTestWithJaRunInterval(jobnetId string, processCount int, pro
 		fmt.Println(testcase.Err_log("Error Jaz server restart : %s", _err_restart))
 	}
 
-	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss-redhat9psql", "JA_CMD", "hostname")
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "hostname")
 	run_jobnet_id, err := lib.Jobarg_exec_E(jobnetId, envs)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error executing job %s: %s", jobnetId, err))
@@ -281,15 +281,29 @@ func ExtractJobStartTimes(logData string) (string, string, error) {
 	}
 }
 
-func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client, searchTerm string) common.Testcase_status {
+func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client, searchTerm string, jatype string) common.Testcase_status {
 
-	configPath := "/etc/jobarranger/jobarg_server.conf"
-	cmdGetInterval := fmt.Sprintf("grep -i 'JaRunInterval=' %s", configPath)
+	var getInterval string
+	var err error
 
-	// Execute the command remotely using SSH
-	getInterval, err := lib.GetOutputStrFromSSHCommand(client, cmdGetInterval)
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error get interval value : %s", err))
+	if jatype == "jarun" {
+		configPath := "/etc/jobarranger/jobarg_server.conf"
+		cmdGetInterval := fmt.Sprintf("grep -i 'JaRunInterval=' %s", configPath)
+
+		// Execute the command remotely using SSH
+		getInterval, err = lib.GetOutputStrFromSSHCommand(client, cmdGetInterval)
+		if err != nil {
+			fmt.Println(testcase.Err_log("Error get run interval value : %s", err))
+		}
+	} else {
+		configPath := "/etc/jobarranger/jobarg_server.conf"
+		cmdGetInterval := fmt.Sprintf("grep -i 'JaJobInterval=' %s", configPath)
+
+		// Execute the command remotely using SSH
+		getInterval, err = lib.GetOutputStrFromSSHCommand(client, cmdGetInterval)
+		if err != nil {
+			fmt.Println(testcase.Err_log("Error get job interval value : %s", err))
+		}
 	}
 
 	// Trim the output to remove extra whitespace
@@ -427,6 +441,21 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 			// Compare the values
 			if duration >= time.Duration(getInterval)*time.Second {
 				fmt.Println("logIntervalValue is equal to or greater than getIntervalValue")
+				log_statement_cmd := fmt.Sprintf("sed -i 's/^log_statement\\s*=.*$/log_statement = none/' %s", defaultConfig)
+				_, log_statement_err := lib.GetOutputStrFromSSHCommand(client, log_statement_cmd)
+				if log_statement_err != nil {
+					fmt.Println("Error setting log_statement to none:", log_statement_err)
+				} else {
+					fmt.Println("log_statement has been set to none successfully.")
+				}
+
+				time.Sleep(5 * time.Second)
+				reloadCmd := `bash -c 'systemctl restart postgresql'`
+				_, err_restart := lib.GetOutputStrFromSSHCommand(client, reloadCmd)
+				if err_restart != nil {
+					fmt.Println("Error reloading PostgreSQL:", err_restart)
+					return FAILED
+				}
 				lib.Restart_jaz_server()
 				return PASSED
 			} else {
@@ -452,14 +481,51 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 			return FAILED
 		}
 
-		log_sed_cmd := fmt.Sprintf(
-			"sed -i -e '/^\\[mysqld\\]/a general_log = 1' -e '/^\\[mysqld\\]/a general_log_file = /var/log/mysql/general.log' %s",
-			config,
-		)
-		output, _log_sed_err := lib.Ssh_exec(log_sed_cmd)
-		fmt.Println("Log statement output:", output)
-		if _log_sed_err != nil {
-			fmt.Println(testcase.Err_log("Error log statement : %s", _log_sed_err))
+		// Command to check if [mysqld] exists in the config file
+		checkMysqldCmd := "grep '^\\[mysqld\\]' /etc/my.cnf "
+		check_block, checkErr := lib.Ssh_exec_to_str(checkMysqldCmd)
+
+		fmt.Println(checkErr)
+
+		// If [mysqld] block is not found
+		if check_block == "" {
+			// Insert [mysqld] block at the beginning of the file
+			insertMysqldCmd := fmt.Sprintf(
+				"sudo sed -i '1i\\\n[mysqld]\\ngeneral_log = 1\\ngeneral_log_file = /var/log/mysql/general.log' %s",
+				config,
+			)
+			_, insertErr := lib.Ssh_exec(insertMysqldCmd)
+			if insertErr != nil {
+				fmt.Println("Error inserting [mysqld] block at the beginning:", insertErr)
+			} else {
+				fmt.Println("[mysqld] block added successfully at the beginning of the file.")
+			}
+		} else {
+			// [mysqld] section exists, check for general_log and general_log_file
+			checkLogSettingsCmd := fmt.Sprintf(
+				"grep -q '^general_log' %s && grep -q '^general_log_file' %s",
+				config,
+				config,
+			)
+			_, checkLogSettingsErr := lib.Ssh_exec(checkLogSettingsCmd)
+
+			// If the general_log and general_log_file are not present
+			if checkLogSettingsErr != nil {
+				// Append general_log and general_log_file under the existing [mysqld] section
+				appendMysqldCmd := fmt.Sprintf(
+					"sudo sed -i '/^\\[mysqld\\]/a\\\ngeneral_log = 1\\ngeneral_log_file = /var/log/mysql/general.log' %s",
+					config,
+				)
+				_, appendErr := lib.Ssh_exec(appendMysqldCmd)
+				if appendErr != nil {
+					fmt.Println("Error appending settings under the [mysqld] section:", appendErr)
+				} else {
+					fmt.Println("Settings successfully appended under the [mysqld] section.")
+				}
+			} else {
+				// general_log and general_log_file already exist, so do nothing
+				fmt.Println("[mysqld] section already contains general_log and general_log_file. No changes made.")
+			}
 		}
 
 		// Optionally, reload PostgreSQL after the change
@@ -503,7 +569,19 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 			// Compare the values
 			if duration >= time.Duration(getInterval)*time.Second {
 				fmt.Println("logIntervalValue is equal to or greater than getIntervalValue")
+				closeGencmd := "sudo sed -i '/^general_log/ s/^/#/' /etc/my.cnf && sudo sed -i '/^general_log_file/ s/^/#/' /etc/my.cnf"
+				_, close_gen_err := lib.Ssh_exec(closeGencmd)
+				if close_gen_err != nil {
+					fmt.Println(testcase.Err_log("Error close gen cmd : %s", close_gen_err))
+				}
+
+				time.Sleep(5 * time.Second)
 				lib.Restart_jaz_server()
+				reloadCmd := `bash -c 'systemctl restart mysqld'`
+				_, err_restart := lib.GetOutputStrFromSSHCommand(client, reloadCmd)
+				if err_restart != nil {
+					fmt.Println("Error reloading mysql :", err_restart)
+				}
 				return PASSED
 			} else {
 				fmt.Println("logIntervalValue is less than getIntervalValue")
