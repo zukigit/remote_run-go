@@ -130,7 +130,7 @@ var rootCmd = &cobra.Command{
 		// Initialize DB Connection
 		common.Set_db_hostname()
 		common.Set_default_db_port()
-		lib.ConnectDB("zabbix", "zabbix", "zabbix")
+		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_name)
 		defer common.DB.Close()
 
 		lib.Enable_common_jobnets()
@@ -161,6 +161,9 @@ func init() {
 	rootCmd.Flags().UintVar(&common.Specific_ticket_no, "ticket", 0, "Ticket number to run specific ticket")
 	rootCmd.Flags().UintVar(&common.Specific_testcase_no, "testcase", 0, "Testcase number to run specific testcase")
 	rootCmd.Flags().StringVar(&common.DB_hostname, "db-hostname", "", "Database specific hostname to connect.")
+	rootCmd.Flags().StringVar(&common.DB_user, "db-user", "zabbix", "Database specific username to connect.")
+	rootCmd.Flags().StringVar(&common.DB_passwd, "db-password", "zabbix", "Database specific password to connect.")
+	rootCmd.Flags().StringVar(&common.DB_name, "db-name", "zabbix", "Database specific name to connect.")
 	rootCmd.Flags().UintVar(&common.DB_port, "db-port", 0, "Database specific port to connect.")
 	rootCmd.Flags().UintVar(&common.Timeout, "timeout", 300, "Common timeout in seconds. ")
 }
