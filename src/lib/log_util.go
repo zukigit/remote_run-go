@@ -52,13 +52,6 @@ func Get_log_folderpath() string {
 	return sub_dir
 }
 
-func Get_yml_filepath() string {
-	file_name := fmt.Sprintf("%s.yml", common.Filepath)
-	file_path := filepath.Join(Get_log_folderpath(), file_name)
-
-	return file_path
-}
-
 func Get_filepath() string {
 	file_name := fmt.Sprintf("%s_TK%d_TC%d", Get_formatted_time(), common.Specific_ticket_no, common.Specific_testcase_no)
 	file_path := filepath.Join(Get_log_folderpath(), file_name)
