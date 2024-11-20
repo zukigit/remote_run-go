@@ -74,7 +74,7 @@ func save_runtks_records() {
 		os.Exit(1)
 	}
 
-	err = os.WriteFile(common.Filepath+".yml", yaml_data, 0644)
+	err = os.WriteFile(common.Log_filepath+".yml", yaml_data, 0644)
 	if err != nil {
 		fmt.Printf("Error writing YAML to file: %v\n", err)
 		return
@@ -90,8 +90,8 @@ func run_tc() {
 		dao.Update_testcase_results_in_tickets(run_tickets)
 		save_runtks_records()
 
-		fmt.Println(lib.Formatted_log(common.INFO, "Logged File: %s.log", common.Filepath))
-		fmt.Println(lib.Formatted_log(common.INFO, "Yaml File: %s.yml", common.Filepath))
+		fmt.Println(lib.Formatted_log(common.INFO, "Logged File: %s.log", common.Log_filepath))
+		fmt.Println(lib.Formatted_log(common.INFO, "Yaml File: %s.yml", common.Log_filepath))
 	} else {
 		fmt.Println("There is no testcase to run.")
 	}
@@ -123,14 +123,14 @@ var rootCmd = &cobra.Command{
 		common.Set_client()
 		defer common.Client.Close()
 
-		common.Filepath = lib.Get_filepath()
-		common.Set_sugar(common.Filepath + ".log")
+		common.Log_filepath = lib.Get_filepath()
+		common.Set_sugar(common.Log_filepath + ".log")
 		defer common.Sugar.Sync()
 
 		// Initialize DB Connection
 		common.Set_db_hostname()
 		common.Set_default_db_port()
-		lib.ConnectDB("zabbix", "zabbix", "zabbix")
+		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_name)
 		defer common.DB.Close()
 
 		lib.Enable_common_jobnets()
@@ -161,6 +161,9 @@ func init() {
 	rootCmd.Flags().UintVar(&common.Specific_ticket_no, "ticket", 0, "Ticket number to run specific ticket")
 	rootCmd.Flags().UintVar(&common.Specific_testcase_no, "testcase", 0, "Testcase number to run specific testcase")
 	rootCmd.Flags().StringVar(&common.DB_hostname, "db-hostname", "", "Database specific hostname to connect.")
+	rootCmd.Flags().StringVar(&common.DB_user, "db-user", "zabbix", "Database specific username to connect.")
+	rootCmd.Flags().StringVar(&common.DB_passwd, "db-password", "zabbix", "Database specific password to connect.")
+	rootCmd.Flags().StringVar(&common.DB_name, "db-name", "zabbix", "Database specific name to connect.")
 	rootCmd.Flags().UintVar(&common.DB_port, "db-port", 0, "Database specific port to connect.")
 	rootCmd.Flags().UintVar(&common.Timeout, "timeout", 300, "Common timeout in seconds. ")
 }

@@ -35,7 +35,7 @@ const (
 	EXPT_RES Doc_data_type = "expected_results"
 )
 
-var Filepath, DB_hostname string
+var Log_filepath, DB_hostname, DB_user, DB_passwd, DB_name string
 var Specific_ticket_no, Specific_testcase_no, DB_port, Timeout uint
 var Client *ssh.Client
 var Login_info Auth
