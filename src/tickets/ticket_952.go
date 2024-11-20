@@ -113,7 +113,7 @@ func (t *Ticket_952) logError(tc *dao.TestCase, format string, args ...interface
 func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_status {
 	const defaultTestFolderPath = `C:\test_folder` //change default
 
-	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "C01-DAT0387", "JA_CMD", fmt.Sprintf("echo mkdir %s", defaultTestFolderPath))
+	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "DESKTOP-8KPOJCT", "JA_CMD", fmt.Sprintf("echo mkdir %s", defaultTestFolderPath))
 	if err != nil {
 		return t.logError(tc, "Error retrieving environment variables: %s", err)
 	}

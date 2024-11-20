@@ -494,6 +494,8 @@ func Run_Job_Status_Check_For_Error(testcase *dao.TestCase, timeout_time int, jo
 		fmt.Printf("\rElapsed Time: %02d:%02d:%02d", hours, minutes, seconds)
 		time.Sleep(1 * time.Millisecond)
 	}
+	fmt.Println(testcase.Err_log("Error: Timeout Occured!"))
+
 	return false
 }
 

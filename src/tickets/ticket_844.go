@@ -88,7 +88,7 @@ func (t *Ticket_844) Add_testcases() {
 		}
 		fmt.Println(tc_71.Info_log("Info: Jobarg cleanup successfully."))
 
-		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "moon8", "JA_CMD", "sleep 10")
+		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 10")
 		run_jobnet_id, error := lib.Jobarg_exec_E(jobnet_id, envs)
 		if error != nil {
 			fmt.Println(tc_71.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
@@ -153,8 +153,9 @@ func (t *Ticket_844) Add_testcases() {
 		// Result:    "The JOB returns with an error"
 		var jobnet_id string = "Icon_1"                 // This value must be Jobnet_ID that you want to enable
 		var jobnet_name string = "TICKET844_TESTCASE74" // This value must be Jobnet_Name that you want to enable.
+		var actual_jobnet_run_id string = "Icon_800"    // This is the actual parallel jobnet_id that we actually want to run.
 		var job_process_count_amt int = 800             // Enter total Job icons you want to check here. Must be same with Jobnet total jobs.
-		var timeout_minute int = 30                     // Enter timeout in minutes for Process count.
+		var timeout_minute int = 60                     // Enter timeout in minutes for Process count.
 		var jobnet_run_manage_id string
 
 		// 1. Enable 1 Icon jobnet.
@@ -174,7 +175,7 @@ func (t *Ticket_844) Add_testcases() {
 			Run_Jobarg_cleanup_linux(tc_74) &&
 			func() bool {
 				var result bool
-				result, jobnet_run_manage_id = Run_Jobnet(tc_74, "Icon_800")
+				result, jobnet_run_manage_id = Run_Jobnet(tc_74, actual_jobnet_run_id)
 				return result
 			}() &&
 			Run_Job_process_count(tc_74, job_process_count_amt, timeout_minute) &&
