@@ -217,7 +217,7 @@ func Run_Jobarg_cleanup_window(testcase *dao.TestCase) bool {
 func Run_Jobarg_get_jobnet_run_info(testcase *dao.TestCase, jobnet_run_manage_id string) (bool, *common.Jobnet_run_info) {
 	//In case if getting jobnet info failed
 	fmt.Println(testcase.Info_log("Info: Getting Jobnet Info."))
-	jobnet_run_info, err := Jobarg_get_jobnet_run_info_with_timer(jobnet_run_manage_id)
+	jobnet_run_info, err := lib.Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error: Failted at getting jobnet run info. %s. Jobnet Management Id: %s ", err.Error(), jobnet_run_manage_id)) //Possible error: Jobnet process killed, Jobnet force-stopped, Wrong Hostname in Job Icon, Job Icon failed, Job Icon force-stopped."
 		return false, jobnet_run_info
@@ -542,66 +542,6 @@ func JobProcessCountCheck_with_process_counter(targetProcessCount int, timeoutDu
 		}
 
 	}
-}
-
-// Jobarg_get_jobnet_run_info waits util the jobnet is done or get error and returns Jobnet run info but with timer.
-// Ctl + C programmer. 99.99% copied from library. Don't wannt directly modify the library since I want to use it as template so I copied it and add the output line.
-func Jobarg_get_jobnet_run_info_with_timer(registry_number string) (*common.Jobnet_run_info, error) {
-	var jobnet_status, job_status, std_out, std_error string
-	var err error
-	var index int
-	var exit_cd int64
-
-	// taking current time snapshot
-	start := time.Now()
-
-	for {
-		jobnet_status, err = lib.Jobarg_get_JA_JOBNETSTATUS(registry_number)
-		if err != nil {
-			return nil, err
-		}
-
-		job_status, err = lib.Jobarg_get_JA_JOBSTATUS(registry_number)
-		if err != nil {
-			return nil, err
-		}
-
-		if (jobnet_status == "ENDERR" && job_status == "ERROR") || jobnet_status == "END" || (jobnet_status == "RUN" && job_status == "ERROR") {
-			break
-		}
-
-		// Calculating elapsed time.
-		elapsed := time.Since(start)
-		// Extract hours, minutes, and seconds from elapsed time
-		hours := int(elapsed.Hours())
-		minutes := int(elapsed.Minutes()) % 60
-		seconds := int(elapsed.Seconds()) % 60
-
-		// Print in HH:MM:SS format with \r to overwrite the line
-		//fmt.Printf("\r%02d:%02d:%02d", hours, minutes, seconds)
-
-		lib.Spinner_log(index, lib.Formatted_log(common.INFO, "Getting jobnet[%s] run info but jobnet is not finished yet. Elapsed Time: %02d:%02d:%02d", registry_number, hours, minutes, seconds))
-		time.Sleep(1 * time.Millisecond)
-		index++
-	}
-
-	exit_cd, err = lib.Jobarg_get_LASTEXITCD(registry_number)
-	if err != nil {
-		return nil, err
-	}
-
-	std_out, err = lib.Jobarg_get_LASTSTDOUT(registry_number)
-	if err != nil {
-		return nil, err
-	}
-
-	std_error, err = lib.Jobarg_get_LASTSTDERR(registry_number)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println()
-	return common.New_jobnet_run_info(jobnet_status, job_status, std_out, std_error, exit_cd), nil
 }
 
 func Run_SFTP_File_Transfer(testcase *dao.TestCase, localFilePath string, remoteFilePath string) bool {
