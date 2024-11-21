@@ -112,7 +112,7 @@ func JaRunLoopNormalTest(jobnetId string, processCount int, processCheckTimeout 
 		fmt.Println(testcase.Err_log("Error Jaz server restart : %s", _err_restart))
 	}
 
-	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss-redhat9psql", "JA_CMD", "hostname")
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "hostname")
 	run_jobnet_id, err := lib.Jobarg_exec_E(jobnetId, envs)
 	if err != nil {
 		fmt.Println(testcase.Err_log("Error executing job %s: %s", jobnetId, err))

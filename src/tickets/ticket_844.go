@@ -193,7 +193,7 @@ func (t *Ticket_844) Add_testcases() {
 	t.Add_testcase(*tc_74)
 
 	//TESTCASE 75
-	tc_75 := t.New_testcase(75, "Agent Restart [Covered with Agent servive stop while 1000  parallel jobnets are running]")
+	tc_75 := t.New_testcase(75, "Parallel 800 jobs with loop (8hr).")
 	tc_func = func() common.Testcase_status {
 
 		// Test Case: "Parallel 800 jobs with loop (8hr)."
@@ -243,7 +243,13 @@ func (t *Ticket_844) Add_testcases() {
 				result, num = Str_To_Int(tc_75, last_std_out)
 				return result
 			}() &&
-			num < 95 &&
+			func() bool {
+				if num != 95 {
+					fmt.Println(tc_75.Err_log("Error: Looping count (total iteration) is incorrect. Looping count: %d", num))
+					return false
+				}
+				return true
+			}() &&
 			func() bool {
 				// Calculating whether jobnet took actual 8 hour or not.
 				end_time := time.Now()
