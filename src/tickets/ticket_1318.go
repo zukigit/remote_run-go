@@ -76,7 +76,7 @@ func (t *Ticket_1318) Add_testcases() {
 			return FAILED
 		}
 
-		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.windows", "JA_CMD", "exit -100000;")
+		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "DESKTOP-8KPOJCT", "JA_CMD", "exit -100000;")
 
 		// Run jobnet
 		run_jobnet_id, error := lib.Jobarg_exec_E("Icon_1", envs)
@@ -130,10 +130,10 @@ func (t *Ticket_1318) Add_testcases() {
 			return FAILED
 		}
 
-		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.windows", "JA_CMD", "exit -100000;")
+		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "DESKTOP-8KPOJCT", "JA_CMD", "exit -100000;")
 
 		// Run jobnet
-		tc_169.Add_doc(common.PRE_OPT, "Run jobnet. JA_HOSTNAME: oss.windows, JA_CMD: exit -100000;.")
+		tc_169.Add_doc(common.PRE_OPT, "Run jobnet. JA_HOSTNAME: DESKTOP-8KPOJCT, JA_CMD: exit -100000;.")
 		run_jobnet_id, error := lib.Jobarg_exec_E("Icon_1", envs)
 		if error != nil {
 			tc_169.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id)

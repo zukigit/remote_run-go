@@ -91,7 +91,7 @@ func (t *Ticket_840) Add_testcases() {
 		{Encoding: SJIS, OSType: Linux, Hostname: "oss.linux"},
 		// {Encoding: SJIS, OSType: Windows, Hostname: "oss.windows"},
 		{Encoding: UTF8, OSType: Linux, Hostname: "oss.linux"},
-		{Encoding: UTF8, OSType: Windows, Hostname: "oss.windows"},
+		{Encoding: UTF8, OSType: Windows, Hostname: "DESKTOP-8KPOJCT"},
 	}
 
 	var testcaseCounter uint = 0

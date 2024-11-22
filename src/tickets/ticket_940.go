@@ -55,16 +55,16 @@ func (t *Ticket_940) Set_values() {
 func (t *Ticket_940) Add_testcases() {
 	// All configurations to be added at once
 	configs := []string{
-		"JaRunTimeout=5",
-		"JaTrapperTimeout=5",
-		"JaJobTimeout=5",
-		"JaJobnetTimeout=5",
-		"JaLoaderTimeout=5",
-		"JaBootTimeout=5",
-		"JaMsgsndTimeout=5",
-		"JaSelfmonTimeout=5",
-		"JaPurgeTimeout=5",
-		"JaAbortTimeout=5",
+		"JaRunTimeout=1",
+		"JaTrapperTimeout=1",
+		"JaJobTimeout=1",
+		"JaJobnetTimeout=1",
+		"JaLoaderTimeout=1",
+		"JaBootTimeout=1",
+		"JaMsgsndTimeout=1",
+		"JaSelfmonTimeout=1",
+		"JaPurgeTimeout=1",
+		"JaAbortTimeout=1",
 	}
 
 	configFilePath := "/etc/jobarranger/jobarg_server.conf"
@@ -95,16 +95,16 @@ func (t *Ticket_940) applyConfigAndRunTests(tc *dao.TestCase, configs []string, 
 		fmt.Println("Configuration has been set to:", config)
 	}
 
+	// Delete logs
+	if err := lib.Delete_server_log(); err != nil {
+		return t.logError(tc, "Error during deleting log: %s", err)
+	}
+
 	// Cleanup server
 	if err := lib.Jobarg_cleanup_linux(); err != nil {
 		return t.logError(tc, "Failed to clean up the server, Error: %s", err.Error())
 	}
 	fmt.Println("jobarg_server has been restarted successfully.")
-
-	// Delete logs
-	if err := lib.Delete_server_log(); err != nil {
-		return t.logError(tc, "Error during deleting log: %s", err)
-	}
 
 	// Enable jobnet
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
@@ -119,6 +119,8 @@ func (t *Ticket_940) applyConfigAndRunTests(tc *dao.TestCase, configs []string, 
 	if err := lib.Restart_jaz_server(); err != nil {
 		return t.logError(tc, "Failed to restart: %s", err)
 	}
+
+	Run_Timeout(tc, 10)
 
 	logFilePath := "/var/log/jobarranger/jobarg_server.log"
 	cmd := fmt.Sprintf(`cat %s | grep "Process is taking"`, logFilePath)

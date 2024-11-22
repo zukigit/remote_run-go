@@ -101,8 +101,8 @@ func (t *Ticket_1264) Add_testcases() {
 			}() &&
 			func() bool {
 				// Specify the local and remote file paths
-				localFilePath := filepath.ToSlash(filepath.Join(strings.TrimSpace(strings.Trim(current_pwd, "\n")), "exported_jobnets", "jobarg_json_parse")) // Replace with the desired full file path on the Window
-				remoteFilePath := "/usr/local/bin/jobarg_json_parse"                                                                                          // Replace with the desired full file path on the Linux
+				localFilePath := filepath.ToSlash(filepath.Join(strings.TrimSpace(strings.Trim(current_pwd, "\n")), "external_tools", "jobarg_json_parse")) // Replace with the desired full file path on the Window
+				remoteFilePath := "/usr/local/bin/jobarg_json_parse"                                                                                        // Replace with the desired full file path on the Linux
 				return Run_SFTP_File_Transfer(tc_125, localFilePath, remoteFilePath)
 			}() &&
 			Run_Linux_Command(tc_125, "chmod +x /usr/local/bin/jobarg_json_parse") &&
