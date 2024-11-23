@@ -103,10 +103,6 @@ var rootCmd = &cobra.Command{
 	Short: "Automated testing",
 	Long:  "Automated testing",
 	Args: func(cmd *cobra.Command, args []string) error {
-		if err := cobra.MinimumNArgs(1)(cmd, args); err != nil {
-			return err
-		}
-
 		if err := common.Set_db_type(); err != nil {
 			return err
 		}
