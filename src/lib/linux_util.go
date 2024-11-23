@@ -18,11 +18,11 @@ func Ja_set_config_linux(key string, value string, config_file_path string) erro
 }
 
 // Replace the string instead of appending it. Also return command as string.
-func Ja_set_config_linux_str_replace(key string, value string, config_file_path string) (error, string) {
+func Ja_set_config_linux_str_replace(key string, value string, config_file_path string) (string, error) {
 	cmd := fmt.Sprintf(`sed -i 's/^#*\(%s\).*/%s/' %s`, key, value, config_file_path)
 	_, err := Ssh_exec_to_str(cmd)
 
-	return err, cmd
+	return cmd, err
 }
 
 // To use this function, you must have jobarg_agentd default filepath.

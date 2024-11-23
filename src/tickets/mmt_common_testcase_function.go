@@ -325,7 +325,7 @@ func Run_Set_Config_Linux(testcase *dao.TestCase, key string, value string, conf
 		err = lib.Ja_set_config_linux(key, value, config_file_path)
 	case 2:
 		var command string
-		err, command = lib.Ja_set_config_linux_str_replace(key, value, config_file_path)
+		command, err = lib.Ja_set_config_linux_str_replace(key, value, config_file_path)
 		fmt.Println(testcase.Info_log("Info: Executed command: %s", command))
 	default:
 		fmt.Println("Invalid parameter. Try again.")
