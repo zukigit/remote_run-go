@@ -90,8 +90,8 @@ func run_tc() {
 		dao.Update_testcase_results_in_tickets(run_tickets)
 		save_runtks_records()
 
-		fmt.Println(lib.Formatted_log(common.INFO, "Logged File: %s.log", common.Log_filepath))
-		fmt.Println(lib.Formatted_log(common.INFO, "Yaml File: %s.yml", common.Log_filepath))
+		fmt.Println(lib.Formatted_log(common.LOG_LEVEL_INFO, "Logged File: %s.log", common.Log_filepath))
+		fmt.Println(lib.Formatted_log(common.LOG_LEVEL_ERR, "Yaml File: %s.yml", common.Log_filepath))
 	} else {
 		fmt.Println("There is no testcase to run.")
 	}

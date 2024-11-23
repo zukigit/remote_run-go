@@ -17,8 +17,8 @@ type Testcase_status string
 type Database string
 type Doc_data_type string
 
-const INFO = 1
-const ERR = 2
+const LOG_LEVEL_INFO = 1
+const LOG_LEVEL_ERR = 2
 
 const (
 	MYSQL    Database      = "mysql"

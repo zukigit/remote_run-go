@@ -96,7 +96,7 @@ func Stop_service_windows(service string) error {
 		if err != nil {
 			return err
 		}
-		Spinner_log(index, Formatted_log(common.INFO, "Jobarg agent service is stopping."))
+		Spinner_log(index, Formatted_log(common.LOG_LEVEL_INFO, "Jobarg agent service is stopping."))
 
 		time.Sleep(2 * time.Second)
 	}

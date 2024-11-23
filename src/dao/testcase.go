@@ -96,10 +96,10 @@ func (t *TestCase) Logi(level int, log string) string {
 
 func (t *TestCase) Err_log(unfmt string, arg ...any) string {
 	log := fmt.Sprintf(unfmt, arg...)
-	return t.Logi(common.ERR, log)
+	return t.Logi(common.LOG_LEVEL_ERR, log)
 }
 
 func (t *TestCase) Info_log(unfmt string, arg ...any) string {
 	log := fmt.Sprintf(unfmt, arg...)
-	return t.Logi(common.INFO, log)
+	return t.Logi(common.LOG_LEVEL_INFO, log)
 }
