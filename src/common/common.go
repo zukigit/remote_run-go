@@ -81,7 +81,7 @@ func Set_default_db_port() {
 
 func Set_db_type() error {
 	if !Is_mysql && !Is_psql {
-		return fmt.Errorf("please choose db type using --with-mysql --with-postgresql")
+		return fmt.Errorf("choose db type using --with-mysql or --with-postgresql flag")
 	}
 
 	if Is_mysql {
