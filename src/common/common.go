@@ -13,6 +13,13 @@ import (
 	"golang.org/x/term"
 )
 
+type Host struct {
+	Host_name, Host_ip, Host_dns, Host_run_username string
+	Host_client                                     *ssh.Client
+	Host_use_ip                                     bool
+	Host_port                                       int
+}
+
 type Testcase_status string
 type Database string
 type Doc_data_type string
@@ -115,24 +122,4 @@ func Set_passwd() {
 		os.Exit(1)
 	}
 	Login_info.Password = string(bytepw)
-}
-
-func Set_client() {
-	config := &ssh.ClientConfig{
-		User: Login_info.Username,
-		Auth: []ssh.AuthMethod{
-			ssh.Password(Login_info.Password),
-		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-	}
-
-	hostname_with_port := fmt.Sprintf("%s:%d", Login_info.Hostname, Login_info.Port)
-
-	client, err := ssh.Dial("tcp", hostname_with_port, config)
-	if err != nil {
-		fmt.Println("Failed in getting ssh client, Error:", err.Error())
-		os.Exit(1)
-	}
-
-	Client = client
 }
