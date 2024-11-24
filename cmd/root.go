@@ -116,7 +116,7 @@ var rootCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		common.Set_passwd()
-		common.Set_client()
+		lib.Set_common_client(common.Login_info.Username, common.Login_info.Password, common.Login_info.Hostname, common.Login_info.Port)
 		defer common.Client.Close()
 
 		common.Log_filepath = lib.Get_filepath()

@@ -103,3 +103,7 @@ func GetOutputStrFromSSHCommand(client *ssh.Client, command string) (string, err
 	output, err := ExecuteSSHCommand(client, command)
 	return string(output), err
 }
+
+func Set_common_client(username, passwd, hostname string, port int) {
+	common.Client = GetSSHClient(hostname, port, username, passwd)
+}
