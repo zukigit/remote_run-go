@@ -27,7 +27,6 @@ func Get_hosts_from_jsonfile(jsonfilepath string) *[]common.Host {
 
 	if err := decoder.Decode(&temp_hosts); err != nil {
 		if err == io.EOF {
-			fmt.Println("it is eof error")
 			return &temp_hosts
 		}
 		fmt.Printf("Failed to decode  hosts.json file, Error: %s\n", err.Error())

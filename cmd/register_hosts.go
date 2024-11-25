@@ -151,7 +151,8 @@ func register() {
 
 	lib.Set_hosts_to_jsonfile(temp_hosts, "hosts.json")
 
-	fmt.Printf("Registered host[%s]", temp_host.Host_name)
+	fmt.Printf("Registered host[%s]\n", temp_host.Host_name)
+	fmt.Println()
 }
 
 // registerHostsCmd represents the registerHosts command
@@ -177,7 +178,9 @@ var registerHostsCmd = &cobra.Command{
 		defer common.DB.Close()
 
 		get_hosts()
-		register()
+		for {
+			register()
+		}
 	},
 }
 
