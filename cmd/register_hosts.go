@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/zukigit/remote_run-go/src/common"
@@ -41,7 +43,6 @@ func check_id_rsa() error {
 	}
 
 	rsa_pub_key = string(content)
-	fmt.Println(rsa_pub_key)
 
 	return nil
 }
@@ -91,34 +92,47 @@ func register() {
 	var temp_passwd string
 	var err error
 	var temp_sshcli *ssh.Client
+	temp_port := 22
 
 	for {
-		if temp_host = get_host(ask_userinput_hostname()); temp_host == nil {
+		temp_hostname := ask_userinput_hostname()
+
+		parts := strings.Split(temp_hostname, ":")
+		if len(parts) == 2 {
+			temp_hostname = parts[0]
+			temp_port, err = strconv.Atoi(parts[1])
+			if err != nil {
+				fmt.Print("you entered wrong port, ")
+				continue
+			}
+		}
+
+		if temp_host = get_host(temp_hostname); temp_host == nil {
 			fmt.Print("you entered wrong hostname, ")
 			continue
 		}
+		temp_host.Host_port = temp_port
 		break
 	}
 
 	temp_host.Host_run_username = lib.Ask_usrinput_string("Enter ssh username to register")
 	temp_passwd = lib.Ask_usrinput_passwd_string("Enter ssh password to register")
-	for {
-		temp_host.Host_port, err = lib.Ask_usrinput_int("Enter ssh port to register")
-		if err != nil {
-			fmt.Print("you entered wrong port, ")
-			continue
-		}
-		break
-	}
 
+	fmt.Print("Connecting to")
 	if temp_host.Host_use_ip {
+		fmt.Printf(" %s:%d ...\n", temp_host.Host_ip, temp_host.Host_port)
 		temp_sshcli = lib.GetSSHClient(temp_host.Host_ip, temp_host.Host_port, temp_host.Host_run_username, temp_passwd)
 	} else {
+		fmt.Printf("%s:%d\n", temp_host.Host_dns, temp_host.Host_port)
 		temp_sshcli = lib.GetSSHClient(temp_host.Host_dns, temp_host.Host_port, temp_host.Host_run_username, temp_passwd)
 	}
 
 	cmd := fmt.Sprintf("echo '%s' >> ~/.ssh/authorized_keys", rsa_pub_key)
-	lib.GetOutputStrFromSSHCommand(temp_sshcli, cmd)
+	if _, err = lib.ExecuteSSHCommand(temp_sshcli, cmd); err != nil {
+		fmt.Printf("Failed to register host[%s], Error: %s\n", temp_host.Host_name, err.Error())
+		os.Exit(1)
+	}
+	fmt.Printf("Registered host[%s]", temp_host.Host_name)
 }
 
 // registerHostsCmd represents the registerHosts command
