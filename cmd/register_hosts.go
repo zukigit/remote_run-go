@@ -87,6 +87,20 @@ func ask_userinput_hostname() string {
 	return lib.Ask_usrinput_string("Enter hostname to register")
 }
 
+func check_duplicated_hosts(temp_hosts []common.Host, temp_host common.Host) *[]common.Host {
+	for _, host := range temp_hosts {
+		if host.Host_name == temp_host.Host_name {
+			host = temp_host
+
+			return &temp_hosts
+		}
+	}
+
+	temp_hosts = append(temp_hosts, temp_host)
+
+	return &temp_hosts
+}
+
 func register() {
 	var temp_host *common.Host
 	var temp_passwd string
@@ -132,6 +146,11 @@ func register() {
 		fmt.Printf("Failed to register host[%s], Error: %s\n", temp_host.Host_name, err.Error())
 		os.Exit(1)
 	}
+
+	temp_hosts := check_duplicated_hosts(*lib.Get_hosts_from_jsonfile("hosts.json"), *temp_host)
+
+	lib.Set_hosts_to_jsonfile(temp_hosts, "hosts.json")
+
 	fmt.Printf("Registered host[%s]", temp_host.Host_name)
 }
 
@@ -150,9 +169,10 @@ var registerHostsCmd = &cobra.Command{
 		return common.Set_db_type()
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		// Initialize DB Connection
 		common.Set_db_hostname()
 		common.Set_default_db_port()
+
+		// Initialize DB Connection
 		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_name)
 		defer common.DB.Close()
 
