@@ -32,6 +32,7 @@ func Get_hosts_from_jsonfile(jsonfilepath string) *[]common.Host {
 		fmt.Printf("Failed to decode  hosts.json file, Error: %s\n", err.Error())
 		os.Exit(1)
 	}
+
 	return &temp_hosts
 }
 
