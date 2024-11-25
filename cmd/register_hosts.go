@@ -97,7 +97,6 @@ func check_duplicated_hosts(temp_hosts []common.Host, temp_host common.Host) *[]
 	}
 
 	temp_hosts = append(temp_hosts, temp_host)
-
 	return &temp_hosts
 }
 

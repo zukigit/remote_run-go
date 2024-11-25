@@ -119,6 +119,12 @@ var rootCmd = &cobra.Command{
 		lib.Set_common_client(common.Login_info.Username, common.Login_info.Password, common.Login_info.Hostname, common.Login_info.Port)
 		defer common.Client.Close()
 
+		lib.Set_host_pool()
+		for _, host := range *common.Host_pool {
+			fmt.Println(host)
+		}
+		os.Exit(0)
+
 		common.Log_filepath = lib.Get_filepath()
 		common.Set_sugar(common.Log_filepath + ".log")
 		defer common.Sugar.Sync()
