@@ -50,6 +50,7 @@ var Is_mysql, Is_psql bool
 var DB_type Database
 var DB *sql.DB
 var Sugar *zap.SugaredLogger
+var Host_pool []Host
 
 func Set_sugar(logfile_path string) {
 	logger_conf := zap.NewProductionConfig()
