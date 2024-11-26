@@ -1,0 +1,1 @@
+[{"Host_name":"auto.linux.host1","Host_ip":"192.168.52.128","Host_dns":"","Host_run_username":"root","Host_client":null,"Host_use_ip":true,"Host_port":22},{"Host_name":"auto.linux.host2","Host_ip":"","Host_dns":"moon.rhel9","Host_run_username":"root","Host_client":null,"Host_use_ip":false,"Host_port":22}]

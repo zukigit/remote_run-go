@@ -3,6 +3,8 @@ package lib
 import (
 	"fmt"
 	"os"
+	"os/user"
+	"path/filepath"
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
@@ -28,6 +30,41 @@ func Ssh_exec(command string) ([]byte, error) {
 func Ssh_exec_to_str(command string) (string, error) {
 	output, err := Ssh_exec(command)
 	return string(output), err
+}
+
+func GetSSHClientWithKey(hostIP string, port int, username string, keyfilepath string) *ssh.Client {
+	// Load the private key
+	key, err := os.ReadFile(keyfilepath)
+	if err != nil {
+		fmt.Println("unable to read private key, Error:", err.Error())
+		fmt.Println("use the following command to generate private key, 'ssh-keygen -t rsa -b 4096'")
+		os.Exit(1)
+	}
+
+	// Create the signer for the private key
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		fmt.Println("unable to parse private key Error:", err.Error())
+		os.Exit(1)
+	}
+
+	clientConfig := &ssh.ClientConfig{
+		User: username,
+		Auth: []ssh.AuthMethod{
+			ssh.PublicKeys(signer),
+		},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+	}
+
+	address := fmt.Sprintf("%s:%d", hostIP, port)
+
+	client, err := ssh.Dial("tcp", address, clientConfig)
+	if err != nil {
+		fmt.Println("Failed in getting ssh client, Error:", err.Error())
+		os.Exit(1)
+	}
+
+	return client
 }
 
 func GetSSHClient(hostIP string, port int, username string, password string) *ssh.Client {
@@ -102,4 +139,28 @@ func ExecuteSSHCommand(client *ssh.Client, command string) ([]byte, error) {
 func GetOutputStrFromSSHCommand(client *ssh.Client, command string) (string, error) {
 	output, err := ExecuteSSHCommand(client, command)
 	return string(output), err
+}
+
+func Set_common_client(username, passwd, hostname string, port int) {
+	common.Client = GetSSHClient(hostname, port, username, passwd)
+}
+
+func Set_host_pool() {
+	common.Host_pool = Get_hosts_from_jsonfile("hosts.json")
+
+	current_user, err := user.Current()
+	if err != nil {
+		fmt.Printf("failed in getting run user, Error: %v", err)
+		os.Exit(1)
+	}
+	ssh_private_filepath := filepath.Join(current_user.HomeDir, ".ssh", "id_rsa")
+
+	for i := range *common.Host_pool {
+		host := &(*common.Host_pool)[i] // Get a pointer to the actual host
+		if host.Host_use_ip {
+			host.Host_client = GetSSHClientWithKey(host.Host_ip, host.Host_port, host.Host_run_username, ssh_private_filepath)
+		} else {
+			host.Host_client = GetSSHClientWithKey(host.Host_dns, host.Host_port, host.Host_run_username, ssh_private_filepath)
+		}
+	}
 }
