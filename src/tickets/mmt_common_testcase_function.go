@@ -325,7 +325,7 @@ func Run_Set_Config_Linux(testcase *dao.TestCase, key string, value string, conf
 		err = lib.Ja_set_config_linux(key, value, config_file_path)
 	case 2:
 		var command string
-		err, command = lib.Ja_set_config_linux_str_replace(key, value, config_file_path)
+		command, err = lib.Ja_set_config_linux_str_replace(key, value, config_file_path)
 		fmt.Println(testcase.Info_log("Info: Executed command: %s", command))
 	default:
 		fmt.Println("Invalid parameter. Try again.")
@@ -612,7 +612,7 @@ func Run_Timeout(testcase *dao.TestCase, timeout int) bool {
 		minutes := int(elapsed.Minutes()) % 60
 		seconds := int(elapsed.Seconds()) % 60
 
-		lib.Spinner_log(index, lib.Formatted_log(common.INFO, "Program in timeout. Elapsed Time: %02d:%02d:%02d|%02d:%02d:%02d", timeout_hour, timeout_minute, timeout_seconds, hours, minutes, seconds))
+		lib.Spinner_log(index, lib.Formatted_log(common.LOG_LEVEL_INFO, "Program in timeout. Elapsed Time: %02d:%02d:%02d|%02d:%02d:%02d", timeout_hour, timeout_minute, timeout_seconds, hours, minutes, seconds))
 
 		time.Sleep(1 * time.Second)
 		index++

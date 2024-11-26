@@ -271,7 +271,7 @@ func insertOneMillionRecords() error {
 		DECLARE
 			batch_size CONSTANT INTEGER := 500;
 			counter INTEGER := 0;
-			total_records INTEGER := 50000;  -- Total number of records to process
+			total_records INTEGER := 1000000;  -- Total number of records to process
 		BEGIN
 			FOR i IN 1..total_records LOOP
 
@@ -390,7 +390,7 @@ CREATE PROCEDURE insert_one_million_records()
 BEGIN
     DECLARE batch_size INT DEFAULT 500;
     DECLARE counter INT DEFAULT 0;
-    DECLARE total_records INT DEFAULT 50000;
+    DECLARE total_records INT DEFAULT 1000000;
     DECLARE i INT DEFAULT 1;
 
     -- Start transaction
@@ -554,6 +554,12 @@ END;
 	// Call the created procedure for mysql
 	if common.Is_mysql {
 		_, err := common.DB.Exec("CALL insert_one_million_records();")
+		if err != nil {
+			return err
+		}
+
+		// Commit after executing the stored procedure
+		_, err = common.DB.Exec("COMMIT;")
 		if err != nil {
 			return err
 		}

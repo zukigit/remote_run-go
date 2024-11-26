@@ -14,12 +14,18 @@ const (
 
 func Run_testcase(tc TestCase) {
 	fmt.Println(tc.Info_log("running..."))
+	common.Current_tk_no = tc.Get_ticket_no()
+	common.Current_tc_no = tc.Get_no()
+
 	if !tc.Is_function_nil() {
 		tc.Set_status(tc.Run_function())
 	} else {
 		fmt.Println(tc.Err_log("has no function. SKIPPED!"))
 		tc.Set_status(FAILED)
 	}
+
+	common.Current_tk_no = 0
+	common.Current_tc_no = 0
 	fmt.Println(tc.Info_log("finished!"))
 }
 

@@ -283,7 +283,7 @@ func modifyHostnameForTestcaseWhenInRunningState(tc *dao.TestCase, registry_numb
 			}
 			break
 		}
-		lib.Spinner_log(index, lib.Formatted_log(common.INFO, "Getting jobnet[%s] run info but jobnet is not in running state. jobnet_status: %s, job_status: %s", registry_number, jobnet_status, job_status))
+		lib.Spinner_log(index, lib.Formatted_log(common.LOG_LEVEL_INFO, "Getting jobnet[%s] run info but jobnet is not in running state. jobnet_status: %s, job_status: %s", registry_number, jobnet_status, job_status))
 		time.Sleep(1 * time.Second)
 		index++
 	}
