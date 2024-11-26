@@ -26,15 +26,21 @@ func check_id_rsa() error {
 		return fmt.Errorf("failed in getting run user, Error: %v", err)
 	}
 
-	ssh_pub_filepath := filepath.Join(current_user.HomeDir, ".ssh", "id_rsa.pub")
-	ssh_private_filepath := filepath.Join(current_user.HomeDir, ".ssh", "id_rsa")
+	key_file_path := filepath.Join(current_user.HomeDir, ".ssh")
+	ssh_pub_filepath := filepath.Join(key_file_path, "id_rsa.pub")
+	ssh_private_filepath := filepath.Join(key_file_path, "id_rsa")
 
 	if _, err := os.Stat(ssh_pub_filepath); err != nil {
-		return fmt.Errorf("expected key[%s] not found, use the following command to generate keys 'ssh-keygen -t rsa -b 4096'", ssh_pub_filepath)
+		fmt.Printf("expected key[%s] not found, generating new key files...\n", ssh_pub_filepath)
+		lib.Generate_sshkeys(key_file_path)
+		return nil
+		// return fmt.Errorf("expected key[%s] not found, use the following command to generate keys 'ssh-keygen -t rsa -b 4096'", ssh_pub_filepath)
 	}
 
 	if _, err := os.Stat(ssh_private_filepath); err != nil {
-		return fmt.Errorf("expected key[%s] not found, use the following command to generate keys 'ssh-keygen -t rsa -b 4096'", ssh_private_filepath)
+		fmt.Printf("expected key[%s] not found, generating new key files...\n", ssh_private_filepath)
+		lib.Generate_sshkeys(key_file_path)
+		return nil
 	}
 
 	content, err := os.ReadFile(ssh_pub_filepath)
