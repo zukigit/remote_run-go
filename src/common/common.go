@@ -13,12 +13,19 @@ import (
 	"golang.org/x/term"
 )
 
+type Host struct {
+	Host_name, Host_ip, Host_dns, Host_run_username string
+	Host_client                                     *ssh.Client
+	Host_use_ip                                     bool
+	Host_port                                       int
+}
+
 type Testcase_status string
 type Database string
 type Doc_data_type string
 
-const INFO = 1
-const ERR = 2
+const LOG_LEVEL_INFO = 1
+const LOG_LEVEL_ERR = 2
 
 const (
 	MYSQL    Database      = "mysql"
@@ -36,13 +43,14 @@ const (
 )
 
 var Log_filepath, DB_hostname, DB_user, DB_passwd, DB_name string
-var Specific_ticket_no, Specific_testcase_no, DB_port, Timeout uint
+var Specific_ticket_no, Specific_testcase_no, DB_port, Timeout, Current_tk_no, Current_tc_no uint
 var Client *ssh.Client
 var Login_info Auth
 var Is_mysql, Is_psql bool
 var DB_type Database
 var DB *sql.DB
 var Sugar *zap.SugaredLogger
+var Host_pool *[]Host
 
 func Set_sugar(logfile_path string) {
 	logger_conf := zap.NewProductionConfig()
@@ -81,7 +89,7 @@ func Set_default_db_port() {
 
 func Set_db_type() error {
 	if !Is_mysql && !Is_psql {
-		return fmt.Errorf("please choose db type using --with-mysql --with-postgresql")
+		return fmt.Errorf("choose db type using --with-mysql or --with-postgresql flag")
 	}
 
 	if Is_mysql {
@@ -115,24 +123,4 @@ func Set_passwd() {
 		os.Exit(1)
 	}
 	Login_info.Password = string(bytepw)
-}
-
-func Set_client() {
-	config := &ssh.ClientConfig{
-		User: Login_info.Username,
-		Auth: []ssh.AuthMethod{
-			ssh.Password(Login_info.Password),
-		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-	}
-
-	hostname_with_port := fmt.Sprintf("%s:%d", Login_info.Hostname, Login_info.Port)
-
-	client, err := ssh.Dial("tcp", hostname_with_port, config)
-	if err != nil {
-		fmt.Println("Failed in getting ssh client, Error:", err.Error())
-		os.Exit(1)
-	}
-
-	Client = client
 }

@@ -85,21 +85,12 @@ func (t *TestCase) Is_function_nil() bool {
 
 // From here is test case util functions
 
-func (t *TestCase) Logi(level int, log string) string {
-	log = fmt.Sprintf("[%d] [%d] %s", t.Get_ticket_no(), t.Get_no(), log)
-	log = lib.Formatted_log(level, log)
-
-	common.Sugar.Infof(log)
-
-	return log
-}
-
 func (t *TestCase) Err_log(unfmt string, arg ...any) string {
 	log := fmt.Sprintf(unfmt, arg...)
-	return t.Logi(common.ERR, log)
+	return lib.Logi(common.LOG_LEVEL_ERR, log)
 }
 
 func (t *TestCase) Info_log(unfmt string, arg ...any) string {
 	log := fmt.Sprintf(unfmt, arg...)
-	return t.Logi(common.INFO, log)
+	return lib.Logi(common.LOG_LEVEL_INFO, log)
 }

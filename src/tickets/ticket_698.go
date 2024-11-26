@@ -89,7 +89,7 @@ func (t *Ticket_698) Add_testcases() {
 			tc_2.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return AgentConnectionReconnection("Icon_1", 180, tc_2, "RUN", "ERROR", 1, "", common.Client)
+		return AgentConnectionReconnection("Icon_1", 150, tc_2, "RUN", "ERROR", 1, "", common.Client)
 	}
 	tc_2.Set_function(tc_func)
 	t.Add_testcase(*tc_2)
@@ -106,7 +106,7 @@ func (t *Ticket_698) Add_testcases() {
 			tc_3.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return AgentConnectionReconnection("Icon_1", 60, tc_3, "END", "NORMAL", 1, "", common.Client)
+		return AgentConnectionReconnection("Icon_1", 60, tc_3, "END", "NORMAL", 33, "", common.Client)
 	}
 	tc_3.Set_function(tc_func)
 	t.Add_testcase(*tc_3)
@@ -141,7 +141,7 @@ func (t *Ticket_698) Add_testcases() {
 			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return AgentConnectionReconnection("Icon_1", 180, tc_5, "RUN", "ERROR", 1, "rm.sh", common.Client)
+		return AgentConnectionReconnection("Icon_1", 150, tc_5, "RUN", "ERROR", 1, "rm.sh", common.Client)
 	}
 	tc_5.Set_function(tc_func)
 	t.Add_testcase(*tc_5)
@@ -177,7 +177,7 @@ func (t *Ticket_698) Add_testcases() {
 			tc_7.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return CheckWhetherTheJobIconRunsNormally("Icon_1", tc_7, "END", "NORMAL", 1, "", common.Client)
+		return CheckWhetherTheJobIconRunsNormally("Icon_1", tc_7, "END", "NORMAL", 20, "", common.Client)
 	}
 	tc_7.Set_function(tc_func)
 	t.Add_testcase(*tc_7)
@@ -208,7 +208,7 @@ func (t *Ticket_698) Add_testcases() {
 			tc_8.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return AgentConnectionReconnection("Icon_1", 180, tc_8, "RUN", "ERROR", 1, "", common.Client)
+		return AgentConnectionReconnection("Icon_1", 150, tc_8, "RUN", "ERROR", 20, "", common.Client)
 	}
 	tc_8.Set_function(tc_func)
 	t.Add_testcase(*tc_8)
@@ -239,7 +239,7 @@ func (t *Ticket_698) Add_testcases() {
 			tc_9.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return AgentConnectionReconnection("Icon_1", 60, tc_9, "END", "NORMAL", 1, "", common.Client)
+		return AgentConnectionReconnection("Icon_1", 60, tc_9, "END", "NORMAL", 20, "", common.Client)
 	}
 	tc_9.Set_function(tc_func)
 	t.Add_testcase(*tc_9)
@@ -270,7 +270,7 @@ func (t *Ticket_698) Add_testcases() {
 			tc_10.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return CheckWhetherTheJobIconRunsNormally("Icon_1", tc_10, "END", "NORMAL", 1, "", common.Client)
+		return CheckWhetherTheJobIconRunsNormally("Icon_1", tc_10, "END", "NORMAL", 20, "", common.Client)
 	}
 	tc_10.Set_function(tc_func)
 	t.Add_testcase(*tc_10)
@@ -364,7 +364,7 @@ func (t *Ticket_698) Add_testcases() {
 			return FAILED
 		}
 
-		return RebootAfterCompletingJob_30("Icon_1", tc_13, "RUN", "ERROR", "END", "NORMAL", 6, common.Client)
+		return RebootAfterCompletingJob_30("Icon_1", tc_13, "RUN", "ERROR", "END", "NORMAL", 10, common.Client)
 
 	}
 	tc_13.Set_function(tc_func)
@@ -397,7 +397,7 @@ func (t *Ticket_698) Add_testcases() {
 			return FAILED
 		}
 
-		return RebootAfterCompletingJob_120("Icon_1", tc_14, "RUN", "ERROR", "END", "TIMEOUT", 6, common.Client)
+		return RebootAfterCompletingJob_120("Icon_1", tc_14, "RUN", "ERROR", "END", "TIMEOUT", 10, common.Client)
 
 	}
 	tc_14.Set_function(tc_func)
@@ -424,6 +424,19 @@ func CheckWhetherTheJobIconRunsNormally(jobnetId string, testcase *dao.TestCase,
 	}
 	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
+	if testcase.Get_no() == 7 || testcase.Get_no() == 10 {
+		sleepDuration := 5 * time.Minute
+		time.Sleep(sleepDuration)
+		common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
+		result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
+
+		if err != nil {
+			fmt.Println(testcase.Err_log("error"))
+			return FAILED
+		}
+		fmt.Print(testcase.Info_log("Successfully rebooted hostname : %s", result2))
+	}
+
 	// Wait jobnet finishes and get jobnet run info.
 	jobnet_run_info, err := lib.Jobarg_get_jobnet_info(run_jobnet_id, targetJobnetStatus, targetJobStatus, processCheckTimeout)
 	if err != nil {
@@ -439,7 +452,7 @@ func CheckWhetherTheJobIconRunsNormally(jobnetId string, testcase *dao.TestCase,
 	}
 	fmt.Println(testcase.Info_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
 
-	if testcase.Get_ticket_no() == 4 {
+	if testcase.Get_no() == 4 {
 		folderPath := "/tmp/"
 		configFilePath := folderPath
 		if !strings.HasSuffix(folderPath, "/") {
@@ -504,6 +517,21 @@ func AgentConnectionReconnection(jobnetId string, sleepCount int, testcase *dao.
 	}
 	fmt.Println(testcase.Info_log("Successful restart the agent."))
 
+	if testcase.Get_no() == 8 || testcase.Get_no() == 9 {
+
+		sleepDuration := 5 * time.Minute
+		time.Sleep(sleepDuration)
+		common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
+
+		result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
+
+		if err != nil {
+			fmt.Println(testcase.Err_log("Error ssh connection connect failed."))
+			return FAILED
+		}
+		fmt.Print(testcase.Info_log("Successfully reboot hostname : %s", result2))
+	}
+
 	// Wait jobnet finishes and get jobnet run info.
 	jobnet_run_info, err := lib.Jobarg_get_jobnet_info(run_jobnet_id, targetJobnetStatus, targetJobStatus, processCheckTimeout)
 	if err != nil || jobnet_run_info == nil {
@@ -518,7 +546,7 @@ func AgentConnectionReconnection(jobnetId string, sleepCount int, testcase *dao.
 	}
 	fmt.Println(testcase.Info_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
 
-	if testcase.Get_ticket_no() == 5 || testcase.Get_ticket_no() == 6 {
+	if testcase.Get_no() == 5 || testcase.Get_no() == 6 {
 		folderPath := "/tmp/"
 		configFilePath := folderPath
 		if !strings.HasSuffix(folderPath, "/") {
@@ -683,7 +711,7 @@ func RebootAfterCompletingJob_30(jobnetId string, testcase *dao.TestCase, normal
 	}
 
 	// After Reboot Connect with ssh again
-	sleepDuration := 1 * time.Minute
+	sleepDuration := 3 * time.Minute
 	time.Sleep(sleepDuration)
 
 	common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
@@ -691,10 +719,10 @@ func RebootAfterCompletingJob_30(jobnetId string, testcase *dao.TestCase, normal
 	result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("error"))
+		fmt.Println(testcase.Err_log("Error ssh connection connect failed."))
 		return FAILED
 	}
-	fmt.Print(testcase.Info_log("Successfully rebooted hostname : %s", result2))
+	fmt.Print(testcase.Info_log("Successfully reboot hostname : %s", result2))
 
 	// Wait jobnet finishes and get reboot jobnet run info.
 	reboot_jobnet_run_info, err := lib.Jobarg_get_jobnet_info(rebootJobnetId, rebootJobnetStatus, rebootJobStatus, processCheckTimeout)
@@ -800,7 +828,7 @@ func RebootAfterCompletingJob_120(jobnetId string, testcase *dao.TestCase, norma
 	}
 
 	// After Reboot Connect with ssh again
-	sleepDuration := 1 * time.Minute
+	sleepDuration := 3 * time.Minute
 	time.Sleep(sleepDuration)
 
 	common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
@@ -808,10 +836,10 @@ func RebootAfterCompletingJob_120(jobnetId string, testcase *dao.TestCase, norma
 	result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("error"))
+		fmt.Println(testcase.Err_log("Error ssh connection connect failed."))
 		return FAILED
 	}
-	fmt.Print(testcase.Info_log("Successfully rebooted hostname : %s", result2))
+	fmt.Print(testcase.Info_log("Successfully reboot hostname : %s", result2))
 
 	// Wait jobnet finishes and get reboot jobnet run info.
 	reboot_jobnet_run_info, err := lib.Jobarg_get_jobnet_info(rebootJobnetId, rebootJobnetStatus, rebootJobStatus, processCheckTimeout)
