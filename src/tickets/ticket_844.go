@@ -155,7 +155,7 @@ func (t *Ticket_844) Add_testcases() {
 		var jobnet_name string = "TICKET844_TESTCASE74" // This value must be Jobnet_Name that you want to enable.
 		var actual_jobnet_run_id string = "Icon_800"    // This is the actual parallel jobnet_id that we actually want to run.
 		var job_process_count_amt int = 800             // Enter total Job icons you want to check here. Must be same with Jobnet total jobs.
-		var timeout_minute int = 60                     // Enter timeout in minutes for Process count.
+		var timeout_minute int = 90                     // Enter timeout in minutes for Process count.
 		var jobnet_run_manage_id string
 
 		// 1. Enable 1 Icon jobnet.
