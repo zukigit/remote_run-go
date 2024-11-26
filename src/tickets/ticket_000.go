@@ -1,9 +1,6 @@
 package tickets
 
 import (
-	"fmt"
-	"os/user"
-
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
@@ -65,17 +62,6 @@ func (t *Ticket_000) Add_testcases() {
 		tc_1.Err_log("tested error log")
 		lib.Logi(common.LOG_LEVEL_INFO, "testing new log function")
 		lib.Logi(common.LOG_LEVEL_ERR, "testing new log function")
-
-		currentUser, err := user.Current()
-		if err != nil {
-			fmt.Printf("Error fetching current user: %v\n", err)
-			return FAILED
-		}
-
-		// Print the username and user details
-		fmt.Printf("Current Username: %s\n", currentUser.Username)
-		fmt.Printf("User UID: %s\n", currentUser.Uid)
-		fmt.Printf("Home Directory: %s\n", currentUser.HomeDir)
 
 		return PASSED
 	}
