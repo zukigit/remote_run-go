@@ -119,11 +119,10 @@ var rootCmd = &cobra.Command{
 		lib.Set_common_client(common.Login_info.Username, common.Login_info.Password, common.Login_info.Hostname, common.Login_info.Port)
 		defer common.Client.Close()
 
-		// lib.Set_host_pool()
-		// for _, host := range *common.Host_pool {
-		// 	fmt.Println(host)
-		// }
-		// os.Exit(0)
+		if err := lib.Set_host_pool(); err != nil {
+			fmt.Println("Failed in creating host pool, use 'register_hosts' command to fix, Err:", err.Error())
+			os.Exit(1)
+		}
 
 		common.Log_filepath = lib.Get_filepath()
 		common.Set_sugar(common.Log_filepath + ".log")
