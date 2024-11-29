@@ -168,20 +168,20 @@ func (t *Ticket_844) Add_testcases() {
 		// 8. Restart linux Jobarranger agent.
 		// 9. Counting Job Process Count again.
 
-		if Run_enable_jobnet(tc_74, jobnet_id, jobnet_name) &&
-			Run_enable_jobnet(tc_74, "Icon_10", "Icon_10") &&
-			Run_enable_jobnet(tc_74, "Icon_100", "Icon_100") &&
-			Run_enable_jobnet(tc_74, "Icon_800", "Icon_800") &&
-			Run_Jobarg_cleanup_linux(tc_74) &&
+		if lib.Run_enable_jobnet(jobnet_id, jobnet_name) &&
+			lib.Run_enable_jobnet("Icon_10", "Icon_10") &&
+			lib.Run_enable_jobnet("Icon_100", "Icon_100") &&
+			lib.Run_enable_jobnet("Icon_800", "Icon_800") &&
+			lib.Run_Jobarg_cleanup_linux() &&
 			func() bool {
 				var result bool
-				result, jobnet_run_manage_id = Run_Jobnet(tc_74, actual_jobnet_run_id)
+				result, jobnet_run_manage_id = lib.Run_Jobnet(actual_jobnet_run_id)
 				return result
 			}() &&
-			Run_Job_process_count(tc_74, job_process_count_amt, timeout_minute) &&
-			Run_Restart_Linux_Jaz_agent(tc_74) &&
-			Run_Job_process_count(tc_74, 0, 1) &&
-			Run_Job_Status_Check_For_Error(tc_74, timeout_minute, jobnet_run_manage_id) {
+			lib.Run_Job_process_count(job_process_count_amt, timeout_minute) &&
+			lib.Run_Restart_Linux_Jaz_agent() &&
+			lib.Run_Job_process_count(0, 1) &&
+			lib.Run_Job_Status_Check_For_Error(timeout_minute, jobnet_run_manage_id) {
 			fmt.Println("All operations completed successfully")
 			return PASSED
 		} else {
@@ -225,22 +225,22 @@ func (t *Ticket_844) Add_testcases() {
 		// 9. Check if Jobnet Finished successfully with no zombie process or not.
 
 		start_time := time.Now()
-		if Run_enable_jobnet(tc_75, jobnet_id, jobnet_name) &&
-			Run_Jobarg_cleanup_linux(tc_75) &&
+		if lib.Run_enable_jobnet(jobnet_id, jobnet_name) &&
+			lib.Run_Jobarg_cleanup_linux() &&
 			func() bool {
-				result, jobnet_run_manage_id = Run_Jobnet(tc_75, jobnet_id)
+				result, jobnet_run_manage_id = lib.Run_Jobnet(jobnet_id)
 				return result
 			}() &&
 			func() bool {
-				result, jobnet_run_info = Run_Jobarg_get_jobnet_run_info(tc_75, jobnet_run_manage_id)
+				result, jobnet_run_info = lib.Run_Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
 				return result
 			}() &&
 			func() bool {
-				result, last_std_out = Run_Jobarg_Get_LastSTDOUT(tc_75, jobnet_run_manage_id)
+				result, last_std_out = lib.Run_Jobarg_Get_LastSTDOUT(jobnet_run_manage_id)
 				return result
 			}() &&
 			func() bool {
-				result, num = Str_To_Int(tc_75, last_std_out)
+				result, num = lib.Str_To_Int(last_std_out)
 				return result
 			}() &&
 			func() bool {
@@ -260,7 +260,7 @@ func (t *Ticket_844) Add_testcases() {
 				}
 				return true
 			}() &&
-			Run_Check_Jobnet_Finish_With_No_Zombie_Process(tc_75, jobnet_run_info) {
+			lib.Run_Check_Jobnet_Finish_With_No_Zombie_Process(jobnet_run_info) {
 			fmt.Println("All operations completed successfully")
 			return PASSED
 		} else {

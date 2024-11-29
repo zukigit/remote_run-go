@@ -5,6 +5,7 @@ import (
 
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
+	"github.com/zukigit/remote_run-go/src/lib"
 )
 
 type Ticket_1089 struct {
@@ -78,21 +79,21 @@ func (t *Ticket_1089) Add_testcases() {
 		var jobnet_run_info *common.Jobnet_run_info
 		var result bool
 
-		if Run_Jobarg_cleanup_linux(tc_101) &&
-			Run_enable_jobnet(tc_101, jobnet_id, jobnet_name_1) &&
+		if lib.Run_Jobarg_cleanup_linux() &&
+			lib.Run_enable_jobnet(jobnet_id, jobnet_name_1) &&
 			func() bool {
-				result, jobnet_run_manage_id = Run_Jobnet_Exec(tc_101, jobnet_id, execute_command)
+				result, jobnet_run_manage_id = lib.Run_Jobnet_Exec(jobnet_id, execute_command)
 				return result
 			}() &&
 			func() bool {
-				result, jobnet_run_info = Run_Jobarg_get_jobnet_run_info(tc_101, jobnet_run_manage_id)
+				result, jobnet_run_info = lib.Run_Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
 				return result
 			}() &&
 			func() bool {
 				fmt.Print(tc_101.Info_log("Info: Job Info: %s. Jobnet Info: %s", jobnet_run_info.Job_status, jobnet_run_info.Jobnet_status))
 				if jobnet_run_info.Job_status == "TIMEOUT" {
 					var count int
-					_, sql_result := Run_Sql_Script_Return_Rows(tc_101, "SELECT count(*) from ja_run_job_table WHERE inner_jobnet_main_id = '"+jobnet_run_manage_id+"' AND status = 3 AND timeout_flag = 1;")
+					_, sql_result := lib.Run_Sql_Script_Return_Rows("SELECT count(*) from ja_run_job_table WHERE inner_jobnet_main_id = '" + jobnet_run_manage_id + "' AND status = 3 AND timeout_flag = 1;")
 					if sql_result.Next() { // Move to the first row
 						if err := sql_result.Scan(&count); err != nil {
 							fmt.Println(tc_101.Err_log("Error: Error scanning result: %s", err))
@@ -109,14 +110,14 @@ func (t *Ticket_1089) Add_testcases() {
 				fmt.Println(tc_101.Info_log("Error: Jobnet doesn't end up with Timeout."))
 				return false
 			}() &&
-			Run_Jobarg_cleanup_linux(tc_101) &&
-			Run_enable_jobnet(tc_101, jobnet_id, jobnet_name_2) &&
+			lib.Run_Jobarg_cleanup_linux() &&
+			lib.Run_enable_jobnet(jobnet_id, jobnet_name_2) &&
 			func() bool {
-				result, jobnet_run_manage_id = Run_Jobnet_Exec(tc_101, jobnet_id, execute_command)
+				result, jobnet_run_manage_id = lib.Run_Jobnet_Exec(jobnet_id, execute_command)
 				return result
 			}() &&
 			func() bool {
-				result, jobnet_run_info = Run_Jobarg_get_jobnet_run_info(tc_101, jobnet_run_manage_id)
+				result, jobnet_run_info = lib.Run_Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
 				if jobnet_run_info == nil {
 					fmt.Println(tc_101.Info_log("Info: Job Icon end up with Error."))
 				} else {

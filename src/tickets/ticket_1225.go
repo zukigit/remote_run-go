@@ -269,7 +269,7 @@ func insertOneMillionRecords() error {
 	if common.Is_psql {
 		query = `DO $$
 		DECLARE
-			batch_size CONSTANT INTEGER := 500;
+			batch_size CONSTANT INTEGER := 20000;
 			counter INTEGER := 0;
 			total_records INTEGER := 1000000;  -- Total number of records to process
 		BEGIN

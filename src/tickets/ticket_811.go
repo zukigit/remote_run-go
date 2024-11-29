@@ -80,16 +80,16 @@ func (t *Ticket_811) Add_testcases() {
 	}
 
 	// TESTCASE 1 (Force stop jobnet with icon count of 100)
-	addTestCase(1, "Check abort process for job icon with count 100", "Icon_100", 100, 10)
+	addTestCase(1, "Check abort process for job icon with count 100", "Icon_100", 100, 30)
 
 	// TESTCASE 2 (Force stop jobnet with icon count of 200)
-	addTestCase(2, "Check abort process for job icon with count 200", "Icon_200", 200, 12)
+	addTestCase(2, "Check abort process for job icon with count 200", "Icon_200", 200, 30)
 
 	// TESTCASE 3 (Force stop jobnet with icon count of 400)
-	addTestCase(3, "Check abort process for job icon with count 400", "Icon_400", 400, 13)
+	addTestCase(3, "Check abort process for job icon with count 400", "Icon_400", 400, 30)
 
 	// TESTCASE 4 (Force stop jobnet with icon count of 1000)
-	addTestCase(4, "Check abort process for job icon with count 1000", "Icon_1000", 1000, 16)
+	addTestCase(4, "Check abort process for job icon with count 1000", "Icon_1000", 1000, 60)
 	//Normal jobnet with 100 agent less icon in running state.
 	tc_5 := t.New_testcase(5, "Check Abort process abort the Agent Less icon or not")
 	tc_func := func() common.Testcase_status {
@@ -105,7 +105,7 @@ func (t *Ticket_811) Add_testcases() {
 			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return RunJobnetAndAbort("Icon_100", 100, 5, tc_5, common.Client)
+		return RunJobnetAndAbort("Icon_100", 100, 30, tc_5, common.Client)
 	}
 	tc_5.Set_function(tc_func)
 	t.Add_testcase(*tc_5)
@@ -125,7 +125,7 @@ func (t *Ticket_811) Add_testcases() {
 			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return RunJobnetAndAbort("Icon_200", 200, 5, tc_6, common.Client)
+		return RunJobnetAndAbort("Icon_200", 200, 30, tc_6, common.Client)
 	}
 	tc_6.Set_function(tc_func)
 	t.Add_testcase(*tc_6)
@@ -145,7 +145,7 @@ func (t *Ticket_811) Add_testcases() {
 			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return RunJobnetAndAbort("Icon_400", 400, 10, tc_7, common.Client)
+		return RunJobnetAndAbort("Icon_400", 400, 30, tc_7, common.Client)
 	}
 	tc_7.Set_function(tc_func)
 	t.Add_testcase(*tc_7)
@@ -165,7 +165,7 @@ func (t *Ticket_811) Add_testcases() {
 			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return RunJobnetAndAbort("Icon_800", 800, 15, tc_8, common.Client)
+		return RunJobnetAndAbort("Icon_800", 800, 30, tc_8, common.Client)
 	}
 	tc_8.Set_function(tc_func)
 	t.Add_testcase(*tc_8)
@@ -178,7 +178,7 @@ func (t *Ticket_811) Add_testcases() {
 			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return RunJobnetAndAbortExtJobIcon("Icon_100", 3, tc_9, common.Client, 100)
+		return RunJobnetAndAbortExtJobIcon("Icon_100", 30, tc_9, common.Client, 100)
 	}
 	tc_9.Set_function(tc_func)
 	t.Add_testcase(*tc_9)
@@ -189,7 +189,7 @@ func (t *Ticket_811) Add_testcases() {
 			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return RunJobnetAndAbortExtJobIcon("Icon_200", 4, tc_10, common.Client, 200)
+		return RunJobnetAndAbortExtJobIcon("Icon_200", 30, tc_10, common.Client, 200)
 	}
 	tc_10.Set_function(tc_func)
 	t.Add_testcase(*tc_10)
@@ -200,7 +200,7 @@ func (t *Ticket_811) Add_testcases() {
 			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return RunJobnetAndAbortExtJobIcon("Icon_400", 5, tc_11, common.Client, 400)
+		return RunJobnetAndAbortExtJobIcon("Icon_400", 30, tc_11, common.Client, 400)
 	}
 	tc_11.Set_function(tc_func)
 	t.Add_testcase(*tc_11)
@@ -211,7 +211,7 @@ func (t *Ticket_811) Add_testcases() {
 			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return RunJobnetAndAbortExtJobIcon("Icon_800", 5, tc_12, common.Client, 800)
+		return RunJobnetAndAbortExtJobIcon("Icon_800", 30, tc_12, common.Client, 800)
 	}
 	tc_12.Set_function(tc_func)
 	t.Add_testcase(*tc_12)
@@ -226,7 +226,7 @@ func (t *Ticket_811) Add_testcases() {
 			tc_13.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return RunJobnetAndAbort("Icon_100", 200, 10, tc_13, common.Client)
+		return RunJobnetAndAbort("Icon_100", 200, 30, tc_13, common.Client)
 	}
 	tc_13.Set_function(tc_func)
 	t.Add_testcase(*tc_13)
@@ -238,7 +238,7 @@ func (t *Ticket_811) Add_testcases() {
 			tc_14.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return RunJobnetAndAbort("Icon_200", 400, 20, tc_14, common.Client)
+		return RunJobnetAndAbort("Icon_200", 400, 40, tc_14, common.Client)
 	}
 	tc_14.Set_function(tc_func)
 	t.Add_testcase(*tc_14)
@@ -250,7 +250,7 @@ func (t *Ticket_811) Add_testcases() {
 			tc_15.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return RunJobnetAndAbort("Icon_400", 800, 40, tc_15, common.Client)
+		return RunJobnetAndAbort("Icon_400", 800, 50, tc_15, common.Client)
 	}
 	tc_15.Set_function(tc_func)
 	t.Add_testcase(*tc_15)

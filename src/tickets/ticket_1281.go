@@ -573,7 +573,8 @@ func BackupThread(jobnetId string, testcase *dao.TestCase, client *ssh.Client) c
 	formattedTime := adjustedTime.Format("2006-01-02 15:04:05")
 
 	// Create the timedatectl command
-	setDatetimeCmd := fmt.Sprintf("sudo timedatectl set-time '%s'", formattedTime)
+	//setDatetimeCmd := fmt.Sprintf("sudo timedatectl set-time '%s'", formattedTime)
+	setDatetimeCmd := "sudo timedatectl set-time '" + formattedTime + "'"
 
 	// Output the command to verify
 	fmt.Println("Generated Command:", setDatetimeCmd)
@@ -590,7 +591,8 @@ func BackupThread(jobnetId string, testcase *dao.TestCase, client *ssh.Client) c
 		fmt.Println(testcase.Err_log("Error set ntp true : %s", set_ntp_err))
 	}
 
-	time.Sleep(5 * time.Minute)
+	//time.Sleep(5 * time.Minute)
+	lib.Run_Timeout(5 * 60)
 	contents, get_jobfile_and_folder_err = getDirectoryContents()
 	if get_jobfile_and_folder_err != nil {
 		fmt.Println(testcase.Err_log("Error after backup thread start job file and folder : %s", get_jobfile_and_folder_err))

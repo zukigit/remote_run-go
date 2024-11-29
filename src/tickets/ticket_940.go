@@ -120,7 +120,7 @@ func (t *Ticket_940) applyConfigAndRunTests(tc *dao.TestCase, configs []string, 
 		return t.logError(tc, "Failed to restart: %s", err)
 	}
 
-	Run_Timeout(tc, 10)
+	lib.Run_Timeout(10)
 
 	logFilePath := "/var/log/jobarranger/jobarg_server.log"
 	cmd := fmt.Sprintf(`cat %s | grep "Process is taking"`, logFilePath)

@@ -68,8 +68,8 @@ func (t *Ticket_794) Add_testcases() {
 		// Define job names
 		jobs := []string{
 			"Icon_510",
-			//"Icon_1020",
-			//"Icon_2040",
+			"Icon_1020",
+			"Icon_2040",
 		}
 
 		for _, job := range jobs {
