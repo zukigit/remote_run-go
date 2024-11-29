@@ -55,16 +55,16 @@ func (t *Ticket_940) Set_values() {
 func (t *Ticket_940) Add_testcases() {
 	// All configurations to be added at once
 	configs := []string{
-		"JaRunTimeout=1",
-		"JaTrapperTimeout=1",
-		"JaJobTimeout=1",
-		"JaJobnetTimeout=1",
-		"JaLoaderTimeout=1",
-		"JaBootTimeout=1",
-		"JaMsgsndTimeout=1",
-		"JaSelfmonTimeout=1",
-		"JaPurgeTimeout=1",
-		"JaAbortTimeout=1",
+		"JaRunTimeout=5",
+		"JaTrapperTimeout=5",
+		"JaJobTimeout=5",
+		"JaJobnetTimeout=5",
+		"JaLoaderTimeout=5",
+		"JaBootTimeout=5",
+		"JaMsgsndTimeout=5",
+		"JaSelfmonTimeout=5",
+		"JaPurgeTimeout=5",
+		"JaAbortTimeout=5",
 	}
 
 	configFilePath := "/etc/jobarranger/jobarg_server.conf"
