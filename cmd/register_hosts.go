@@ -19,6 +19,7 @@ import (
 
 var found_hosts []common.Host
 var rsa_pub_key string
+var chosen_hosts_index int
 
 func check_id_rsa() error {
 	current_user, err := user.Current()
@@ -74,8 +75,9 @@ func get_hosts() {
 }
 
 func get_host(hostname string) *common.Host {
-	for _, host := range found_hosts {
+	for index, host := range found_hosts {
 		if hostname == host.Host_name {
+			chosen_hosts_index = index
 			return &host
 		}
 	}
@@ -84,6 +86,11 @@ func get_host(hostname string) *common.Host {
 }
 
 func ask_userinput_hostname() string {
+	if len(found_hosts) == 0 {
+		fmt.Println("No hosts to register, exiting...")
+		os.Exit(0)
+	}
+
 	fmt.Println("Found hosts:")
 	for index, host := range found_hosts {
 		fmt.Printf("%d) %s\n", index+1, host.Host_name)
@@ -157,6 +164,7 @@ func register() {
 	lib.Set_hosts_to_jsonfile(temp_hosts, "hosts.json")
 
 	fmt.Printf("Registered host[%s]\n", temp_host.Host_name)
+	found_hosts = append(found_hosts[:chosen_hosts_index], found_hosts[chosen_hosts_index+1:]...)
 	fmt.Println()
 }
 
