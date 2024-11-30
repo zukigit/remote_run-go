@@ -1,3 +1,4 @@
 logs/*.log
 logs/*.yml
 remote_run.exe
+hosts.json
