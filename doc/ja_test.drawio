@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36" version="24.7.16">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0" version="24.7.13">
   <diagram name="Page-1" id="TSFPr093VOYMbW9e3bXQ">
-    <mxGraphModel dx="2996" dy="814" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1900" dy="566" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -194,8 +194,11 @@
             <mxPoint x="710" y="1010" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="EFfEMhPxB99IKdlydbC8-1" value="Jobarg_agent" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="EFfEMhPxB99IKdlydbC8-1" value="Jobarg_agent" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="-105" y="350" width="105" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tAvOXAf8v9fTOtNfdXad-1" value="How Hosts pool works" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="140" y="1778" width="140" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
