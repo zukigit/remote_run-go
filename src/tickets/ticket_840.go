@@ -100,6 +100,25 @@ func (t *Ticket_840) Add_testcases() {
 		// Waiting File Creation (the file will be created)
 		testcaseCounter++
 		testcaseA := t.New_testcase(testcaseCounter, fmt.Sprintf("Can be successfully run on %s (%s) [FWait - Waiting File Creation]", env.Encoding, env.OSType))
+		testcaseA.Pre_operation = &[]string{
+			"Created fwait icon's jobnet in Shift-js environment.",
+			"1. File name in the filewait icon setting must be in japanese",
+			`2. Choose File Processing mode as "Waiting File Creation"`,
+		}
+		testcaseA.Operation = &[]string{
+			"Check file wait icon can successfully execute or not.",
+			"Execute the jobnet with immediate run.",
+		}
+		testcaseA.Expected_results = &[]string{
+			"1. File wait process must work and successfully end.",
+			"2. Fwait icon must be end with green color.",
+			"3. There is no std error msg.",
+			"4. The following message must be display in std_out.",
+			`Message : "the file "xxxxxx" exists."`,
+			"xxxxx: /file path/filename",
+			"filename Font shoud not be corrupt. ",
+			"Japanese character should not be change into question mark(?)",
+		}
 
 		tcFunc := func() common.Testcase_status {
 			return fileWaitTestcase(testcaseA, env)
@@ -110,6 +129,25 @@ func (t *Ticket_840) Add_testcases() {
 		// Check File Existence (the file exists)
 		testcaseCounter++
 		testcaseB := t.New_testcase(testcaseCounter, fmt.Sprintf("Can be successfully run on %s (%s) [FWait - Check File Existence: file exists]", env.Encoding, env.OSType))
+		testcaseB.Pre_operation = &[]string{
+			`Create fwait icon's jobnet in Shift-js Shift-js environment.`,
+			`1. File name in the filewait icon setting must be in japanese and check.`,
+			`2. Choose File Processing mode as "Check File Existence".`,
+		}
+		testcaseB.Operation = &[]string{
+			`Check file wait icon can successfully execute while checking file is existing in specified place.`,
+			`Execute the jobnet with immediate run.`,
+		}
+		testcaseB.Expected_results = &[]string{
+			`1. File check process must work and successfully end.`,
+			`2. Fwait icon must be end with green color.`,
+			`3.There is no std error msg.`,
+			`4. The following message must be display in std_out .`,
+			`Message : "the file "xxxxxx" exists." `,
+			`filename Font shoud not be corrupt. `,
+			`Japanese character should not be change into question mark(?)`,
+		}
+
 		tcFunc = func() common.Testcase_status {
 			return fileCheckTestcase(testcaseB, env, true)
 		}
@@ -119,6 +157,25 @@ func (t *Ticket_840) Add_testcases() {
 		// Check File Existence (the file does not exist)
 		testcaseCounter++
 		testcaseC := t.New_testcase(testcaseCounter, fmt.Sprintf("Can be successfully run on %s (%s) [FWait - Check File Existence: file does not exist]", env.Encoding, env.OSType))
+		testcaseC.Pre_operation = &[]string{
+			`Create fwait icon's jobnet in Shift-js Shift-js environment.`,
+			`1. File name in the filewait icon setting must be in japanese and check.`,
+			`2. Choose File Processing mode as "Check File Existence".`,
+		}
+		testcaseC.Operation = &[]string{
+			`Check file wait icon can execute while checking file does not exist in specified place.`,
+			`Execute the jobnet with immediate run.`,
+		}
+		testcaseC.Expected_results = &[]string{
+			`1. File check process must work and successfully end.`,
+			`2. Fwait icon must be end with green color.`,
+			`3.There is no std error msg.`,
+			`4. The following message must be display in std_out .`,
+			`Message : "the file "xxxxxx" does not exist."`,
+			`filename Font shoud not be corrupt. `,
+			`Japanese character should not be change into question mark(?)`,
+		}
+
 		tcFunc = func() common.Testcase_status {
 			return fileCheckTestcase(testcaseC, env, false)
 		}
@@ -128,6 +185,20 @@ func (t *Ticket_840) Add_testcases() {
 		// Normal Job Icon with file copy command
 		testcaseCounter++
 		testcaseD := t.New_testcase(testcaseCounter, fmt.Sprintf("Can be successfully run on %s (%s) [Job Icon - Copy Command with japanese name]", env.Encoding, env.OSType))
+		testcaseD.Pre_operation = &[]string{
+			"Create job icon's jobnet in Shift-js Shift-js environment.",
+			"Command with japanese character must work normally",
+		}
+		testcaseD.Operation = &[]string{
+			"Create normal job with command including japanese characters:",
+			"for Linux: cp /path/sourcefile_with_japanese_char   /path/destination_file",
+			"for Windows : copy /path/sourcefile_with_japanese_char   /path/destination_file",
+		}
+		testcaseD.Expected_results = &[]string{
+			"1.Job icon must work normally",
+			"2. Check stdout.",
+		}
+
 		tcFunc = func() common.Testcase_status {
 			return normalIconTestcase(testcaseD, env)
 		}
@@ -149,6 +220,17 @@ func (t *Ticket_840) Add_testcases() {
 		// Own host
 		testcaseCounter++
 		testcaseF := t.New_testcase(testcaseCounter, fmt.Sprintf("Can be successfully run on %s (%s) [FCopy Icon - own host]", env.Encoding, env.OSType))
+		testcaseF.Pre_operation = &[]string{
+			`1) Create a file with Japanese filename`,
+			`2) create f-transfer jobnet with same hosts.`,
+		}
+		testcaseF.Operation = &[]string{
+			`Copy the file with F-Transfer icon.`,
+		}
+		testcaseF.Expected_results = &[]string{
+			`F-Transfer icon must be successful done. (green)`,
+		}
+
 		tcFunc = func() common.Testcase_status {
 			envs := map[string]string{
 				"JA_SRC_HOST":  env.Hostname,
@@ -238,7 +320,7 @@ func rebootIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 	common.Client, err = ssh.Dial("tcp", fmt.Sprintf("%s:%d", common.Login_info.Hostname, common.Login_info.Port), &ssh.ClientConfig{
 		User: common.Login_info.Username,
 		Auth: []ssh.AuthMethod{
-			ssh.Password(common.Login_info.Username),
+			ssh.Password(common.Login_info.Password),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	})
