@@ -185,6 +185,19 @@ func (t *Ticket_698) Add_testcases() {
 	tc_8 := t.New_testcase(8, "Agent connection failure after 120 seconds. (Reboot)")
 	tc_func = func() common.Testcase_status {
 
+		sleepDuration := 1 * time.Minute
+		time.Sleep(sleepDuration)
+
+		common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
+
+		result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
+
+		if err != nil {
+			fmt.Println(tc_8.Err_log("error"))
+			return FAILED
+		}
+		fmt.Print(tc_8.Info_log("Successfully rebooted hostname : %s", result2))
+
 		if err := lib.Start_jaz_server(); err != nil {
 			tc_8.Err_log("Failed to start jobarg-server, Error: %s", err.Error())
 			return FAILED
@@ -202,6 +215,19 @@ func (t *Ticket_698) Add_testcases() {
 
 	tc_9 := t.New_testcase(9, "Agent reconnection within 120 seconds. (Reboot)")
 	tc_func = func() common.Testcase_status {
+
+		sleepDuration := 1 * time.Minute
+		time.Sleep(sleepDuration)
+
+		common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
+
+		result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
+
+		if err != nil {
+			fmt.Println(tc_9.Err_log("error"))
+			return FAILED
+		}
+		fmt.Print(tc_9.Info_log("Successfully rebooted hostname : %s", result2))
 
 		if err := lib.Start_jaz_server(); err != nil {
 			tc_9.Err_log("Failed to start jobarg-server, Error: %s", err.Error())
@@ -221,6 +247,19 @@ func (t *Ticket_698) Add_testcases() {
 	tc_10 := t.New_testcase(10, "Reconnect and retry case for connection agent(Reboot)")
 	tc_func = func() common.Testcase_status {
 
+		sleepDuration := 1 * time.Minute
+		time.Sleep(sleepDuration)
+
+		common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
+
+		result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
+
+		if err != nil {
+			fmt.Println(tc_10.Err_log("error"))
+			return FAILED
+		}
+		fmt.Print(tc_10.Info_log("Successfully rebooted hostname : %s", result2))
+
 		if err := lib.Start_jaz_server(); err != nil {
 			tc_10.Err_log("Failed to start jobarg-server, Error: %s", err.Error())
 			return FAILED
@@ -238,6 +277,19 @@ func (t *Ticket_698) Add_testcases() {
 
 	tc_11 := t.New_testcase(11, "F-Transfer Icon with allow root = 0 (Root Permission File)")
 	tc_func = func() common.Testcase_status {
+
+		sleepDuration := 1 * time.Minute
+		time.Sleep(sleepDuration)
+
+		common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
+
+		result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
+
+		if err != nil {
+			fmt.Println(tc_11.Err_log("error"))
+			return FAILED
+		}
+		fmt.Print(tc_11.Info_log("Successfully rebooted hostname : %s", result2))
 
 		if err := lib.Start_jaz_server(); err != nil {
 			tc_11.Err_log("Failed to start jobarg-server, Error: %s", err.Error())
@@ -257,6 +309,19 @@ func (t *Ticket_698) Add_testcases() {
 	tc_12 := t.New_testcase(12, "F-Transfer Icon with allow root = 0 (Zabbix Permission File)")
 	tc_func = func() common.Testcase_status {
 
+		sleepDuration := 1 * time.Minute
+		time.Sleep(sleepDuration)
+
+		common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
+
+		result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
+
+		if err != nil {
+			fmt.Println(tc_12.Err_log("error"))
+			return FAILED
+		}
+		fmt.Print(tc_12.Info_log("Successfully rebooted hostname : %s", result2))
+
 		if err := lib.Start_jaz_server(); err != nil {
 			tc_12.Err_log("Failed to start jobarg-server, Error: %s", err.Error())
 			return FAILED
@@ -274,6 +339,19 @@ func (t *Ticket_698) Add_testcases() {
 
 	tc_13 := t.New_testcase(13, "Reboot after completing Job (AllowRoot 1) <Timeout=30>")
 	tc_func = func() common.Testcase_status {
+
+		sleepDuration := 1 * time.Minute
+		time.Sleep(sleepDuration)
+
+		common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
+
+		result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
+
+		if err != nil {
+			fmt.Println(tc_13.Err_log("error"))
+			return FAILED
+		}
+		fmt.Print(tc_13.Info_log("Successfully rebooted hostname : %s", result2))
 
 		if err := lib.Start_jaz_server(); err != nil {
 			tc_13.Err_log("Failed to start jobarg-server, Error: %s", err.Error())
@@ -294,6 +372,19 @@ func (t *Ticket_698) Add_testcases() {
 
 	tc_14 := t.New_testcase(14, "Reboot after completing Job (AllowRoot 1) <Timeout=120>")
 	tc_func = func() common.Testcase_status {
+
+		sleepDuration := 1 * time.Minute
+		time.Sleep(sleepDuration)
+
+		common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
+
+		result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
+
+		if err != nil {
+			fmt.Println(tc_14.Err_log("error"))
+			return FAILED
+		}
+		fmt.Print(tc_14.Info_log("Successfully rebooted hostname : %s", result2))
 
 		if err := lib.Start_jaz_server(); err != nil {
 			tc_14.Err_log("Failed to start jobarg-server, Error: %s", err.Error())

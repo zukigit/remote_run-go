@@ -7,6 +7,7 @@ import (
 
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
+	"github.com/zukigit/remote_run-go/src/lib"
 )
 
 type Ticket_1264 struct {
@@ -89,26 +90,26 @@ func (t *Ticket_1264) Add_testcases() {
 		// 5. Run jobnet and check if jobnet run successfully or not.
 		// 6. Remove jobarg_json_parse and restore back to original config files.
 
-		if Run_Jobarg_cleanup_linux(tc_125) &&
-			Run_Linux_Command(tc_125, "cp /etc/jobarranger/jobarg_server.conf /etc/jobarranger/jobarg_server.conf.bk") &&
-			Run_Linux_Command(tc_125, "cp /etc/jobarranger/web/jam.config.php /etc/jobarranger/web/jam.config.php.bk") &&
-			Run_Linux_Command(tc_125, "cp /etc/zabbix/web/zabbix.conf.php /etc/zabbix/web/zabbix.conf.php.bk") &&
-			Run_enable_jobnet(tc_125, "Icon_1", "jobicon_linux") &&
+		if lib.Run_Jobarg_cleanup_linux() &&
+			lib.Run_Linux_Command("cp /etc/jobarranger/jobarg_server.conf /etc/jobarranger/jobarg_server.conf.bk") &&
+			lib.Run_Linux_Command("cp /etc/jobarranger/web/jam.config.php /etc/jobarranger/web/jam.config.php.bk") &&
+			lib.Run_Linux_Command("cp /etc/zabbix/web/zabbix.conf.php /etc/zabbix/web/zabbix.conf.php.bk") &&
+			lib.Run_enable_jobnet("Icon_1", "jobicon_linux") &&
 			func() bool {
-				result, current_pwd = Run_Window_Command_Str(tc_125, "cd")
+				result, current_pwd = lib.Run_Window_Command_Str("cd")
 				fmt.Print(current_pwd)
 				return result
 			}() &&
 			func() bool {
 				// Specify the local and remote file paths
-				localFilePath := filepath.ToSlash(filepath.Join(strings.TrimSpace(strings.Trim(current_pwd, "\n")), "exported_jobnets", "jobarg_json_parse")) // Replace with the desired full file path on the Window
-				remoteFilePath := "/usr/local/bin/jobarg_json_parse"                                                                                          // Replace with the desired full file path on the Linux
-				return Run_SFTP_File_Transfer(tc_125, localFilePath, remoteFilePath)
+				localFilePath := filepath.ToSlash(filepath.Join(strings.TrimSpace(strings.Trim(current_pwd, "\n")), "external_tools", "jobarg_json_parse")) // Replace with the desired full file path on the Window
+				remoteFilePath := "/usr/local/bin/jobarg_json_parse"                                                                                        // Replace with the desired full file path on the Linux
+				return lib.Run_SFTP_File_Transfer(localFilePath, remoteFilePath)
 			}() &&
-			Run_Linux_Command(tc_125, "chmod +x /usr/local/bin/jobarg_json_parse") &&
+			lib.Run_Linux_Command("chmod +x /usr/local/bin/jobarg_json_parse") &&
 			func() bool {
-				return (Run_Set_Config_Linux(tc_125, "# DBPasswordExternal=", "DBPasswordExternal=echo \"{\\\\\\\"password\\\\\\\":\\\\\\\"zabbix\\\\\\\"}\" | jobarg_json_parse password", "/etc/jobarranger/jobarg_server.conf", 2) ||
-					Run_Set_Config_Linux(tc_125, "DBPasswordExternal=", "DBPasswordExternal=echo \"{\\\\\\\"password\\\\\\\":\\\\\\\"zabbix\\\\\\\"}\" | jobarg_json_parse password", "/etc/jobarranger/jobarg_server.conf", 2))
+				return (lib.Run_Set_Config_Linux("# DBPasswordExternal=", "DBPasswordExternal=echo \"{\\\\\\\"password\\\\\\\":\\\\\\\"zabbix\\\\\\\"}\" | jobarg_json_parse password", "/etc/jobarranger/jobarg_server.conf", 2) ||
+					lib.Run_Set_Config_Linux("DBPasswordExternal=", "DBPasswordExternal=echo \"{\\\\\\\"password\\\\\\\":\\\\\\\"zabbix\\\\\\\"}\" | jobarg_json_parse password", "/etc/jobarranger/jobarg_server.conf", 2))
 			}() &&
 			func() bool {
 				// I hate you shell script. sed command litreally makes no sense.
@@ -124,47 +125,47 @@ func (t *Ticket_1264) Add_testcases() {
 				//| `             |  \`         | \\`        |
 				//|_______________|_____________|____________|
 				cmd := "sed -i \"s/^#*\\(define('DB_PASS' , 'zabbix'); \\).*/define('DB_PASS' , \\`echo \\\"{\\\\\\\\\\\"password\\\\\\\\\\\":\\\\\\\\\\\"zabbix\\\\\\\\\\\"}\\\" | jobarg_json_parse password\\`); /\" /etc/jobarranger/web/jam.config.php"
-				return Run_Linux_Command(tc_125, cmd)
+				return lib.Run_Linux_Command(cmd)
 			}() &&
 			func() bool {
 				cmd := "sed -i \"s/^#*\\(\\$DB\\['PASSWORD'\\]                 = 'zabbix';\\).*/\\$DB\\['PASSWORD'\\]                 = \\`echo \\\"{\\\\\\\\\\\"password\\\\\\\\\\\":\\\\\\\\\\\"zabbix\\\\\\\\\\\"}\\\" | jobarg_json_parse password\\`;/\" /etc/zabbix/web/zabbix.conf.php"
-				return Run_Linux_Command(tc_125, cmd)
+				return lib.Run_Linux_Command(cmd)
 			}() &&
 			func() bool {
-				Run_Linux_Command(tc_125, "systemctl restart jobarg-server php-fpm httpd apache2")
+				lib.Run_Linux_Command("systemctl restart jobarg-server php-fpm httpd apache2")
 				return true
 			}() &&
 			func() bool {
-				result, jobnet_manage_id = Run_Jobnet_Exec(tc_125, "Icon_1", "hostname")
+				result, jobnet_manage_id = lib.Run_Jobnet_Exec("Icon_1", "hostname")
 				return result
 			}() &&
 			func() bool {
-				result, jobnet_run_info := Run_Jobarg_get_jobnet_run_info(tc_125, jobnet_manage_id)
+				result, jobnet_run_info := lib.Run_Jobarg_get_jobnet_run_info(jobnet_manage_id)
 				fmt.Println(tc_125.Info_log("Info: Jobnet Status: %s, Job Status: %s,Std Out: %s", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Std_out))
 				fmt.Println(tc_125.Info_log("Info: Everything works normally."))
 				return result
 			}() &&
-			Run_Set_Config_Linux(tc_125, "DBPassword=zabbix", "DBPassword=YOUR_INCORRECT_PASSWORD", "/etc/jobarranger/jobarg_server.conf", 2) &&
-			Run_Restart_Linux_Jaz_server(tc_125) &&
+			lib.Run_Set_Config_Linux("DBPassword=zabbix", "DBPassword=YOUR_INCORRECT_PASSWORD", "/etc/jobarranger/jobarg_server.conf", 2) &&
+			lib.Run_Restart_Linux_Jaz_server() &&
 			func() bool {
-				result, jobnet_manage_id = Run_Jobnet_Exec(tc_125, "Icon_1", "hostname")
+				result, jobnet_manage_id = lib.Run_Jobnet_Exec("Icon_1", "hostname")
 				return result
 			}() &&
 			func() bool {
-				result, jobnet_run_info := Run_Jobarg_get_jobnet_run_info(tc_125, jobnet_manage_id)
+				result, jobnet_run_info := lib.Run_Jobarg_get_jobnet_run_info(jobnet_manage_id)
 				fmt.Println(tc_125.Info_log("Info: Jobnet Status: %s, Job Status: %s,Std Out: %s", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Std_out))
 				fmt.Println(tc_125.Info_log("Info: Everything works normally."))
 				return result
 			}() &&
-			Run_Set_Config_Linux(tc_125, "DBPassword=YOUR_INCORRECT_PASSWORD", "DBPassword=zabbix", "/etc/jobarranger/jobarg_server.conf", 2) &&
-			Run_Set_Config_Linux(tc_125, "DBPasswordExternal=echo \"{\\\\\\\"password\\\\\\\":\\\\\\\"zabbix\\\\\\\"}\" | jobarg_json_parse password", "DBPasswordExternal=nsfkjnkjnsidufn", "/etc/jobarranger/jobarg_server.conf", 2) &&
-			Run_Restart_Linux_Jaz_server(tc_125) &&
+			lib.Run_Set_Config_Linux("DBPassword=YOUR_INCORRECT_PASSWORD", "DBPassword=zabbix", "/etc/jobarranger/jobarg_server.conf", 2) &&
+			lib.Run_Set_Config_Linux("DBPasswordExternal=echo \"{\\\\\\\"password\\\\\\\":\\\\\\\"zabbix\\\\\\\"}\" | jobarg_json_parse password", "DBPasswordExternal=nsfkjnkjnsidufn", "/etc/jobarranger/jobarg_server.conf", 2) &&
+			lib.Run_Restart_Linux_Jaz_server() &&
 			func() bool {
-				result, jobnet_manage_id = Run_Jobnet_Exec(tc_125, "Icon_1", "hostname")
+				result, jobnet_manage_id = lib.Run_Jobnet_Exec("Icon_1", "hostname")
 				return result
 			}() &&
 			func() bool {
-				result, jobnet_run_info := Run_Jobarg_get_jobnet_run_info(tc_125, jobnet_manage_id)
+				result, jobnet_run_info := lib.Run_Jobarg_get_jobnet_run_info(jobnet_manage_id)
 				fmt.Println(tc_125.Info_log("Info: Jobnet Status: %s, Job Status: %s,Std Out: %s", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Std_out))
 				fmt.Println(tc_125.Info_log("Info: Everything works normally."))
 				return result
@@ -172,22 +173,22 @@ func (t *Ticket_1264) Add_testcases() {
 			fmt.Println("All operations completed successfully")
 		}
 		fmt.Println(tc_125.Info_log("Info: Resting config files back to normal."))
-		if Run_Linux_Command(tc_125, "rm -rf /usr/local/bin/jobarg_json_parse") &&
-			Run_Linux_Command(tc_125, "rm -rf /etc/jobarranger/jobarg_server.conf") &&
-			Run_Linux_Command(tc_125, "rm -rf /etc/jobarranger/web/jam.config.php") &&
-			Run_Linux_Command(tc_125, "rm -rf /etc/zabbix/web/zabbix.conf.php") &&
-			Run_Linux_Command(tc_125, "mv /etc/jobarranger/jobarg_server.conf.bk /etc/jobarranger/jobarg_server.conf") &&
-			Run_Linux_Command(tc_125, "mv /etc/jobarranger/web/jam.config.php.bk /etc/jobarranger/web/jam.config.php") &&
-			Run_Linux_Command(tc_125, "mv /etc/zabbix/web/zabbix.conf.php.bk /etc/zabbix/web/zabbix.conf.php") &&
-			Run_Linux_Command(tc_125, "chown zabbix:zabbix /etc/jobarranger/jobarg_server.conf") &&
-			(Run_Linux_Command(tc_125, "chown apache:apache /etc/jobarranger/web/jam.config.php") ||
-				Run_Linux_Command(tc_125, "chown www-data:www-data /etc/jobarranger/web/jam.config.php")) &&
-			(Run_Linux_Command(tc_125, "chown apache:apache /etc/zabbix/web/zabbix.conf.php") ||
-				Run_Linux_Command(tc_125, "chown www-data:www-data /etc/zabbix/web/zabbix.conf.php")) &&
-			Run_Restart_Linux_Jaz_agent(tc_125) &&
-			Run_Restart_Linux_Jaz_server(tc_125) {
-			Run_Linux_Command(tc_125, "systemctl restart zabbix-server zabbix-agent jobarg-server php-fpm httpd apache2")
-			Run_Jobarg_cleanup_linux(tc_125)
+		if lib.Run_Linux_Command("rm -rf /usr/local/bin/jobarg_json_parse") &&
+			lib.Run_Linux_Command("rm -rf /etc/jobarranger/jobarg_server.conf") &&
+			lib.Run_Linux_Command("rm -rf /etc/jobarranger/web/jam.config.php") &&
+			lib.Run_Linux_Command("rm -rf /etc/zabbix/web/zabbix.conf.php") &&
+			lib.Run_Linux_Command("mv /etc/jobarranger/jobarg_server.conf.bk /etc/jobarranger/jobarg_server.conf") &&
+			lib.Run_Linux_Command("mv /etc/jobarranger/web/jam.config.php.bk /etc/jobarranger/web/jam.config.php") &&
+			lib.Run_Linux_Command("mv /etc/zabbix/web/zabbix.conf.php.bk /etc/zabbix/web/zabbix.conf.php") &&
+			lib.Run_Linux_Command("chown zabbix:zabbix /etc/jobarranger/jobarg_server.conf") &&
+			(lib.Run_Linux_Command("chown apache:apache /etc/jobarranger/web/jam.config.php") ||
+				lib.Run_Linux_Command("chown www-data:www-data /etc/jobarranger/web/jam.config.php")) &&
+			(lib.Run_Linux_Command("chown apache:apache /etc/zabbix/web/zabbix.conf.php") ||
+				lib.Run_Linux_Command("chown www-data:www-data /etc/zabbix/web/zabbix.conf.php")) &&
+			lib.Run_Restart_Linux_Jaz_agent() &&
+			lib.Run_Restart_Linux_Jaz_server() {
+			lib.Run_Linux_Command("systemctl restart zabbix-server zabbix-agent jobarg-server php-fpm httpd apache2")
+			lib.Run_Jobarg_cleanup_linux()
 			if result {
 				return PASSED
 			}

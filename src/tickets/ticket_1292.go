@@ -5,6 +5,7 @@ import (
 
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
+	"github.com/zukigit/remote_run-go/src/lib"
 )
 
 type Ticket_1292 struct {
@@ -85,25 +86,25 @@ func (t *Ticket_1292) Add_testcases() {
 		// 6. Wait for 5 minutes
 		// 7. Check database for the empty set for the Ja Purge to work.
 
-		if Run_Jobarg_cleanup_linux(tc_127) &&
-			Run_enable_jobnet(tc_127, jobnet_id, jobnet_name) &&
-			Run_enable_jobnet(tc_127, "Icon_10", "Icon_10") &&
-			Run_enable_jobnet(tc_127, "Icon_100", "Icon_100") &&
-			Run_Sql_Script(tc_127, "UPDATE ja_parameter_table SET value = 5 WHERE parameter_name = 'JOBNET_KEEP_SPAN';") &&
-			Run_Restart_Linux_Jaz_server(tc_127) &&
+		if lib.Run_Jobarg_cleanup_linux() &&
+			lib.Run_enable_jobnet(jobnet_id, jobnet_name) &&
+			lib.Run_enable_jobnet("Icon_10", "Icon_10") &&
+			lib.Run_enable_jobnet("Icon_100", "Icon_100") &&
+			lib.Run_Sql_Script("UPDATE ja_parameter_table SET value = 5 WHERE parameter_name = 'JOBNET_KEEP_SPAN';") &&
+			lib.Run_Restart_Linux_Jaz_server() &&
 			func() bool {
-				result, jobnet_manage_id = Run_Jobnet(tc_127, "Icon_100")
+				result, jobnet_manage_id = lib.Run_Jobnet("Icon_100")
 				return result
 			}() &&
 			func() bool {
-				result, _ = Run_Jobarg_get_jobnet_run_info(tc_127, jobnet_manage_id)
+				result, _ = lib.Run_Jobarg_get_jobnet_run_info(jobnet_manage_id)
 				return result
 			}() &&
-			Run_Sql_Script(tc_127, "UPDATE ja_run_job_table SET status = 1;") &&
-			Run_Timeout(tc_127, 5*60) &&
+			lib.Run_Sql_Script("UPDATE ja_run_job_table SET status = 1;") &&
+			lib.Run_Timeout(5*60) &&
 			func() bool {
 				var count int
-				_, sql_result := Run_Sql_Script_Return_Rows(tc_127, "SELECT count(*) FROM ja_run_jobnet_table WHERE inner_jobnet_id = '"+jobnet_manage_id+"';")
+				_, sql_result := lib.Run_Sql_Script_Return_Rows("SELECT count(*) FROM ja_run_jobnet_table WHERE inner_jobnet_id = '" + jobnet_manage_id + "';")
 				if sql_result.Next() { // Move to the first row
 					if err := sql_result.Scan(&count); err != nil {
 						fmt.Println(tc_127.Err_log("Error: Error scanning result: %s", err))
@@ -120,8 +121,8 @@ func (t *Ticket_1292) Add_testcases() {
 			fmt.Println("All operations completed successfully")
 		}
 		fmt.Println(tc_127.Info_log("Info: Resting config files back to normal parameter"))
-		if Run_Sql_Script(tc_127, "UPDATE ja_parameter_table SET value = 60 WHERE parameter_name = 'JOBNET_KEEP_SPAN';") &&
-			Run_Jobarg_cleanup_linux(tc_127) {
+		if lib.Run_Sql_Script("UPDATE ja_parameter_table SET value = 60 WHERE parameter_name = 'JOBNET_KEEP_SPAN';") &&
+			lib.Run_Jobarg_cleanup_linux() {
 			if result {
 				return PASSED
 			}

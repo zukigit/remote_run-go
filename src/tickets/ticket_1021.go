@@ -6,6 +6,7 @@ import (
 
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/dao"
+	"github.com/zukigit/remote_run-go/src/lib"
 )
 
 type Ticket_1021 struct {
@@ -95,16 +96,16 @@ func (t *Ticket_1021) Add_testcases() {
 		// 19. Get File encoding of .json file in close folder with file --mime command.
 		// 20. Compare Encoding value.
 
-		if Run_Clear_Linux_Agent_log(tc_104) &&
-			Run_Restart_Linux_Jaz_agent(tc_104) &&
-			Run_Linux_Command(tc_104, "rm -rf /var/lib/jobarranger/tmp/close/*") &&
+		if lib.Run_Clear_Linux_Agent_log() &&
+			lib.Run_Restart_Linux_Jaz_agent() &&
+			lib.Run_Linux_Command("rm -rf /var/lib/jobarranger/tmp/close/*") &&
 			func() bool {
-				result, executeResult := Run_Linux_Command_Str(tc_104, "locale | grep 'LC_CTYPE='")
+				result, executeResult := lib.Run_Linux_Command_Str("locale | grep 'LC_CTYPE='")
 				systemEncode = executeResult[strings.LastIndex(executeResult, "=")+1:]
 				return result
 			}() &&
 			func() bool {
-				result, executeResult := Run_Linux_Command_Str(tc_104, "cat /var/log/jobarranger/jobarg_agentd.log | grep 'LC_CTYPE :'")
+				result, executeResult := lib.Run_Linux_Command_Str("cat /var/log/jobarranger/jobarg_agentd.log | grep 'LC_CTYPE :'")
 				agentEncode = executeResult[strings.LastIndex(executeResult, ":")+1:]
 				return result
 			}() &&
@@ -125,46 +126,46 @@ func (t *Ticket_1021) Add_testcases() {
 					return false
 				}
 			}() &&
-			Run_Jobarg_cleanup_linux(tc_104) &&
-			Run_enable_jobnet(tc_104, jobnet_id, "jobicon_linux") &&
+			lib.Run_Jobarg_cleanup_linux() &&
+			lib.Run_enable_jobnet(jobnet_id, "jobicon_linux") &&
 			func() bool {
-				result, jobnet_run_manage_id = Run_Jobnet_Exec(tc_104, jobnet_id, "echo ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｀１２３４５６７８９０－＝～！＠＃＄％＾＆＊（）＿＋，．／＜＞？；＇：＂［］｛｝＼｜ジョブの単一実行")
+				result, jobnet_run_manage_id = lib.Run_Jobnet_Exec(jobnet_id, "echo ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｀１２３４５６７８９０－＝～！＠＃＄％＾＆＊（）＿＋，．／＜＞？；＇：＂［］｛｝＼｜ジョブの単一実行")
 				return result
 			}() &&
 			func() bool {
-				result, jobnet_run_info := Run_Jobarg_get_jobnet_run_info(tc_104, jobnet_run_manage_id)
+				result, jobnet_run_info := lib.Run_Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
 				fmt.Println(tc_104.Info_log("Info: Jobnet Std_out: %s", jobnet_run_info.Std_out))
 				fmt.Println(tc_104.Info_log("Info: Job can be executed correctly with full-width characters."))
 				return result
 			}() &&
-			Run_Jobarg_cleanup_linux(tc_104) &&
-			Run_enable_jobnet(tc_104, jobnet_id, jobnet_name) &&
-			Run_Linux_Command(tc_104, "touch /home/ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｀１２３４５６７８９０－＝～！＠＃＄％＾＆＊（）＿＋，．／＜＞？；＇：＂［］｛｝＼｜ジョブの単一実行．ｔｘｔ") &&
+			lib.Run_Jobarg_cleanup_linux() &&
+			lib.Run_enable_jobnet(jobnet_id, jobnet_name) &&
+			lib.Run_Linux_Command("touch /home/ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｀１２３４５６７８９０－＝～！＠＃＄％＾＆＊（）＿＋，．／＜＞？；＇：＂［］｛｝＼｜ジョブの単一実行．ｔｘｔ") &&
 			func() bool {
-				result, jobnet_run_manage_id = Run_Jobnet(tc_104, jobnet_id)
+				result, jobnet_run_manage_id = lib.Run_Jobnet(jobnet_id)
 				return result
 			}() &&
 			func() bool {
-				result, jobnet_run_info := Run_Jobarg_get_jobnet_run_info(tc_104, jobnet_run_manage_id)
+				result, jobnet_run_info := lib.Run_Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
 				fmt.Println(tc_104.Info_log("Info: Jobnet Std_out: %s", jobnet_run_info.Std_out))
 				fmt.Println(tc_104.Info_log("Info: Both File Wait and File Check can be executed correctly with full-width characters."))
 				return result
 			}() &&
-			Run_Linux_Command(tc_104, "rm -rf /home/ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｀１２３４５６７８９０－＝～！＠＃＄％＾＆＊（）＿＋，．／＜＞？；＇：＂［］｛｝＼｜ジョブの単一実行．ｔｘｔ") &&
+			lib.Run_Linux_Command("rm -rf /home/ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｀１２３４５６７８９０－＝～！＠＃＄％＾＆＊（）＿＋，．／＜＞？；＇：＂［］｛｝＼｜ジョブの単一実行．ｔｘｔ") &&
 			func() bool {
-				result, executeResult := Run_Linux_Command_Str(tc_104, "ls /var/lib/jobarranger/tmp/close/")
+				result, executeResult := lib.Run_Linux_Command_Str("ls /var/lib/jobarranger/tmp/close/")
 				close_folder_name = strings.Split(executeResult, "\n")[0]
 				fmt.Print(tc_104.Info_log("Info: Execution result: %s", strings.Trim(executeResult, "\n")))
 				return result
 			}() &&
 			func() bool {
-				result, executeResult := Run_Linux_Command_Str(tc_104, "file --mime-encoding /var/lib/jobarranger/tmp/close/"+close_folder_name+"/"+close_folder_name+".sh")
+				result, executeResult := lib.Run_Linux_Command_Str("file --mime-encoding /var/lib/jobarranger/tmp/close/" + close_folder_name + "/" + close_folder_name + ".sh")
 				fmt.Print(tc_104.Info_log("Info: Execution result: %s", strings.Trim(executeResult, "\n")))
 				sh_file_encoding = executeResult
 				return result
 			}() &&
 			func() bool {
-				result, executeResult := Run_Linux_Command_Str(tc_104, "file --mime-encoding /var/lib/jobarranger/tmp/close/"+close_folder_name+"/"+close_folder_name[:strings.LastIndex(close_folder_name, "-")]+".json")
+				result, executeResult := lib.Run_Linux_Command_Str("file --mime-encoding /var/lib/jobarranger/tmp/close/" + close_folder_name + "/" + close_folder_name[:strings.LastIndex(close_folder_name, "-")] + ".json")
 				fmt.Print(tc_104.Info_log("Info: Execution result: %s", strings.Trim(executeResult, "\n")))
 				json_file_encoding = executeResult
 				return result

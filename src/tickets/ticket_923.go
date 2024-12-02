@@ -11,10 +11,10 @@ import (
 )
 
 type Ticket_923 struct {
-	no          uint
-	description string
+	Ticket_no                                   uint
+	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	testcases   []dao.TestCase
+	Testcases                                   []dao.TestCase
 }
 
 func (t *Ticket_923) Set_PASSED_count(passed_count int) {
@@ -29,30 +29,29 @@ func (t *Ticket_923) Set_MUSTCHECK_count(mustcheck_count int) {
 	t.MUSTCHECK_count = mustcheck_count
 }
 
-
 func (t *Ticket_923) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
 	return dao.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_923) Get_no() uint {
-	return t.no
+	return t.Ticket_no
 }
 
 func (t *Ticket_923) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
 }
 
 func (t *Ticket_923) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+	t.Testcases = append(t.Testcases, tc)
 }
 
 func (t *Ticket_923) Get_testcases() []dao.TestCase {
-	return t.testcases
+	return t.Testcases
 }
 
 func (t *Ticket_923) Set_values() {
-	t.no = 923
-	t.description = "Check whether agentd can run with different listener process with parallel"
+	t.Ticket_no = 923
+	t.Ticket_description = "Check whether agentd can run with different listener process with parallel"
 }
 
 func (t *Ticket_923) Add_testcases() {
@@ -79,7 +78,7 @@ func (t *Ticket_923) addTestCase87() {
 			tc.Err_log("Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		fmt.Println(tc.Info_log("Jobnet 'Icon_1' enabled successfully.",))
+		fmt.Println(tc.Info_log("Jobnet 'Icon_1' enabled successfully."))
 
 		if err := t.enableJobnet("Icon_10", "Icon_10"); err != nil {
 			tc.Err_log("Failed to enable jobnet, Error: %s", err)

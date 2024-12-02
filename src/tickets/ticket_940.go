@@ -95,16 +95,16 @@ func (t *Ticket_940) applyConfigAndRunTests(tc *dao.TestCase, configs []string, 
 		fmt.Println("Configuration has been set to:", config)
 	}
 
+	// Delete logs
+	if err := lib.Delete_server_log(); err != nil {
+		return t.logError(tc, "Error during deleting log: %s", err)
+	}
+
 	// Cleanup server
 	if err := lib.Jobarg_cleanup_linux(); err != nil {
 		return t.logError(tc, "Failed to clean up the server, Error: %s", err.Error())
 	}
 	fmt.Println("jobarg_server has been restarted successfully.")
-
-	// Delete logs
-	if err := lib.Delete_server_log(); err != nil {
-		return t.logError(tc, "Error during deleting log: %s", err)
-	}
 
 	// Enable jobnet
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
@@ -119,6 +119,8 @@ func (t *Ticket_940) applyConfigAndRunTests(tc *dao.TestCase, configs []string, 
 	if err := lib.Restart_jaz_server(); err != nil {
 		return t.logError(tc, "Failed to restart: %s", err)
 	}
+
+	lib.Run_Timeout(10)
 
 	logFilePath := "/var/log/jobarranger/jobarg_server.log"
 	cmd := fmt.Sprintf(`cat %s | grep "Process is taking"`, logFilePath)
