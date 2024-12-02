@@ -206,14 +206,14 @@ func GenerateExcelFile(yamlFiles []string, outputExcel, testerName string) error
 			endCol = incrementColumnBy(startCol, DurationColCount-1)
 			f.SetCellStyle(sheetName, getCell(currRow, startCol), getCell(currRow, lastCol), centerCenterStyle)
 			f.MergeCell(sheetName, getCell(currRow, startCol), getCell(currRow, endCol))
-			f.SetCellValue(sheetName, getCell(currRow, startCol), 15)
+			f.SetCellValue(sheetName, getCell(currRow, startCol), "")
 
 			// Write actual duration
 			startCol = incrementColumnBy(endCol, 1)
 			endCol = incrementColumnBy(startCol, DurationColCount-1)
 			f.SetCellStyle(sheetName, getCell(currRow, startCol), getCell(currRow, lastCol), centerCenterStyle)
 			f.MergeCell(sheetName, getCell(currRow, startCol), getCell(currRow, endCol))
-			f.SetCellValue(sheetName, getCell(currRow, startCol), 20)
+			f.SetCellValue(sheetName, getCell(currRow, startCol), "")
 
 			// Write result
 			startCol = incrementColumnBy(endCol, 1)
