@@ -21,9 +21,9 @@ func Formatted_log(level int, unfmt string, arg ...any) string {
 	formattedTime := Get_formatted_time()
 
 	switch level {
-	case common.INFO:
+	case common.LOG_LEVEL_INFO:
 		log = formattedTime + " [INFO] " + log
-	case common.ERR:
+	case common.LOG_LEVEL_ERR:
 		log = formattedTime + " [ERROR] " + log
 	default:
 		log = formattedTime + " [UNKNOWN] " + log
@@ -61,4 +61,15 @@ func Get_filepath() string {
 
 func Spinner_log(index int, log string) {
 	fmt.Printf("\r%s %c", log, spinner[index%len(spinner)])
+}
+
+// This function will write log with ticket and testcase numbers.
+// If you call this function outside of testcase function, ticket and testcase numbers will be zero.
+func Logi(level int, log string) string {
+	log = fmt.Sprintf("[%d] [%d] %s", common.Current_tk_no, common.Current_tc_no, log)
+	log = Formatted_log(level, log)
+
+	common.Sugar.Infof(log)
+
+	return log
 }

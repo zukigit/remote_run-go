@@ -103,7 +103,7 @@ func Jobarg_get_jobnet_run_info(registry_number string) (*common.Jobnet_run_info
 		// Print in HH:MM:SS format with \r to overwrite the line
 		//fmt.Printf("\r%02d:%02d:%02d", hours, minutes, seconds)
 
-		Spinner_log(index, Formatted_log(common.INFO, "Getting jobnet[%s] run info but jobnet is not finished yet. jobnet_status: %s, job_status: %s Elapsed Time: %02d:%02d:%02d", registry_number, jobnet_status, job_status, hours, minutes, seconds))
+		Spinner_log(index, Formatted_log(common.LOG_LEVEL_INFO, "Getting jobnet[%s] run info but jobnet is not finished yet. jobnet_status: %s, job_status: %s Elapsed Time: %02d:%02d:%02d", registry_number, jobnet_status, job_status, hours, minutes, seconds))
 		time.Sleep(1 * time.Second)
 		index++
 	}
@@ -146,11 +146,11 @@ func Jobarg_get_jobnet_info(registry_number string, targetJobnetStatus string, t
 			// Get jobnet and job statuses
 			jobnet_status, err = Jobarg_get_JA_JOBNETSTATUS(registry_number)
 			if err != nil {
-				Formatted_log(common.INFO, "Error:%s", err.Error())
+				Formatted_log(common.LOG_LEVEL_INFO, "Error:%s", err.Error())
 			}
 			job_status, err = Jobarg_get_JA_JOBSTATUS(registry_number)
 			if err != nil {
-				Formatted_log(common.INFO, "Error:%s", err.Error())
+				Formatted_log(common.LOG_LEVEL_INFO, "Error:%s", err.Error())
 			}
 			// Check if the jobnet status matches the target statuses
 			if jobnet_status == targetJobnetStatus && job_status == targetJobStatus {
@@ -160,7 +160,7 @@ func Jobarg_get_jobnet_info(registry_number string, targetJobnetStatus string, t
 			}
 
 			// Log progress and wait before the next check
-			Spinner_log(index, Formatted_log(common.INFO, "Getting jobnet[%s] run info but jobnet is not finished yet ", registry_number))
+			Spinner_log(index, Formatted_log(common.LOG_LEVEL_INFO, "Getting jobnet[%s] run info but jobnet is not finished yet ", registry_number))
 			time.Sleep(1 * time.Second)
 			index++
 		}
@@ -169,17 +169,17 @@ FetchInfo:
 	// Fetch additional information after successful job completion
 	exit_cd, err = Jobarg_get_LASTEXITCD(registry_number)
 	if err != nil {
-		Formatted_log(common.INFO, "Error:%s", err.Error())
+		Formatted_log(common.LOG_LEVEL_INFO, "Error:%s", err.Error())
 	}
 
 	std_out, err = Jobarg_get_LASTSTDOUT(registry_number)
 	if err != nil {
-		Formatted_log(common.INFO, "Error:%s", err.Error())
+		Formatted_log(common.LOG_LEVEL_INFO, "Error:%s", err.Error())
 	}
 
 	std_error, err = Jobarg_get_LASTSTDERR(registry_number)
 	if err != nil {
-		Formatted_log(common.INFO, "Error:%s", err.Error())
+		Formatted_log(common.LOG_LEVEL_INFO, "Error:%s", err.Error())
 	}
 
 	fmt.Println()
