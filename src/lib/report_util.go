@@ -3,7 +3,9 @@ package lib
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/xuri/excelize/v2"
 	"gopkg.in/yaml.v3"
@@ -38,6 +40,7 @@ type Ticket struct {
 	FailedCount       int        `yaml:"failed_count"`
 	MustCheckCount    int        `yaml:"mustcheck_count"`
 	Testcases         []TestCase `yaml:"testcases"`
+	TestedDate        string
 }
 
 func (t *TestCase) getResult() string {
@@ -53,6 +56,7 @@ func (t *TestCase) getResult() string {
 }
 
 var allBorders []excelize.Border
+var ticketHeaderStyleID, testcaseHeaderStyleID, leftCenterStyle, centerCenterStyle int
 
 func init() {
 	allBorders = []excelize.Border{
@@ -79,24 +83,32 @@ func init() {
 	}
 }
 
-func GenerateExcelFile(yamlFiles []string, outputExcel string) error {
+func GenerateExcelFile(yamlFiles []string, outputExcel, testerName string) error {
 	var tickets []Ticket
 
-	for _, yamlFile := range yamlFiles {
+	for _, yamlFilePath := range yamlFiles {
 		var tmpTickets []Ticket
 
 		// Read the YAML file
-		yamlFile, err := os.ReadFile(yamlFile)
+		yamlFile, err := os.ReadFile(yamlFilePath)
 		if err != nil {
-			fmt.Printf("Error reading YAML file %s: %v\n", yamlFile, err)
-			return err
+			return fmt.Errorf("error reading YAML file %s: %v", yamlFile, err)
 		}
 
 		// Parse the YAML data
 		err = yaml.Unmarshal(yamlFile, &tmpTickets)
 		if err != nil {
-			fmt.Printf("Error unmarshaling YAML %s: %v\n", yamlFile, err)
-			return err
+			return fmt.Errorf("error unmarshaling YAML %s: %v", yamlFile, err)
+		}
+
+		// get Tested Date
+		testedDate, err := getTestedDate(yamlFilePath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "failed to set 'testedDate': %v", err)
+		}
+
+		for i := range tmpTickets {
+			tmpTickets[i].TestedDate = testedDate
 		}
 
 		tickets = append(tickets, tmpTickets...)
@@ -111,77 +123,15 @@ func GenerateExcelFile(yamlFiles []string, outputExcel string) error {
 	currRow := 2
 	initialCol := "B"
 
+	// Creating styles
+	if err := initializeStyles(f); err != nil {
+		return fmt.Errorf("failed to initialize styles: %v", err)
+	}
+
+	// Drawing header
 	lastCol, err := drawHeader(f, sheetName, initialCol, currRow)
 	if err != nil {
-		fmt.Printf("Error drawing header: %s\n", err)
-		return err
-	}
-
-	// Creating styles
-	ticketHeaderStyleID, err := f.NewStyle(&excelize.Style{
-		Alignment: &excelize.Alignment{
-			WrapText:   true,
-			Horizontal: "left",
-			Vertical:   "center",
-		},
-		Border: allBorders,
-		Fill: excelize.Fill{
-			Type:    "pattern",
-			Color:   []string{"#C5D9F1"},
-			Pattern: 1,
-		},
-	})
-
-	if err != nil {
-		fmt.Printf("Error creating ticket header style: %s\n", err)
-		return err
-	}
-
-	testcaseHeaderStyleID, err := f.NewStyle(&excelize.Style{
-		Alignment: &excelize.Alignment{
-			WrapText:   true,
-			Horizontal: "left",
-			Vertical:   "center",
-		},
-		Border: allBorders,
-		Fill: excelize.Fill{
-			Type:    "pattern",
-			Color:   []string{"#F2DCDB"},
-			Pattern: 1,
-		},
-	})
-
-	if err != nil {
-		fmt.Printf("Error creating testcase header style: %s\n", err)
-		return err
-	}
-
-	leftCenterStyle, err := f.NewStyle(&excelize.Style{
-		Alignment: &excelize.Alignment{
-			WrapText:   true,
-			Horizontal: "left",
-			Vertical:   "center",
-		},
-		Border: allBorders,
-	})
-
-	if err != nil {
-		fmt.Printf("Error creating testcase style: %s\n", err)
-		return err
-	}
-
-	centerCenterStyle, err := f.NewStyle(&excelize.Style{
-		Alignment: &excelize.Alignment{
-			WrapText:   true,
-			Horizontal: "center",
-			Vertical:   "center",
-		},
-		Border: allBorders,
-	})
-
-	if err != nil {
-		fmt.Printf("Error creating centerCenter style: %s\n", err)
-		return err
+		return fmt.Errorf("error drawing header: %v", err)
 	}
 
 	// Create a sheet for the ticket information
@@ -277,25 +227,92 @@ func GenerateExcelFile(yamlFiles []string, outputExcel string) error {
 			endCol = incrementColumnBy(startCol, TestedDateColCount-1)
 			f.SetCellStyle(sheetName, getCell(currRow, startCol), getCell(currRow, lastCol), centerCenterStyle)
 			f.MergeCell(sheetName, getCell(currRow, startCol), getCell(currRow, endCol))
-			f.SetCellValue(sheetName, getCell(currRow, startCol), "2024-01-04")
+			f.SetCellValue(sheetName, getCell(currRow, startCol), ticket.TestedDate)
 
 			// Tested By
 			startCol = incrementColumnBy(endCol, 1)
 			endCol = incrementColumnBy(startCol, TestedByColCount-1)
 			f.SetCellStyle(sheetName, getCell(currRow, startCol), getCell(currRow, lastCol), centerCenterStyle)
 			f.MergeCell(sheetName, getCell(currRow, startCol), getCell(currRow, endCol))
-			f.SetCellValue(sheetName, getCell(currRow, startCol), "Paing Pyae Man")
+			f.SetCellValue(sheetName, getCell(currRow, startCol), testerName)
 
 		}
+
 	}
+
+	f.SetColWidth(sheetName, initialCol, initialCol, 5)
 
 	// Save the Excel file
 	if err := f.SaveAs(outputExcel); err != nil {
-		fmt.Printf("Error saving Excel file: %s\n", err)
-		return err
+		return fmt.Errorf("error saving Excel file: %s", err)
 	}
 
-	fmt.Printf("Excel file successfully created as %s\n", outputExcel)
+	return nil
+}
+
+func initializeStyles(f *excelize.File) error {
+	var err error
+	ticketHeaderStyleID, err = f.NewStyle(&excelize.Style{
+		Alignment: &excelize.Alignment{
+			WrapText:   true,
+			Horizontal: "left",
+			Vertical:   "center",
+		},
+		Border: allBorders,
+		Fill: excelize.Fill{
+			Type:    "pattern",
+			Color:   []string{"#C5D9F1"},
+			Pattern: 1,
+		},
+	})
+
+	if err != nil {
+		return fmt.Errorf("error creating ticket header style: %w", err)
+	}
+
+	testcaseHeaderStyleID, err = f.NewStyle(&excelize.Style{
+		Alignment: &excelize.Alignment{
+			WrapText:   true,
+			Horizontal: "left",
+			Vertical:   "center",
+		},
+		Border: allBorders,
+		Fill: excelize.Fill{
+			Type:    "pattern",
+			Color:   []string{"#F2DCDB"},
+			Pattern: 1,
+		},
+	})
+
+	if err != nil {
+		return fmt.Errorf("error creating testcase header style: %w", err)
+	}
+
+	leftCenterStyle, err = f.NewStyle(&excelize.Style{
+		Alignment: &excelize.Alignment{
+			WrapText:   true,
+			Horizontal: "left",
+			Vertical:   "center",
+		},
+		Border: allBorders,
+	})
+
+	if err != nil {
+		return fmt.Errorf("error creating testcase style: %w", err)
+	}
+
+	centerCenterStyle, err = f.NewStyle(&excelize.Style{
+		Alignment: &excelize.Alignment{
+			WrapText:   true,
+			Horizontal: "center",
+			Vertical:   "center",
+		},
+		Border: allBorders,
+	})
+
+	if err != nil {
+		return fmt.Errorf("error creating centerCenter style: %w", err)
+	}
 
 	return nil
 }
@@ -478,4 +495,28 @@ func getMaxNumber(numbers ...int) int {
 	}
 
 	return maxNumber
+}
+
+// get test date 'YYYY-MM-dd' from yaml file name
+func getTestedDate(yamlFilePath string) (string, error) {
+	yamlFileName := filepath.Base(yamlFilePath)
+	parts := strings.Split(yamlFileName, "_")
+
+	if len(parts) <= 0 {
+		return "", fmt.Errorf("yaml file name does not contain '_'")
+	}
+
+	// parsing the timestamp
+	timestamp := parts[0]
+	inputLayout := "20060102150405.000"
+
+	parsedTime, err := time.Parse(inputLayout, timestamp)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse timestamp: %w", err)
+	}
+
+	// convert the output format
+	outputLayout := "2006-01-02"
+	output := parsedTime.Format(outputLayout)
+	return output, nil
 }
