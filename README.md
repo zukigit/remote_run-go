@@ -1,2 +1,2 @@
-# Automated Testing for My Lovely Team!
+# Jobarranger unit testing tool using golang
 
