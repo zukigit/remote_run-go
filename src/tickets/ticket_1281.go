@@ -70,7 +70,7 @@ func (t *Ticket_1281) Add_testcases() {
 	tc_2 := t.New_testcase(2, "Agentless must run successfully in Interact mode. STD_OUT should be correct.")
 	tc_func = func() common.Testcase_status {
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "agentless_interact"); err != nil {
-			tc_2.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return AgentlessInteractCheckSTDOut("Icon_1", tc_2, common.Client)
@@ -81,7 +81,7 @@ func (t *Ticket_1281) Add_testcases() {
 	tc_3 := t.New_testcase(3, "Agentless must run successfully in non-interact mode. STD_OUT should be correct.")
 	tc_func = func() common.Testcase_status {
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "agentless_no_interact"); err != nil {
-			tc_3.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return AgentlessNoInteractCheckSTDOut("Icon_1", tc_3, common.Client)
@@ -92,7 +92,7 @@ func (t *Ticket_1281) Add_testcases() {
 	tc_4 := t.New_testcase(4, "change AgentLessRegex value in jobarg-server.conf for agentless interact mode STD_OUT.")
 	tc_func = func() common.Testcase_status {
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "agentless_no_interact"); err != nil {
-			tc_4.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return AgentlessInteractRegexCheckSTDOut("Icon_1", tc_4, common.Client)
@@ -103,7 +103,7 @@ func (t *Ticket_1281) Add_testcases() {
 	tc_5 := t.New_testcase(5, "0xff character encoding issue.")
 	tc_func = func() common.Testcase_status {
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "0xff_character_encoding"); err != nil {
-			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return CharacterEncodingIssue("Icon_1", tc_5, common.Client)
@@ -114,7 +114,7 @@ func (t *Ticket_1281) Add_testcases() {
 	tc_6 := t.New_testcase(6, "Backup thread testing.")
 	tc_func = func() common.Testcase_status {
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-			tc_6.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return BackupThread("Icon_1", tc_6, common.Client)
@@ -137,19 +137,19 @@ func CheckJobProcessStartOrExit(testcase *dao.TestCase, client *ssh.Client) comm
 
 	_clear_err := lib.ClearLogFile(client, "/var/log/jobarranger/jobarg_server.log")
 	if _clear_err != nil {
-		fmt.Println(testcase.Err_log("Error clear log: %s", _clear_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error clear log: %s", _clear_err))
 	}
 
 	_restart_err := lib.Restart_jaz_server()
 	if _restart_err != nil {
-		fmt.Println(testcase.Err_log("Error jaz restart: %s", _restart_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error jaz restart: %s", _restart_err))
 	}
 	time.Sleep(10 * time.Second)
 	pattern := "[INFO] [JASERVER000004] server #15 started [check job process #1]"
 
 	_check_log, _check_err := lib.WaitForPatternInLogFile(client, "/var/log/jobarranger/jobarg_server.log", pattern, 30, 2)
 	if _check_err != nil {
-		fmt.Println(testcase.Err_log("Error check log file : %s", _check_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error check log file : %s", _check_err))
 	}
 
 	if _check_log != "" {
@@ -170,7 +170,7 @@ func CheckJobProcessStartOrExit(testcase *dao.TestCase, client *ssh.Client) comm
 
 	_ps_job, _ps_job_err := lib.GetOutputStrFromSSHCommand(client, "ps -aux | grep job")
 	if _ps_job_err != nil {
-		fmt.Println(testcase.Err_log("Error ps aux job : %s", _ps_job_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error ps aux job : %s", _ps_job_err))
 	}
 
 	if _ps_job != "" {
@@ -196,7 +196,7 @@ func AgentlessInteractCheckSTDOut(jobnetId string, testcase *dao.TestCase, clien
 
 	hostname, hostname_err := lib.Ssh_exec_to_str(hostname_cmd)
 	if hostname_err != nil {
-		fmt.Println(testcase.Err_log("Error hostname : %s", hostname_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error hostname : %s", hostname_err))
 	}
 	hostname = strings.TrimSpace(hostname)
 	fmt.Println(hostname)
@@ -205,7 +205,7 @@ func AgentlessInteractCheckSTDOut(jobnetId string, testcase *dao.TestCase, clien
 	run_jobnet_id, job_run_err := lib.Jobarg_exec_E(jobnetId, envs)
 
 	if job_run_err != nil {
-		fmt.Println(testcase.Err_log("Error running job: %s", job_run_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error running job: %s", job_run_err))
 	}
 
 	fmt.Println("Run Jobnet ID:", run_jobnet_id)
@@ -215,7 +215,7 @@ func AgentlessInteractCheckSTDOut(jobnetId string, testcase *dao.TestCase, clien
 	_stdOut, _stdOut_err := lib.Jobarg_get_LASTSTDOUT(run_jobnet_id)
 
 	if _stdOut_err != nil {
-		fmt.Println(testcase.Err_log("Error get std out : %s", _stdOut_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error get std out : %s", _stdOut_err))
 	}
 
 	fmt.Println(_stdOut)
@@ -250,7 +250,7 @@ func AgentlessNoInteractCheckSTDOut(jobnetId string, testcase *dao.TestCase, cli
 
 	hostname, hostname_err := lib.Ssh_exec_to_str(hostname_cmd)
 	if hostname_err != nil {
-		fmt.Println(testcase.Err_log("Error hostname : %s", hostname_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error hostname : %s", hostname_err))
 	}
 	hostname = strings.TrimSpace(hostname)
 	fmt.Println(hostname)
@@ -259,7 +259,7 @@ func AgentlessNoInteractCheckSTDOut(jobnetId string, testcase *dao.TestCase, cli
 	run_jobnet_id, job_run_err := lib.Jobarg_exec_E(jobnetId, envs)
 
 	if job_run_err != nil {
-		fmt.Println(testcase.Err_log("Error running job: %s", job_run_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error running job: %s", job_run_err))
 	}
 
 	fmt.Println("Run Jobnet ID:", run_jobnet_id)
@@ -269,7 +269,7 @@ func AgentlessNoInteractCheckSTDOut(jobnetId string, testcase *dao.TestCase, cli
 	_stdOut, _stdOut_err := lib.Jobarg_get_LASTSTDOUT(run_jobnet_id)
 
 	if _stdOut_err != nil {
-		fmt.Println(testcase.Err_log("Error get std out : %s", _stdOut_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error get std out : %s", _stdOut_err))
 	}
 
 	fmt.Println(_stdOut)
@@ -289,20 +289,20 @@ func AgentlessInteractRegexCheckSTDOut(jobnetId string, testcase *dao.TestCase, 
 
 	_, _config_err := lib.Ssh_exec(config_cmd)
 	if _config_err != nil {
-		fmt.Println(testcase.Err_log("Error set config : %s", _config_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error set config : %s", _config_err))
 	}
 
 	jaz_server_restart_err := lib.Restart_jaz_server()
 
 	if jaz_server_restart_err != nil {
-		fmt.Println(testcase.Err_log("Error jaz restart : %s", jaz_server_restart_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error jaz restart : %s", jaz_server_restart_err))
 	}
 
 	hostname_cmd := "hostname"
 
 	hostname, hostname_err := lib.Ssh_exec_to_str(hostname_cmd)
 	if hostname_err != nil {
-		fmt.Println(testcase.Err_log("Error hostname : %s", hostname_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error hostname : %s", hostname_err))
 	}
 	hostname = strings.TrimSpace(hostname)
 	fmt.Println(hostname)
@@ -311,7 +311,7 @@ func AgentlessInteractRegexCheckSTDOut(jobnetId string, testcase *dao.TestCase, 
 	run_jobnet_id, job_run_err := lib.Jobarg_exec_E(jobnetId, envs)
 
 	if job_run_err != nil {
-		fmt.Println(testcase.Err_log("Error running job: %s", job_run_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error running job: %s", job_run_err))
 	}
 
 	fmt.Println("Run Jobnet ID:", run_jobnet_id)
@@ -321,7 +321,7 @@ func AgentlessInteractRegexCheckSTDOut(jobnetId string, testcase *dao.TestCase, 
 	_stdOut, _stdOut_err := lib.Jobarg_get_LASTSTDOUT(run_jobnet_id)
 
 	if _stdOut_err != nil {
-		fmt.Println(testcase.Err_log("Error get std out : %s", _stdOut_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error get std out : %s", _stdOut_err))
 	}
 
 	fmt.Println(_stdOut)
@@ -356,14 +356,14 @@ func CharacterEncodingIssue(jobnetId string, testcase *dao.TestCase, client *ssh
 	run_jobnet_id, job_run_err := lib.Jobarg_exec(jobnetId)
 
 	if job_run_err != nil {
-		fmt.Println(testcase.Err_log("Error running job: %s", job_run_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error running job: %s", job_run_err))
 	}
 
 	time.Sleep(20 * time.Second) // Sleep for 20 seconds
 	job_status, job_status_err := lib.Jobarg_get_JA_JOBSTATUS(run_jobnet_id)
 
 	if job_status_err != nil {
-		fmt.Println(testcase.Err_log("Error job status : %s", job_status_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error job status : %s", job_status_err))
 	}
 	fmt.Println(job_status)
 
@@ -457,7 +457,7 @@ func BackupThread(jobnetId string, testcase *dao.TestCase, client *ssh.Client) c
 	rm_cmd := "sudo rm -rf /var/lib/jobarranger/tmp/close/*"
 	_, rm_err := lib.Ssh_exec(rm_cmd)
 	if rm_err != nil {
-		fmt.Println(testcase.Err_log("Error remove close dir : %s", rm_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error remove close dir : %s", rm_err))
 	}
 
 	time.Sleep(5 * time.Second) // Sleep for 2 seconds
@@ -465,28 +465,28 @@ func BackupThread(jobnetId string, testcase *dao.TestCase, client *ssh.Client) c
 	_, job_run_err := lib.Jobarg_exec_E(jobnetId, envs)
 
 	if job_run_err != nil {
-		fmt.Println(testcase.Err_log("Error running job: %s", job_run_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error running job: %s", job_run_err))
 	}
 
 	envs, _ = lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "hostname")
 	_, job_run_err = lib.Jobarg_exec_E(jobnetId, envs)
 
 	if job_run_err != nil {
-		fmt.Println(testcase.Err_log("Error running job: %s", job_run_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error running job: %s", job_run_err))
 	}
 
 	time.Sleep(20 * time.Second) // Sleep for 2 seconds
 	day, hr, err := extractDayAndHour()
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s", err))
 	}
 
-	fmt.Println(testcase.Info_log("Day : %d", day))
-	fmt.Println(testcase.Info_log("Hr : %d", hr))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Day : %d", day))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Hr : %d", hr))
 
 	contents, get_jobfile_and_folder_err := getDirectoryContents()
 	if get_jobfile_and_folder_err != nil {
-		fmt.Println(testcase.Err_log("Error before job file and folder : %s", get_jobfile_and_folder_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error before job file and folder : %s", get_jobfile_and_folder_err))
 	}
 
 	fmt.Println(contents)
@@ -496,7 +496,7 @@ func BackupThread(jobnetId string, testcase *dao.TestCase, client *ssh.Client) c
 
 	_, rm_jobFile_err := lib.Ssh_exec(rm_jobFile_cmd)
 	if rm_jobFile_err != nil {
-		fmt.Println(testcase.Err_log("Error remove .job file : %s", rm_jobFile_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error remove .job file : %s", rm_jobFile_err))
 	}
 
 	rm_jobFolder_cmd := fmt.Sprintf(`cd /var/lib/jobarranger/tmp/close && rm -rf %s`, contents[2])
@@ -504,14 +504,14 @@ func BackupThread(jobnetId string, testcase *dao.TestCase, client *ssh.Client) c
 
 	_, rm_jobFolder_err := lib.Ssh_exec(rm_jobFolder_cmd)
 	if rm_jobFolder_err != nil {
-		fmt.Println(testcase.Err_log("Error remove job folder : %s", rm_jobFolder_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error remove job folder : %s", rm_jobFolder_err))
 	}
 
 	time.Sleep(10 * time.Second) // Sleep for 10 seconds
 
 	contents, get_jobfile_and_folder_err = getDirectoryContents()
 	if get_jobfile_and_folder_err != nil {
-		fmt.Println(testcase.Err_log("Error after job file and folder : %s", get_jobfile_and_folder_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error after job file and folder : %s", get_jobfile_and_folder_err))
 	}
 
 	fmt.Println(contents)
@@ -550,13 +550,13 @@ func BackupThread(jobnetId string, testcase *dao.TestCase, client *ssh.Client) c
 	}
 	agent_err := lib.Restart_jaz_agent_linux()
 	if agent_err != nil {
-		fmt.Println(testcase.Err_log("Error agentd restart : %s", agent_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error agentd restart : %s", agent_err))
 	}
 
 	set_ntp_cmd := "sudo timedatectl set-ntp false"
 	_, set_ntp_err := lib.Ssh_exec(set_ntp_cmd)
 	if set_ntp_err != nil {
-		fmt.Println(testcase.Err_log("Error set ntp false : %s", set_ntp_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error set ntp false : %s", set_ntp_err))
 	}
 
 	year := time.Now().Year()
@@ -582,20 +582,20 @@ func BackupThread(jobnetId string, testcase *dao.TestCase, client *ssh.Client) c
 	// set_datetime_cmd := fmt.Sprintf(`sudo timedatectl set-time '2024-11-07 15:30:00'`)
 	_, set_dateTime_err := lib.Ssh_exec(setDatetimeCmd)
 	if set_dateTime_err != nil {
-		fmt.Println(testcase.Err_log("Error set date time : %s", set_dateTime_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error set date time : %s", set_dateTime_err))
 	}
 
 	set_ntp_cmd = "sudo timedatectl set-ntp true"
 	_, set_ntp_err = lib.Ssh_exec(set_ntp_cmd)
 	if set_ntp_err != nil {
-		fmt.Println(testcase.Err_log("Error set ntp true : %s", set_ntp_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error set ntp true : %s", set_ntp_err))
 	}
 
 	//time.Sleep(5 * time.Minute)
 	lib.Run_Timeout(5 * 60)
 	contents, get_jobfile_and_folder_err = getDirectoryContents()
 	if get_jobfile_and_folder_err != nil {
-		fmt.Println(testcase.Err_log("Error after backup thread start job file and folder : %s", get_jobfile_and_folder_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error after backup thread start job file and folder : %s", get_jobfile_and_folder_err))
 	}
 
 	if len(contents) == 0 {
@@ -617,7 +617,7 @@ func BackupThread(jobnetId string, testcase *dao.TestCase, client *ssh.Client) c
 		set_ntp_cmd = "sudo timedatectl set-ntp false"
 		_, set_ntp_err = lib.Ssh_exec(set_ntp_cmd)
 		if set_ntp_err != nil {
-			fmt.Println(testcase.Err_log("Error set ntp false : %s", set_ntp_err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error set ntp false : %s", set_ntp_err))
 		}
 
 		// Example: Set the time using the formatted string in a command
@@ -626,30 +626,30 @@ func BackupThread(jobnetId string, testcase *dao.TestCase, client *ssh.Client) c
 
 		_, set_curr_time_err := lib.Ssh_exec(setCurrentTimeZone)
 		if set_curr_time_err != nil {
-			fmt.Println(testcase.Err_log("Error set current time : %s", set_curr_time_err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error set current time : %s", set_curr_time_err))
 		}
 
 		set_ntp_cmd = "sudo timedatectl set-ntp true"
 		_, set_ntp_err = lib.Ssh_exec(set_ntp_cmd)
 		if set_ntp_err != nil {
-			fmt.Println(testcase.Err_log("Error set ntp true : %s", set_ntp_err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error set ntp true : %s", set_ntp_err))
 		}
 
 		_set_current_backup_time_cmd := "sudo sed -i '/^JaBackupTime=1$/d' /etc/jobarranger/jobarg_agentd.conf"
 		_, _set_current_backup_time_err := lib.Ssh_exec(_set_current_backup_time_cmd)
 		if _set_current_backup_time_err != nil {
-			fmt.Println(testcase.Err_log("Error set current backup time : %s", _set_current_backup_time_err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error set current backup time : %s", _set_current_backup_time_err))
 		}
 
 		_set_current_backup_run_time_cmd := fmt.Sprintf("sudo sed -i '/^JaBackupRunTime=%d$/d' /etc/jobarranger/jobarg_agentd.conf", hr+1)
 		_, _set_current_backup_run_time_err := lib.Ssh_exec(_set_current_backup_run_time_cmd)
 		if _set_current_backup_run_time_err != nil {
-			fmt.Println(testcase.Err_log("Error set current backup time : %s", _set_current_backup_run_time_err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error set current backup time : %s", _set_current_backup_run_time_err))
 		}
 
 		agent_err = lib.Restart_jaz_agent_linux()
 		if agent_err != nil {
-			fmt.Println(testcase.Err_log("Error agentd restart : %s", agent_err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error agentd restart : %s", agent_err))
 		}
 
 		return PASSED
@@ -737,7 +737,7 @@ func CheckIconCountForSendingStatus(jobnetId string, testcase *dao.TestCase, cli
 	clean_log_cmd := "> /var/log/jobarranger/jobarg_server.log"
 	_, clean_log_err := lib.Ssh_exec(clean_log_cmd)
 	if clean_log_err != nil {
-		fmt.Println(testcase.Err_log("Error clean log : %s", clean_log_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error clean log : %s", clean_log_err))
 	}
 
 	filePath := "/etc/jobarranger/locale/logmessage_64BIT.txt"
@@ -746,7 +746,7 @@ func CheckIconCountForSendingStatus(jobnetId string, testcase *dao.TestCase, cli
 	// Check if the desired line is already in the file
 	exists, err := lineExistsInFile(filePath, searchString)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error checking if line exists: %v", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error checking if line exists: %v", err))
 	}
 
 	// If the line doesn't exist, apply the modification with sed
@@ -755,43 +755,43 @@ func CheckIconCountForSendingStatus(jobnetId string, testcase *dao.TestCase, cli
 		configCmd := fmt.Sprintf("sudo sed -i 's/JACHECKJOB000002,4,0,/JACHECKJOB000002,0,0,/' %s", filePath)
 		_, configErr := lib.Ssh_exec(configCmd)
 		if configErr != nil {
-			fmt.Println(testcase.Err_log("Error applying sed command: %s", configErr))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error applying sed command: %s", configErr))
 		}
 	}
 
 	// config_cmd := "sudo sed -i 's/JACHECKJOB000002,4,0,/JACHECKJOB000002,0,0,/' /etc/jobarranger/locale/logmessage_64BIT.txt"
 	// _, config_err := lib.Ssh_exec(config_cmd)
 	// if config_err != nil {
-	// 	fmt.Println(testcase.Err_log("Error config : %s", config_err))
+	// 	fmt.Println(lib.Logi(common.LOG_LEVEL_ERR,"Error config : %s", config_err))
 	// }
 
 	// start noamal job sleep 1000 host 1
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "sleep 1000"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 	}
 	_, job_run_err := lib.Jobarg_exec(jobnetId)
 
 	if job_run_err != nil {
-		fmt.Println(testcase.Err_log("Error running job: %s", job_run_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error running job: %s", job_run_err))
 	}
 	// End noraml job sleep 1000 host 1
 
 	time.Sleep(10 * time.Second)
 	// Start reboot after host 1
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "Reboot_after_completing_jobs_linux"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 	}
 
 	_, job_reboot_after_err := lib.Jobarg_exec(jobnetId)
 	if job_reboot_after_err != nil {
-		fmt.Println(testcase.Err_log("Error reboot after job : %s", job_reboot_after_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error reboot after job : %s", job_reboot_after_err))
 	}
 
 	// watch log job count host1
 	pattern := `\[\s*JACHECKJOB000002\s*\]  In check_job_process\(\), job count: (\d+), reboot job count: (\d+)`
 	normal_job_count, normal_job_count_err := WatchLog(client, pattern, 1*time.Second)
 	if normal_job_count_err != nil {
-		fmt.Println(testcase.Err_log("Error normal job count : %s", normal_job_count_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error normal job count : %s", normal_job_count_err))
 	}
 
 	fmt.Println(normal_job_count)
@@ -800,7 +800,7 @@ func CheckIconCountForSendingStatus(jobnetId string, testcase *dao.TestCase, cli
 		abortRebootIconQuery := "UPDATE ja_run_job_table SET status = 4 WHERE job_id  = 'REBOOT-1';"
 		_, abort_reboot_err := lib.ExecuteQuery(lib.DBQuery(abortRebootIconQuery))
 		if abort_reboot_err != nil {
-			fmt.Println(testcase.Err_log("Error abort reboot icon : %s", abort_reboot_err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error abort reboot icon : %s", abort_reboot_err))
 		}
 
 		time.Sleep(20 * time.Second)
@@ -808,7 +808,7 @@ func CheckIconCountForSendingStatus(jobnetId string, testcase *dao.TestCase, cli
 		abortRebootJobnetQuery := "UPDATE ja_run_jobnet_summary_table SET jobnet_abort_flag = 1 WHERE jobnet_name  = 'Reboot_after_completing_jobs_linux';"
 		_, abort_reboot_err = lib.ExecuteQuery(lib.DBQuery(abortRebootJobnetQuery))
 		if abort_reboot_err != nil {
-			fmt.Println(testcase.Err_log("Error abort reboot jobnet : %s", abort_reboot_err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error abort reboot jobnet : %s", abort_reboot_err))
 		}
 	}
 

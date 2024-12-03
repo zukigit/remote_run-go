@@ -107,20 +107,20 @@ func (t *Ticket_1292) Add_testcases() {
 				_, sql_result := lib.Run_Sql_Script_Return_Rows("SELECT count(*) FROM ja_run_jobnet_table WHERE inner_jobnet_id = '" + jobnet_manage_id + "';")
 				if sql_result.Next() { // Move to the first row
 					if err := sql_result.Scan(&count); err != nil {
-						fmt.Println(tc_127.Err_log("Error: Error scanning result: %s", err))
+						fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: Error scanning result: %s", err))
 						return false
 					}
 				}
 				if count > 0 {
-					fmt.Println(tc_127.Err_log("Error: Database is not empty!!!"))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: Database is not empty!!!"))
 					return false
 				}
-				fmt.Println(tc_127.Info_log("Info: Database is empty."))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Database is empty."))
 				return true
 			}() {
 			fmt.Println("All operations completed successfully")
 		}
-		fmt.Println(tc_127.Info_log("Info: Resting config files back to normal parameter"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Resting config files back to normal parameter"))
 		if lib.Run_Sql_Script("UPDATE ja_parameter_table SET value = 60 WHERE parameter_name = 'JOBNET_KEEP_SPAN';") &&
 			lib.Run_Jobarg_cleanup_linux() {
 			if result {
@@ -128,7 +128,7 @@ func (t *Ticket_1292) Add_testcases() {
 			}
 			return FAILED
 		}
-		fmt.Println(tc_127.Info_log("Error: Failed at restting config files back to normal settings. Please reset the config files manually."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Error: Failed at restting config files back to normal settings. Please reset the config files manually."))
 		return MUST_CHECK
 	}
 	tc_127.Set_function(tc_func)

@@ -90,24 +90,24 @@ func (t *Ticket_1089) Add_testcases() {
 				return result
 			}() &&
 			func() bool {
-				fmt.Print(tc_101.Info_log("Info: Job Info: %s. Jobnet Info: %s", jobnet_run_info.Job_status, jobnet_run_info.Jobnet_status))
+				fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Info: Job Info: %s. Jobnet Info: %s", jobnet_run_info.Job_status, jobnet_run_info.Jobnet_status))
 				if jobnet_run_info.Job_status == "TIMEOUT" {
 					var count int
 					_, sql_result := lib.Run_Sql_Script_Return_Rows("SELECT count(*) from ja_run_job_table WHERE inner_jobnet_main_id = '" + jobnet_run_manage_id + "' AND status = 3 AND timeout_flag = 1;")
 					if sql_result.Next() { // Move to the first row
 						if err := sql_result.Scan(&count); err != nil {
-							fmt.Println(tc_101.Err_log("Error: Error scanning result: %s", err))
+							fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: Error scanning result: %s", err))
 							return false
 						}
 					}
 					if count != 0 {
-						fmt.Println(tc_101.Info_log("Info: Jobnet End with Timeout. Job Icon end up with Timeout."))
+						fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Jobnet End with Timeout. Job Icon end up with Timeout."))
 						return true
 					}
-					fmt.Println(tc_101.Info_log("Info: Jobnet End with Timeout."))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Jobnet End with Timeout."))
 					return true
 				}
-				fmt.Println(tc_101.Info_log("Error: Jobnet doesn't end up with Timeout."))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Error: Jobnet doesn't end up with Timeout."))
 				return false
 			}() &&
 			lib.Run_Jobarg_cleanup_linux() &&
@@ -119,9 +119,9 @@ func (t *Ticket_1089) Add_testcases() {
 			func() bool {
 				result, jobnet_run_info = lib.Run_Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
 				if jobnet_run_info == nil {
-					fmt.Println(tc_101.Info_log("Info: Job Icon end up with Error."))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Job Icon end up with Error."))
 				} else {
-					fmt.Println(tc_101.Info_log("Info: Job Icon doesn't end up with Error."))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Job Icon doesn't end up with Error."))
 				}
 				return !result
 			}() {

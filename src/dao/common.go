@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
+	"github.com/zukigit/remote_run-go/src/lib"
 )
 
 const (
@@ -14,7 +15,7 @@ const (
 )
 
 func Run_testcase(tc TestCase) {
-	fmt.Println(tc.Info_log("running..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "running..."))
 	common.Current_tk_no = tc.Get_ticket_no()
 	common.Current_tc_no = tc.Get_no()
 
@@ -30,13 +31,13 @@ func Run_testcase(tc TestCase) {
 
 		tc.Set_duration(durationStr)
 	} else {
-		fmt.Println(tc.Err_log("has no function. SKIPPED!"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "has no function. SKIPPED!"))
 		tc.Set_status(FAILED)
 	}
 
 	common.Current_tk_no = 0
 	common.Current_tc_no = 0
-	fmt.Println(tc.Info_log("finished!"))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "finished!"))
 }
 
 func Update_testcase_results_in_tickets(tks []Ticket) {

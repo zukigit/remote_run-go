@@ -252,14 +252,14 @@ func rebootIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 	// set AllowRoot to 1 for reboot
 	err := lib.Ja_set_agent_config_linux("AllowRoot", "1")
 	if err != nil {
-		fmt.Println(testcase.Err_log("failed to set agent config: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to set agent config: %s", err.Error()))
 		return FAILED
 	}
 
 	// restart the jaz agent server
 	err = lib.Restart_jaz_agent_linux()
 	if err != nil {
-		fmt.Println(testcase.Err_log("failed to restart jaz agent: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to restart jaz agent: %s", err.Error()))
 		return FAILED
 	}
 
@@ -268,11 +268,11 @@ func rebootIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 	encodingCmd := fmt.Sprintf("echo LANG=%s > /etc/locale.conf", srvEncoding)
 	_, err = lib.Ssh_exec(encodingCmd)
 	if err != nil {
-		fmt.Println(testcase.Err_log("failed to convert the encoding: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to convert the encoding: %s", err.Error()))
 		return common.ERROR
 	}
 
-	fmt.Println(testcase.Info_log("Encoding is set as: %s", srvEncoding))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Encoding is set as: %s", srvEncoding))
 
 	jobnetId := "TICKET840"
 	jobnetName := "reboot_icon"
@@ -291,28 +291,28 @@ func rebootIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 	registryNumber, err := lib.Jobarg_exec_E(jobnetId, envs)
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error running the jobnet: %s, std_out: %s", err.Error(), registryNumber))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error running the jobnet: %s, std_out: %s", err.Error(), registryNumber))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("Jobnet [%s:%s] is run successfully with registry number: %s", jobnetId, jobnetName, registryNumber))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet [%s:%s] is run successfully with registry number: %s", jobnetId, jobnetName, registryNumber))
 
 	// Check if the server is rebooted and up again
-	fmt.Println(testcase.Info_log("Waiting for server to be down..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Waiting for server to be down..."))
 	downTimeout := 1 // minutes
 	if waitForServerDown(common.Login_info.Hostname, strconv.Itoa(common.Login_info.Port), 3*time.Second, time.Duration(downTimeout)*time.Minute) {
-		fmt.Println(testcase.Info_log("the server is down"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "the server is down"))
 	} else {
-		fmt.Println(testcase.Err_log("the server is not down in the expected time of %d minutes", downTimeout))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "the server is not down in the expected time of %d minutes", downTimeout))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("Waiting for server to be up again..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Waiting for server to be up again..."))
 	upTimeout := 5 // minutes
 	if waitForServerUp(common.Login_info.Hostname, strconv.Itoa(common.Login_info.Port), 3*time.Second, time.Duration(upTimeout)*time.Minute) {
-		fmt.Println(testcase.Info_log("the server is now up and running"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "the server is now up and running"))
 	} else {
-		fmt.Println(testcase.Err_log("the server is not up in the expected time of %d", upTimeout))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "the server is not up in the expected time of %d", upTimeout))
 		return FAILED
 	}
 
@@ -326,7 +326,7 @@ func rebootIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 	})
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("failed to re-create the ssh client: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to re-create the ssh client: %s", err.Error()))
 		return FAILED
 	}
 
@@ -335,21 +335,21 @@ func rebootIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 	targetJobStatus := "NORMAL"
 	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus, 10)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error getting jobnet info: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error getting jobnet info: %s", err.Error()))
 		return FAILED
 	}
 
 	// Success (obtain the expected status, message, or exit code)
-	fmt.Println(testcase.Info_log("Jobnet_status: %s, Job_status: %s, std_out: %s, std_err: %s", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Std_out, jobnetRunInfo.Std_error))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet_status: %s, Job_status: %s, std_out: %s, std_err: %s", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Std_out, jobnetRunInfo.Std_error))
 
 	// Check the stderr
 	stderr := strings.TrimSpace(jobnetRunInfo.Std_error)
 	if stderr != "" {
-		fmt.Println(testcase.Err_log("stderr should be empty, but it is not: '%s'", stderr))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "stderr should be empty, but it is not: '%s'", stderr))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("%s with registry number %s is completed with expected status and output.", jobnetId, registryNumber))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s with registry number %s is completed with expected status and output.", jobnetId, registryNumber))
 
 	return PASSED
 }
@@ -371,27 +371,27 @@ func fileWaitTestcase(testcase *dao.TestCase, env Environment) common.Testcase_s
 		encodingCmd := fmt.Sprintf("echo LANG=%s > /etc/locale.conf", srvEncoding)
 		_, err := lib.Ssh_exec(encodingCmd)
 		if err != nil {
-			fmt.Println(testcase.Err_log("failed to convert the encoding: %s", err.Error()))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to convert the encoding: %s", err.Error()))
 			return common.ERROR
 		}
 
-		fmt.Println(testcase.Info_log("Encoding is set as: %s", srvEncoding))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Encoding is set as: %s", srvEncoding))
 
 	} else if env.OSType == Windows {
 		homeDir, err := os.UserHomeDir()
 
 		if err != nil {
-			fmt.Println(testcase.Err_log("failed to get home directory: %s", err.Error()))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to get home directory: %s", err.Error()))
 			return common.ERROR
 		}
 
 		filePath = filepath.Join(homeDir, "Documents", fileName)
 	} else {
-		fmt.Println(testcase.Err_log("unsupported os type: %s", env.OSType))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "unsupported os type: %s", env.OSType))
 		return common.ERROR
 	}
 
-	fmt.Println(testcase.Info_log("File to be waited: %s", filePath))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "File to be waited: %s", filePath))
 
 	jobnetId := "TICKET840"
 	jobnetName := "fwait_waiting_file_creation"
@@ -410,48 +410,48 @@ func fileWaitTestcase(testcase *dao.TestCase, env Environment) common.Testcase_s
 	registryNumber, err := lib.Jobarg_exec_E(jobnetId, envs)
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error running the jobnet: %s, std_out: %s", err.Error(), registryNumber))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error running the jobnet: %s, std_out: %s", err.Error(), registryNumber))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("Jobnet [%s:%s] is run successfully with registry number: %s", jobnetId, jobnetName, registryNumber))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet [%s:%s] is run successfully with registry number: %s", jobnetId, jobnetName, registryNumber))
 
 	// Create the file if not exists
 	if err = createFile(filePath, env.OSType); err != nil {
-		fmt.Println(testcase.Err_log("failed to create the file: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to create the file: %s", err.Error()))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("File is created: %s", filePath))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "File is created: %s", filePath))
 
 	// Wait jobnet finishes and get jobnet run info.
 	targetJobnetStatus := "END"
 	targetJobStatus := "NORMAL"
 	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus, 5)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error getting jobnet info: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error getting jobnet info: %s", err.Error()))
 		return FAILED
 	}
 
 	// Success (obtain the expected status, message, or exit code)
-	fmt.Println(testcase.Info_log("Jobnet_status: %s, Job_status: %s, std_out: %s, std_err: %s", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Std_out, jobnetRunInfo.Std_error))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet_status: %s, Job_status: %s, std_out: %s, std_err: %s", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Std_out, jobnetRunInfo.Std_error))
 
 	// Check the stderr
 	stdout := strings.TrimSpace(jobnetRunInfo.Std_out)
 	stderr := strings.TrimSpace(jobnetRunInfo.Std_error)
 	if stderr != "" {
-		fmt.Println(testcase.Err_log("stderr should be empty, but it is not: '%s'", stderr))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "stderr should be empty, but it is not: '%s'", stderr))
 		return FAILED
 	}
 
 	// Check the stdout
 	expectedStdOut := fmt.Sprintf("the file '%s' exists", filePath)
 	if stdout != expectedStdOut {
-		fmt.Println(testcase.Err_log("stdout is not as expected. Expected: %s, Actual: %s", expectedStdOut, stdout))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "stdout is not as expected. Expected: %s, Actual: %s", expectedStdOut, stdout))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("%s with registry number %s is completed with expected status and output.", jobnetId, registryNumber))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s with registry number %s is completed with expected status and output.", jobnetId, registryNumber))
 
 	return PASSED
 }
@@ -474,45 +474,45 @@ func fileCheckTestcase(testcase *dao.TestCase, env Environment, shouldFileExist 
 		encodingCmd := fmt.Sprintf("echo LANG=%s > /etc/locale.conf", srvEncoding)
 		_, err := lib.Ssh_exec(encodingCmd)
 		if err != nil {
-			fmt.Println(testcase.Err_log("failed to convert the encoding: %s", err.Error()))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to convert the encoding: %s", err.Error()))
 			return common.ERROR
 		}
 
-		fmt.Println(testcase.Info_log("Encoding is set as: %s", srvEncoding))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Encoding is set as: %s", srvEncoding))
 
 	} else if env.OSType == Windows {
 		homeDir, err := os.UserHomeDir()
 
 		if err != nil {
-			fmt.Println(testcase.Err_log("failed to get home directory: %s", err.Error()))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to get home directory: %s", err.Error()))
 			return common.ERROR
 		}
 
 		filePath = filepath.Join(homeDir, "Documents", fileName)
 	} else {
-		fmt.Println(testcase.Err_log("unsupported os type: %s", env.OSType))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "unsupported os type: %s", env.OSType))
 		return common.ERROR
 	}
 
-	fmt.Println(testcase.Info_log("File to be checked: %s", filePath))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "File to be checked: %s", filePath))
 
 	// create or delete based on testcase
 	if shouldFileExist {
 		// Create the file
 		if err := createFile(filePath, env.OSType); err != nil {
-			fmt.Println(testcase.Err_log("failed to create the file: %s", err.Error()))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to create the file: %s", err.Error()))
 			return FAILED
 		}
 
-		fmt.Println(testcase.Info_log("File is created: %s", filePath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "File is created: %s", filePath))
 	} else {
 		// Delete the file if exists
 		if err := deleteFileIfExists(filePath, env.OSType); err != nil {
-			fmt.Println(testcase.Err_log("failed to delete the file: %s", err.Error()))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to delete the file: %s", err.Error()))
 			return FAILED
 		}
 
-		fmt.Println(testcase.Info_log("File is deleted: %s", filePath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "File is deleted: %s", filePath))
 	}
 
 	jobnetId := "TICKET840"
@@ -532,29 +532,29 @@ func fileCheckTestcase(testcase *dao.TestCase, env Environment, shouldFileExist 
 	registryNumber, err := lib.Jobarg_exec_E(jobnetId, envs)
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error running the jobnet: %s, std_out: %s", err.Error(), registryNumber))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error running the jobnet: %s, std_out: %s", err.Error(), registryNumber))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("Jobnet [%s:%s] is run successfully with registry number: %s", jobnetId, jobnetName, registryNumber))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet [%s:%s] is run successfully with registry number: %s", jobnetId, jobnetName, registryNumber))
 
 	// Wait jobnet finishes and get jobnet run info.
 	targetJobnetStatus := "END"
 	targetJobStatus := "NORMAL"
 	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus, 5)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error getting jobnet info: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error getting jobnet info: %s", err.Error()))
 		return FAILED
 	}
 
 	// Success (obtain the expected status, message, or exit code)
-	fmt.Println(testcase.Info_log("Jobnet_status: %s, Job_status: %s, std_out: %s, std_err: %s", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Std_out, jobnetRunInfo.Std_error))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet_status: %s, Job_status: %s, std_out: %s, std_err: %s", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Std_out, jobnetRunInfo.Std_error))
 
 	// Check the stderr
 	stdout := strings.TrimSpace(jobnetRunInfo.Std_out)
 	stderr := strings.TrimSpace(jobnetRunInfo.Std_error)
 	if stderr != "" {
-		fmt.Println(testcase.Err_log("stderr should be empty, but it is not: '%s'", stderr))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "stderr should be empty, but it is not: '%s'", stderr))
 		return FAILED
 	}
 
@@ -570,11 +570,11 @@ func fileCheckTestcase(testcase *dao.TestCase, env Environment, shouldFileExist 
 
 	// Check the stdout
 	if !re.MatchString(stdout) {
-		fmt.Println(testcase.Err_log("stdout is not as expected. Expected: %s, Actual: %s", expectedStdOutPattern, stdout))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "stdout is not as expected. Expected: %s, Actual: %s", expectedStdOutPattern, stdout))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("%s with registry number %s is completed with expected status and output.", jobnetId, registryNumber))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s with registry number %s is completed with expected status and output.", jobnetId, registryNumber))
 
 	return PASSED
 }
@@ -597,36 +597,36 @@ func normalIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 		encodingCmd := fmt.Sprintf("echo LANG=%s > /etc/locale.conf", srvEncoding)
 		_, err := lib.Ssh_exec(encodingCmd)
 		if err != nil {
-			fmt.Println(testcase.Err_log("failed to convert the encoding: %s", err.Error()))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to convert the encoding: %s", err.Error()))
 			return common.ERROR
 		}
 
-		fmt.Println(testcase.Info_log("Encoding is set as: %s", srvEncoding))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Encoding is set as: %s", srvEncoding))
 
 	} else if env.OSType == Windows {
 		var err error
 		homeDir, err = os.UserHomeDir()
 
 		if err != nil {
-			fmt.Println(testcase.Err_log("failed to get home directory: %s", err.Error()))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to get home directory: %s", err.Error()))
 			return common.ERROR
 		}
 
 		filePath = filepath.Join(homeDir, "Documents", fileName)
 	} else {
-		fmt.Println(testcase.Err_log("unsupported os type: %s", env.OSType))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "unsupported os type: %s", env.OSType))
 		return common.ERROR
 	}
 
-	fmt.Println(testcase.Info_log("File to be copied: %s", filePath))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "File to be copied: %s", filePath))
 
 	// Create the file
 	if err := createFile(filePath, env.OSType); err != nil {
-		fmt.Println(testcase.Err_log("failed to create the file: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to create the file: %s", err.Error()))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("File is created: %s", filePath))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "File is created: %s", filePath))
 
 	jobnetId := "TICKET840"
 	var jobnetName string
@@ -636,7 +636,7 @@ func normalIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 	} else if env.OSType == Linux {
 		jobnetName = "job_icon_linux"
 	} else {
-		fmt.Println(testcase.Err_log("unsupported os type: %s", env.OSType))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "unsupported os type: %s", env.OSType))
 		return FAILED
 	}
 
@@ -659,29 +659,29 @@ func normalIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 	registryNumber, err := lib.Jobarg_exec_E(jobnetId, envs)
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error running the jobnet: %s, std_out: %s", err.Error(), registryNumber))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error running the jobnet: %s, std_out: %s", err.Error(), registryNumber))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("Jobnet [%s:%s] is run successfully with registry number: %s", jobnetId, jobnetName, registryNumber))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet [%s:%s] is run successfully with registry number: %s", jobnetId, jobnetName, registryNumber))
 
 	// Wait jobnet finishes and get jobnet run info.
 	targetJobnetStatus := "END"
 	targetJobStatus := "NORMAL"
 	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus, 5)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error getting jobnet info: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error getting jobnet info: %s", err.Error()))
 		return FAILED
 	}
 
 	// Success (obtain the expected status, message, or exit code)
-	fmt.Println(testcase.Info_log("Jobnet_status: %s, Job_status: %s, std_out: %s, std_err: %s", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Std_out, jobnetRunInfo.Std_error))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet_status: %s, Job_status: %s, std_out: %s, std_err: %s", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Std_out, jobnetRunInfo.Std_error))
 
 	// Check the stderr
 	stdout := strings.TrimSpace(jobnetRunInfo.Std_out)
 	stderr := strings.TrimSpace(jobnetRunInfo.Std_error)
 	if stderr != "" {
-		fmt.Println(testcase.Err_log("stderr should be empty, but it is not: '%s'", stderr))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "stderr should be empty, but it is not: '%s'", stderr))
 		return FAILED
 	}
 
@@ -694,12 +694,12 @@ func normalIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 
 		// Check the stdout
 		if !re.MatchString(stdout) {
-			fmt.Println(testcase.Err_log("stdout is not as expected. Expected: %s, Actual: %s", expectedStdOutPattern, stdout))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "stdout is not as expected. Expected: %s, Actual: %s", expectedStdOutPattern, stdout))
 			return FAILED
 		}
 	}
 
-	fmt.Println(testcase.Info_log("%s with registry number %s is completed with expected status and output.", jobnetId, registryNumber))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s with registry number %s is completed with expected status and output.", jobnetId, registryNumber))
 
 	return PASSED
 }
@@ -721,36 +721,36 @@ func fcopyIconTestcase(testcase *dao.TestCase, env Environment, envs map[string]
 		encodingCmd := fmt.Sprintf("echo LANG=%s > /etc/locale.conf", srvEncoding)
 		_, err := lib.Ssh_exec(encodingCmd)
 		if err != nil {
-			fmt.Println(testcase.Err_log("failed to convert the encoding: %s", err.Error()))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to convert the encoding: %s", err.Error()))
 			return common.ERROR
 		}
 
-		fmt.Println(testcase.Info_log("Encoding is set as: %s", srvEncoding))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Encoding is set as: %s", srvEncoding))
 
 	} else if env.OSType == Windows {
 		var err error
 		homeDir, err = os.UserHomeDir()
 
 		if err != nil {
-			fmt.Println(testcase.Err_log("failed to get home directory: %s", err.Error()))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to get home directory: %s", err.Error()))
 			return common.ERROR
 		}
 
 		filePath = filepath.Join(homeDir, "Documents", fileName)
 	} else {
-		fmt.Println(testcase.Err_log("unsupported os type: %s", env.OSType))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "unsupported os type: %s", env.OSType))
 		return common.ERROR
 	}
 
-	fmt.Println(testcase.Info_log("File to be copied: %s", filePath))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "File to be copied: %s", filePath))
 
 	// Create the file
 	if err := createFile(filePath, env.OSType); err != nil {
-		fmt.Println(testcase.Err_log("failed to create the file: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to create the file: %s", err.Error()))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("File is created: %s", filePath))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "File is created: %s", filePath))
 
 	jobnetId := "TICKET840"
 	jobnetName := "fcopy_icon"
@@ -775,46 +775,46 @@ WHERE
     jobnet_id = $4;`
 
 	if _, err := lib.ExecuteQuery(lib.DBQuery(query), fromDir, fileName, toDir, jobnetId); err != nil {
-		fmt.Println(testcase.Err_log("failed to update values in fcopy icon: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "failed to update values in fcopy icon: %s", err.Error()))
 		return FAILED
 	}
 
 	// Enabling the jobnet
 	err := lib.Jobarg_enable_jobnet(jobnetId, jobnetName)
 	if err != nil {
-		fmt.Println(testcase.Err_log("err in enable jobnet: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "err in enable jobnet: %s", err.Error()))
 		return FAILED
 	}
 
 	registryNumber, err := lib.Jobarg_exec_E(jobnetId, envs)
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error running the jobnet: %s, std_out: %s", err.Error(), registryNumber))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error running the jobnet: %s, std_out: %s", err.Error(), registryNumber))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("Jobnet [%s:%s] is run successfully with registry number: %s", jobnetId, jobnetName, registryNumber))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet [%s:%s] is run successfully with registry number: %s", jobnetId, jobnetName, registryNumber))
 
 	// Wait jobnet finishes and get jobnet run info.
 	targetJobnetStatus := "END"
 	targetJobStatus := "NORMAL"
 	jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(registryNumber, targetJobnetStatus, targetJobStatus, 5)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error getting jobnet info: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error getting jobnet info: %s", err.Error()))
 		return FAILED
 	}
 
 	// Success (obtain the expected status, message, or exit code)
-	fmt.Println(testcase.Info_log("Jobnet_status: %s, Job_status: %s, std_out: %s, std_err: %s", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Std_out, jobnetRunInfo.Std_error))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet_status: %s, Job_status: %s, std_out: %s, std_err: %s", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Std_out, jobnetRunInfo.Std_error))
 
 	// Check the stderr
 	stderr := strings.TrimSpace(jobnetRunInfo.Std_error)
 	if stderr != "" {
-		fmt.Println(testcase.Err_log("stderr should be empty, but it is not: '%s'", stderr))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "stderr should be empty, but it is not: '%s'", stderr))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("%s with registry number %s is completed with expected status and output.", jobnetId, registryNumber))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s with registry number %s is completed with expected status and output.", jobnetId, registryNumber))
 
 	return PASSED
 }

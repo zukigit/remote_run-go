@@ -1,10 +1,7 @@
 package dao
 
 import (
-	"fmt"
-
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/lib"
 )
 
 type TestCase struct {
@@ -88,16 +85,4 @@ func (t *TestCase) Run_function() common.Testcase_status {
 
 func (t *TestCase) Is_function_nil() bool {
 	return t.function == nil
-}
-
-// From here is test case util functions
-
-func (t *TestCase) Err_log(unfmt string, arg ...any) string {
-	log := fmt.Sprintf(unfmt, arg...)
-	return lib.Logi(common.LOG_LEVEL_ERR, log)
-}
-
-func (t *TestCase) Info_log(unfmt string, arg ...any) string {
-	log := fmt.Sprintf(unfmt, arg...)
-	return lib.Logi(common.LOG_LEVEL_INFO, log)
 }

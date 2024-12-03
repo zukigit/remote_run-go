@@ -128,15 +128,15 @@ func (t *Ticket_1091) Add_testcases() {
 					if executeResult != "" && executeResult != " " {
 						break
 					}
-					fmt.Println(tc_99.Info_log("Info: Executing the command Again. Retry count %d", index))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Executing the command Again. Retry count %d", index))
 					index++
 					time.Sleep(1 * time.Second)
 				}
 				if executeResult == "" || executeResult == " " {
-					fmt.Print(tc_99.Err_log("Error: There's no 'In ja_send_ipchange_request(), Server Ip is up to date in' log jobarranger_server log."))
+					fmt.Print(lib.Logi(common.LOG_LEVEL_ERR, "Error: There's no 'In ja_send_ipchange_request(), Server Ip is up to date in' log jobarranger_server log."))
 					return false
 				}
-				fmt.Print(tc_99.Info_log("Info: Execution result: %s", executeResult))
+				fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Info: Execution result: %s", executeResult))
 				return result
 			}() {
 			fmt.Println("All operations completed successfully")
@@ -213,7 +213,7 @@ func (t *Ticket_1091) Add_testcases() {
 			func() bool {
 				var jobnet_run_info *common.Jobnet_run_info
 				result, jobnet_run_info = lib.Run_Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
-				fmt.Print(tc_100.Info_log("Info: Jobnet Status: %s", jobnet_run_info.Jobnet_status))
+				fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Info: Jobnet Status: %s", jobnet_run_info.Jobnet_status))
 				return result
 			}() &&
 			func() bool {
@@ -228,10 +228,10 @@ func (t *Ticket_1091) Add_testcases() {
 					time.Sleep(1 * time.Second)
 				}
 				if executeResult == "" || executeResult == " " {
-					fmt.Print(tc_99.Err_log("Error: There's no 'In ja_send_ipchange_request(), Server Ip is up to date in' log jobarranger_server log."))
+					fmt.Print(lib.Logi(common.LOG_LEVEL_ERR, "Error: There's no 'In ja_send_ipchange_request(), Server Ip is up to date in' log jobarranger_server log."))
 					return false
 				}
-				fmt.Println(tc_100.Info_log("Info: Execution result: %s", executeResult))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Execution result: %s", executeResult))
 				return result
 			}() {
 			fmt.Println("All operations completed successfully")

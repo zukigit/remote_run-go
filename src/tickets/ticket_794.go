@@ -104,7 +104,7 @@ func (t *Ticket_794) runJob(tc *dao.TestCase, job string) common.Testcase_status
 	fmt.Printf("Jobnet Run Info: %+v\n", jobnet_run_info)
 
 	if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" && jobnet_run_info.Exit_cd == 0 {
-		tc.Info_log("%s completed successfully.", job)
+		lib.Logi(common.LOG_LEVEL_INFO, "%s completed successfully.", job)
 		return PASSED
 	}
 
@@ -112,6 +112,6 @@ func (t *Ticket_794) runJob(tc *dao.TestCase, job string) common.Testcase_status
 }
 
 func (t *Ticket_794) logError(tc *dao.TestCase, format string, args ...interface{}) common.Testcase_status {
-	fmt.Println(tc.Err_log(format, args...))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, format, args...))
 	return FAILED
 }

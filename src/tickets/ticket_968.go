@@ -65,7 +65,7 @@ func (t *Ticket_968) Add_testcases() {
 			return t.logError(tc_97, "Failed to stop jobarg-server, Error: %s", err.Error())
 		}
 
-		fmt.Println(tc_97.Info_log("JAZ Server has been stopped."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ Server has been stopped."))
 
 		const DBconCount = "10"
 		configFilePath := "/etc/jobarranger/jobarg_server.conf"
@@ -76,13 +76,13 @@ func (t *Ticket_968) Add_testcases() {
 		if err != nil {
 			return t.logError(tc_97, "Failed to set server config for DBconCount, Error: %s, Output: %s", err.Error(), output)
 		}
-		fmt.Println(tc_97.Info_log("DBconCount has been set to %s.", DBconCount))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "DBconCount has been set to %s.", DBconCount))
 
 		// Restart jobarg_server to apply new configuration
 		if err := lib.Restart_jaz_server(); err != nil {
 			return t.logError(tc_97, "Failed to restart jobarg-server, Error: %s", err.Error())
 		}
-		fmt.Println(tc_97.Info_log("JAZ Server has been restarted."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ Server has been restarted."))
 
 		// Check for lock files
 		status := t.CheckDBconCount(tc_97)
@@ -154,7 +154,7 @@ func (t *Ticket_968) Add_testcases() {
 	t.Add_testcase(*tc_99)
 }
 func (t *Ticket_968) logError(tc_97 *dao.TestCase, format string, args ...interface{}) common.Testcase_status {
-	fmt.Println(tc_97.Err_log(format, args...))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, format, args...))
 	return FAILED
 }
 
@@ -275,19 +275,19 @@ func (t *Ticket_968) checkLog(tc_98 *dao.TestCase) common.Testcase_status {
 
 	// Prepare the command to search for the warning log in the jobarg_server.log file
 	cmd := fmt.Sprintf(`cat %s | grep "%s"`, logFilePath, logFileWarning)
-	tc_98.Info_log("Executing command: %s", cmd)
+	lib.Logi(common.LOG_LEVEL_INFO, "Executing command: %s", cmd)
 
 	warningLogOutput, err := lib.Ssh_exec_to_str(cmd)
 	if err != nil {
-		tc_98.Info_log("checking for warning log: %s", err)
+		lib.Logi(common.LOG_LEVEL_INFO, "checking for warning log: %s", err)
 	}
 
 	if strings.Contains(warningLogOutput, logFileWarning) {
-		tc_98.Info_log("Warning log found, returning Passed.")
+		lib.Logi(common.LOG_LEVEL_INFO, "Warning log found, returning Passed.")
 		return PASSED
 	}
 
-	tc_98.Err_log("Warning log not found, returning FAILED.")
+	lib.Logi(common.LOG_LEVEL_ERR, "Warning log not found, returning FAILED.")
 	return FAILED
 }
 
@@ -298,7 +298,7 @@ func (t *Ticket_968) checkJobStatus(runJobnetID string, tc_97 *dao.TestCase) com
 	}
 
 	if jobnetRunInfo.Job_status == "NORMAL" && jobnetRunInfo.Exit_cd == 0 {
-		fmt.Println(tc_97.Info_log("Job %s completed successfully.", runJobnetID))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job %s completed successfully.", runJobnetID))
 		return PASSED
 	}
 

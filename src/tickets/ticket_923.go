@@ -62,39 +62,39 @@ func (t *Ticket_923) addTestCase87() {
 	tc := t.New_testcase(87, "Abnormal job execution")
 	tc_func := func() common.Testcase_status {
 		if err := t.cleanupJobArg(); err != nil {
-			tc.Err_log("Failed to cleanup jobarg, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to cleanup jobarg, Error: %s", err)
 			return FAILED
 		}
-		fmt.Println(tc.Info_log("Jobarg cleanup successfully."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobarg cleanup successfully."))
 
 		logfilePath := "/var/log/jobarranger/jobarg_agentd.log"
 		if err := t.clearLogFile(logfilePath); err != nil {
-			tc.Err_log("Failed to clear log file, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to clear log file, Error: %s", err)
 			return FAILED
 		}
-		fmt.Println(tc.Info_log("Agent log file has been cleared."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Agent log file has been cleared."))
 
 		if err := t.enableJobnet("Icon_1", "jobicon_linux"); err != nil {
-			tc.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		fmt.Println(tc.Info_log("Jobnet 'Icon_1' enabled successfully."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet 'Icon_1' enabled successfully."))
 
 		if err := t.enableJobnet("Icon_10", "Icon_10"); err != nil {
-			tc.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		fmt.Println(tc.Info_log("Jobnet 'Icon_10' enabled successfully."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet 'Icon_10' enabled successfully."))
 
 		run_jobnet_id, err := t.runJobnet("Icon_10", "oss.linux", "sleep 60")
 		if err != nil {
-			tc.Err_log("Error: %s, std_out: %s", err.Error(), run_jobnet_id)
+			lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", err.Error(), run_jobnet_id)
 			return FAILED
 		}
 
 		output, err := getProcessIdFromAgentLog(logfilePath)
 		if err != nil {
-			tc.Err_log("Failed to get process id from agent log")
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to get process id from agent log")
 			return FAILED
 		}
 
@@ -102,7 +102,7 @@ func (t *Ticket_923) addTestCase87() {
 		processId1, processId2 := processIds[0], processIds[1]
 
 		if processId1 != processId2 {
-			fmt.Println(tc.Info_log("Info: Process IDs are different."))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Process IDs are different."))
 			return PASSED
 		}
 

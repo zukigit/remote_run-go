@@ -63,7 +63,7 @@ func (t *Ticket_800) Add_testcases() {
 	tc_1 := t.New_testcase(1, "Stop and Start Jobar Agent Service when runing a jobnet.")
 	tc_func := func() common.Testcase_status {
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-			tc_1.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return RunJobnet("Icon_1", 1, 1, tc_1, common.Client)
@@ -77,34 +77,34 @@ func RunJobnet(jobnetId string, processCount int, processCheckTimeout int, testc
 	// Cleanup jobarg server and agent
 	err := lib.Jobarg_cleanup_linux()
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error cleaning up jobarg server and agent: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error cleaning up jobarg server and agent: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("jobarg-server and jobarg-agentd have been cleaned and restarted."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "jobarg-server and jobarg-agentd have been cleaned and restarted."))
 
 	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 50")
 
 	// Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec_E(jobnetId, envs)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
 	// Wait for all jobs to be in running state
 	err = lib.JobProcessCountCheck(processCount, processCheckTimeout, client)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error getting process count: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error getting process count: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Process count has reached %d", processCount))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Process count has reached %d", processCount))
 
 	// Simulate stopping jobarg-agentd after jobnet starts running
-	fmt.Println(testcase.Info_log("Stopping jobarg-agentd..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Stopping jobarg-agentd..."))
 	err = lib.Stop_jaz_agent_linux() // Stop the agent
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error stopping jobarg-agentd: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error stopping jobarg-agentd: %s", err.Error()))
 		return FAILED
 	}
 	// Verify "no connection to database" error is not in the log
@@ -114,23 +114,23 @@ func RunJobnet(jobnetId string, processCount int, processCheckTimeout int, testc
 	interval := 1 * time.Second
 
 	// Use WaitForPatternInLogFile to check for the error message
-	fmt.Println(testcase.Info_log("Checking for 'no connection to database' error in log..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Checking for 'no connection to database' error in log..."))
 	_, err = lib.WaitForPatternInLogFile(client, logFilePath, errorMsg, timeout, interval)
 	if err == nil {
-		fmt.Println(testcase.Err_log("Unexpected error message found in log: %s", errorMsg))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Unexpected error message found in log: %s", errorMsg))
 		return FAILED
 	} else if !strings.Contains(err.Error(), "timeout reached") {
-		fmt.Println(testcase.Err_log("Error while checking log for database connection errors: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error while checking log for database connection errors: %s", err.Error()))
 		return FAILED
 	}
 	// Wait to simulate an interruption
 	time.Sleep(10 * time.Second)
 
 	// Restart jobarg-agentd
-	fmt.Println(testcase.Info_log("Restarting jobarg-agentd..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Restarting jobarg-agentd..."))
 	err = lib.Restart_jaz_agent_linux()
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error restarting jobarg-agentd: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error restarting jobarg-agentd: %s", err.Error()))
 		return FAILED
 	}
 
@@ -139,15 +139,15 @@ func RunJobnet(jobnetId string, processCount int, processCheckTimeout int, testc
 	targetJobStatus := "ERROR"
 	jobnet_run_info, err := lib.Jobarg_get_jobnet_info(run_jobnet_id, targetJobnetStatus, targetJobStatus, 5)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error getting jobnet info: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error getting jobnet info: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Jobnet %s with registry number %s is completed.", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet %s with registry number %s is completed.", jobnetId, run_jobnet_id))
 
 	// Check jobnet run status and exit code
 	// fmt.Println(jobnet_run_info.Jobnet_status)
 	if jobnet_run_info.Jobnet_status != targetJobnetStatus || jobnet_run_info.Job_status != targetJobStatus {
-		fmt.Println(testcase.Err_log("Unexpected Jobnet or Job status. Jobnet_status: %s, Job_status: %s, Exit_cd: %d",
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Unexpected Jobnet or Job status. Jobnet_status: %s, Job_status: %s, Exit_cd: %d",
 			jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
 		return FAILED
 	}
@@ -155,13 +155,13 @@ func RunJobnet(jobnetId string, processCount int, processCheckTimeout int, testc
 	// Check for zombie processes after job completion
 	zombieProcessCount, err := lib.CheckZombieProcess(1, client)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error checking zombie processes: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error checking zombie processes: %s", err.Error()))
 		return FAILED
 	}
 	if zombieProcessCount != 0 {
-		fmt.Println(testcase.Err_log("There are zombie processes: %d", zombieProcessCount))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "There are zombie processes: %d", zombieProcessCount))
 	} else {
-		fmt.Println(testcase.Info_log("No zombie process detected."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "No zombie process detected."))
 	}
 
 	return PASSED

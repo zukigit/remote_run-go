@@ -165,22 +165,22 @@ func (t *Ticket_919) checkLog(tc_1 *dao.TestCase) common.Testcase_status {
 
 	for i := 0; i < maxRetries; i++ {
 		cmd := fmt.Sprintf(`cat %s | grep "%s"`, logFilePath, logFileWarning)
-		tc_1.Info_log("Executing command: %s", cmd)
+		lib.Logi(common.LOG_LEVEL_INFO, "Executing command: %s", cmd)
 
 		warningLogOutput, err := lib.Ssh_exec_to_str(cmd)
 
-		tc_1.Info_log("checking for warning log: %s", err)
+		lib.Logi(common.LOG_LEVEL_INFO, "checking for warning log: %s", err)
 
 		if strings.Contains(warningLogOutput, logFileWarning) {
-			tc_1.Info_log("Warning log found, returning Passed.")
+			lib.Logi(common.LOG_LEVEL_INFO, "Warning log found, returning Passed.")
 			return PASSED
 		}
 
-		tc_1.Info_log("Warning log not found. Retrying in %v...", retryInterval)
+		lib.Logi(common.LOG_LEVEL_INFO, "Warning log not found. Retrying in %v...", retryInterval)
 		time.Sleep(retryInterval)
 	}
 
-	tc_1.Err_log("Warning log not found after retries, returning FAILED.")
+	lib.Logi(common.LOG_LEVEL_ERR, "Warning log not found after retries, returning FAILED.")
 	return FAILED
 }
 

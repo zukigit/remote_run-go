@@ -64,7 +64,7 @@ func (t *Ticket_1341) Add_testcases() {
 	tc_1 := t.New_testcase(160, "Check if Check job process start or not.")
 	tc_func := func() common.Testcase_status {
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "two_jobicon"); err != nil {
-			tc_1.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return JaRunLoopNormalTest("Icon_1", 0, 30, tc_1, common.Client)
@@ -75,7 +75,7 @@ func (t *Ticket_1341) Add_testcases() {
 	tc_2 := t.New_testcase(161, "Check if Check job process start or not.")
 	tc_func = func() common.Testcase_status {
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "two_jobicon"); err != nil {
-			tc_2.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return JaRunLoopNormalTestWithJaRunInterval("Icon_1", 0, 30, tc_2, common.Client)
@@ -104,29 +104,29 @@ func JaRunLoopNormalTest(jobnetId string, processCount int, processCheckTimeout 
 
 	_set_param_err := lib.Ja_set_server_config_linux("JaRunInterval", "1")
 	if _set_param_err != nil {
-		fmt.Println(testcase.Err_log("Error set params : %s", _set_param_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error set params : %s", _set_param_err))
 	}
 
 	_err_restart := lib.Restart_jaz_server()
 	if _err_restart != nil {
-		fmt.Println(testcase.Err_log("Error Jaz server restart : %s", _err_restart))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error Jaz server restart : %s", _err_restart))
 	}
 
 	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "hostname")
 	run_jobnet_id, err := lib.Jobarg_exec_E(jobnetId, envs)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error executing job %s: %s", jobnetId, err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error executing job %s: %s", jobnetId, err))
 	}
 
 	time.Sleep(30 * time.Second)
 	if run_jobnet_id != "" {
 		_job_status, _job_status_err := lib.Jobarg_get_JA_JOBNETSTATUS(run_jobnet_id)
 		if _job_status_err != nil {
-			fmt.Println(testcase.Err_log("Error Job get status : %s", _job_status_err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error Job get status : %s", _job_status_err))
 		}
 
 		if _job_status == "END" {
-			fmt.Println(testcase.Info_log("Job get status is : %s", _job_status))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job get status is : %s", _job_status))
 			return PASSED
 		}
 	}
@@ -146,35 +146,35 @@ func JaRunLoopNormalTestWithJaRunInterval(jobnetId string, processCount int, pro
 
 	_, _set_param_err := lib.GetOutputStrFromSSHCommand(client, setIntervalCmd)
 	if _set_param_err != nil {
-		fmt.Println(testcase.Err_log("Error set params : %s", _set_param_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error set params : %s", _set_param_err))
 	}
 
 	_err_restart := lib.Restart_jaz_server()
 	if _err_restart != nil {
-		fmt.Println(testcase.Err_log("Error Jaz server restart : %s", _err_restart))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error Jaz server restart : %s", _err_restart))
 	}
 
 	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "hostname")
 	run_jobnet_id, err := lib.Jobarg_exec_E(jobnetId, envs)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error executing job %s: %s", jobnetId, err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error executing job %s: %s", jobnetId, err))
 	}
 
 	time.Sleep(30 * time.Second)
 	if run_jobnet_id != "" {
 		_job_status, _job_status_err := lib.Jobarg_get_JA_JOBNETSTATUS(run_jobnet_id)
 		if _job_status_err != nil {
-			fmt.Println(testcase.Err_log("Error Job get status : %s", _job_status_err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error Job get status : %s", _job_status_err))
 		}
 
 		if _job_status == "END" {
-			fmt.Println(testcase.Info_log("Job get status is : %s", _job_status))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job get status is : %s", _job_status))
 
 			cmd := fmt.Sprintf("jobarg_joblogput -z %s -U Admin -P zabbix -r %s", common.Login_info.Hostname, run_jobnet_id)
 
 			_job_run_info, _job_run_info_err := lib.Ssh_exec_to_str(cmd)
 			if _job_run_info_err != nil {
-				fmt.Println(testcase.Err_log("Error job get run info : %s", _job_run_info_err))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error job get run info : %s", _job_run_info_err))
 			}
 
 			if _job_run_info != "" {
@@ -229,7 +229,7 @@ func JaRunLoopNormalTestWithJaRunInterval(jobnetId string, processCount int, pro
 
 			return PASSED
 		} else {
-			fmt.Println(testcase.Err_log("Error job status : %s", _job_status))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error job status : %s", _job_status))
 			return FAILED
 		}
 	}
@@ -293,7 +293,7 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 		// Execute the command remotely using SSH
 		getInterval, err = lib.GetOutputStrFromSSHCommand(client, cmdGetInterval)
 		if err != nil {
-			fmt.Println(testcase.Err_log("Error get run interval value : %s", err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error get run interval value : %s", err))
 		}
 	} else {
 		configPath := "/etc/jobarranger/jobarg_server.conf"
@@ -302,7 +302,7 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 		// Execute the command remotely using SSH
 		getInterval, err = lib.GetOutputStrFromSSHCommand(client, cmdGetInterval)
 		if err != nil {
-			fmt.Println(testcase.Err_log("Error get job interval value : %s", err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error get job interval value : %s", err))
 		}
 	}
 
@@ -332,7 +332,7 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 		defaultConfig, _def_err := findPostgresqlConf(client)
 
 		if _def_err != nil {
-			fmt.Println(testcase.Err_log("Error default config : %s", _def_err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error default config : %s", _def_err))
 		}
 
 		// Define the path to the postgresql.conf file
@@ -421,7 +421,7 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 			logIntervalValue, log_interval_err := watchLogFileSSH(latestLogFile, searchTerm, client, interval)
 
 			if log_interval_err != nil {
-				fmt.Println(testcase.Err_log("Error log interval : %s", log_interval_err))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error log interval : %s", log_interval_err))
 			}
 
 			fmt.Println(logIntervalValue)
@@ -549,7 +549,7 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 			logIntervalValue, log_interval_err := watchLogFileSSH(logDir, searchTerm, client, interval)
 
 			if log_interval_err != nil {
-				fmt.Println(testcase.Err_log("Error log interval : %s", log_interval_err))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error log interval : %s", log_interval_err))
 			}
 
 			fmt.Println(logIntervalValue)
@@ -572,7 +572,7 @@ func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processChe
 				closeGencmd := "sudo sed -i '/^general_log/ s/^/#/' /etc/my.cnf && sudo sed -i '/^general_log_file/ s/^/#/' /etc/my.cnf"
 				_, close_gen_err := lib.Ssh_exec(closeGencmd)
 				if close_gen_err != nil {
-					fmt.Println(testcase.Err_log("Error close gen cmd : %s", close_gen_err))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error close gen cmd : %s", close_gen_err))
 				}
 
 				time.Sleep(5 * time.Second)

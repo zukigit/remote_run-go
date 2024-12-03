@@ -115,14 +115,14 @@ func (t *Ticket_1021) Add_testcases() {
 				systemEncode = strings.Trim(systemEncode, "\"\n")
 				agentEncode = strings.Trim(agentEncode, "\"\n")
 
-				fmt.Println(tc_104.Info_log("Info: System Encode: " + systemEncode))
-				fmt.Println(tc_104.Info_log("Info: Agent Encode: " + systemEncode))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: System Encode: "+systemEncode))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Agent Encode: "+systemEncode))
 
 				if strings.TrimSpace(systemEncode) == strings.TrimSpace(agentEncode) {
-					fmt.Println(tc_104.Info_log("Info: Both Encoding are same."))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Both Encoding are same."))
 					return true
 				} else {
-					fmt.Print(tc_104.Info_log("Info: Encoding are not same."))
+					fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Info: Encoding are not same."))
 					return false
 				}
 			}() &&
@@ -134,8 +134,8 @@ func (t *Ticket_1021) Add_testcases() {
 			}() &&
 			func() bool {
 				result, jobnet_run_info := lib.Run_Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
-				fmt.Println(tc_104.Info_log("Info: Jobnet Std_out: %s", jobnet_run_info.Std_out))
-				fmt.Println(tc_104.Info_log("Info: Job can be executed correctly with full-width characters."))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Jobnet Std_out: %s", jobnet_run_info.Std_out))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Job can be executed correctly with full-width characters."))
 				return result
 			}() &&
 			lib.Run_Jobarg_cleanup_linux() &&
@@ -147,26 +147,26 @@ func (t *Ticket_1021) Add_testcases() {
 			}() &&
 			func() bool {
 				result, jobnet_run_info := lib.Run_Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
-				fmt.Println(tc_104.Info_log("Info: Jobnet Std_out: %s", jobnet_run_info.Std_out))
-				fmt.Println(tc_104.Info_log("Info: Both File Wait and File Check can be executed correctly with full-width characters."))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Jobnet Std_out: %s", jobnet_run_info.Std_out))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Both File Wait and File Check can be executed correctly with full-width characters."))
 				return result
 			}() &&
 			lib.Run_Linux_Command("rm -rf /home/ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｀１２３４５６７８９０－＝～！＠＃＄％＾＆＊（）＿＋，．／＜＞？；＇：＂［］｛｝＼｜ジョブの単一実行．ｔｘｔ") &&
 			func() bool {
 				result, executeResult := lib.Run_Linux_Command_Str("ls /var/lib/jobarranger/tmp/close/")
 				close_folder_name = strings.Split(executeResult, "\n")[0]
-				fmt.Print(tc_104.Info_log("Info: Execution result: %s", strings.Trim(executeResult, "\n")))
+				fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Info: Execution result: %s", strings.Trim(executeResult, "\n")))
 				return result
 			}() &&
 			func() bool {
 				result, executeResult := lib.Run_Linux_Command_Str("file --mime-encoding /var/lib/jobarranger/tmp/close/" + close_folder_name + "/" + close_folder_name + ".sh")
-				fmt.Print(tc_104.Info_log("Info: Execution result: %s", strings.Trim(executeResult, "\n")))
+				fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Info: Execution result: %s", strings.Trim(executeResult, "\n")))
 				sh_file_encoding = executeResult
 				return result
 			}() &&
 			func() bool {
 				result, executeResult := lib.Run_Linux_Command_Str("file --mime-encoding /var/lib/jobarranger/tmp/close/" + close_folder_name + "/" + close_folder_name[:strings.LastIndex(close_folder_name, "-")] + ".json")
-				fmt.Print(tc_104.Info_log("Info: Execution result: %s", strings.Trim(executeResult, "\n")))
+				fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Info: Execution result: %s", strings.Trim(executeResult, "\n")))
 				json_file_encoding = executeResult
 				return result
 			}() &&
@@ -174,13 +174,13 @@ func (t *Ticket_1021) Add_testcases() {
 				//sh_file_encoding = strings.TrimSpace(strings.Trim(strings.Split(sh_file_encoding[strings.LastIndex(sh_file_encoding, ":")+1:], " ")[3], ","))
 				sh_file_encoding = strings.TrimSpace(sh_file_encoding[strings.LastIndex(sh_file_encoding, ":")+1:])
 				json_file_encoding = strings.TrimSpace(json_file_encoding[strings.LastIndex(json_file_encoding, ":")+1:])
-				fmt.Println(tc_104.Info_log("Info: Sh file value = %s", sh_file_encoding))
-				fmt.Println(tc_104.Info_log("Info: Json file value = %s", json_file_encoding))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Sh file value = %s", sh_file_encoding))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Json file value = %s", json_file_encoding))
 				if strings.EqualFold(sh_file_encoding, json_file_encoding) {
-					fmt.Println(tc_104.Info_log("Info: Both Encoding are same."))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Both Encoding are same."))
 					return true
 				} else {
-					fmt.Print(tc_104.Info_log("Info: Encoding are not same."))
+					fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Info: Encoding are not same."))
 					return false
 				}
 			}() {

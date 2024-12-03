@@ -106,7 +106,7 @@ func (t *Ticket_952) Add_testcases() {
 }
 
 func (t *Ticket_952) logError(tc *dao.TestCase, format string, args ...interface{}) common.Testcase_status {
-	fmt.Println(tc.Err_log(format, args...))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, format, args...))
 	return FAILED
 }
 
@@ -125,7 +125,7 @@ func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_s
 
 	jobExecMessage := fmt.Sprintf("Executed job: %s with run_jobnet_id: %s", job, run_jobnet_id)
 	fmt.Println(jobExecMessage)
-	tc.Info_log(jobExecMessage)
+	lib.Logi(common.LOG_LEVEL_INFO, jobExecMessage)
 
 	jobnet_run_info, err := lib.Jobarg_get_jobnet_run_info(run_jobnet_id)
 	if err != nil {
@@ -133,7 +133,7 @@ func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_s
 	}
 
 	fmt.Printf("Jobnet Run Info: %+v\n", jobnet_run_info)
-	tc.Info_log(fmt.Sprintf("Jobnet Run Info: %+v", jobnet_run_info))
+	lib.Logi(common.LOG_LEVEL_INFO, fmt.Sprintf("Jobnet Run Info: %+v", jobnet_run_info))
 
 	if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" {
 
@@ -142,7 +142,7 @@ func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_s
 
 			logMessage := fmt.Sprintf("The folder %s already exists, deleting it now.", defaultTestFolderPath)
 			fmt.Println(logMessage)
-			tc.Info_log(logMessage)
+			lib.Logi(common.LOG_LEVEL_INFO, logMessage)
 
 			err = os.RemoveAll(defaultTestFolderPath)
 			if err != nil {
@@ -153,11 +153,11 @@ func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_s
 			}
 			successMessage := fmt.Sprintf("Successfully deleted the folder %s.", defaultTestFolderPath)
 			fmt.Println(successMessage)
-			tc.Info_log(successMessage)
+			lib.Logi(common.LOG_LEVEL_INFO, successMessage)
 		} else if os.IsNotExist(err) {
 			successMessage := fmt.Sprintf("Folder %s does not exist, which is as expected. Test Passed.", defaultTestFolderPath)
 			fmt.Println(successMessage)
-			tc.Info_log(successMessage)
+			lib.Logi(common.LOG_LEVEL_INFO, successMessage)
 		} else {
 			errorMessage := fmt.Sprintf("Error checking folder %s: %s", defaultTestFolderPath, err)
 			fmt.Println(errorMessage)
@@ -167,13 +167,13 @@ func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_s
 
 		successMessage := fmt.Sprintf("%s completed successfully.", job)
 		fmt.Println(successMessage)
-		tc.Info_log(successMessage)
+		lib.Logi(common.LOG_LEVEL_INFO, successMessage)
 		return PASSED
 	} else {
 
 		failMessage := fmt.Sprintf("%s failed. Jobnet_status: %s, Job_status: %s, Exit_cd: %d", job, jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd)
 		fmt.Println(failMessage)
-		tc.Info_log(failMessage)
+		lib.Logi(common.LOG_LEVEL_INFO, failMessage)
 		return FAILED
 	}
 }

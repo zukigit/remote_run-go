@@ -59,7 +59,6 @@ func (t *Ticket_000) Add_testcases() {
 		tc_1.Add_doc(common.PRE_OPT, "tested preopt")
 		tc_1.Add_doc(common.OPT, "tested opt")
 		tc_1.Add_doc(common.EXPT_RES, "tested expt_result")
-		tc_1.Err_log("tested error log")
 		lib.Logi(common.LOG_LEVEL_INFO, "testing new log function")
 		lib.Logi(common.LOG_LEVEL_ERR, "testing new log function")
 
@@ -71,7 +70,7 @@ func (t *Ticket_000) Add_testcases() {
 	// TESTCASE 002
 	tc_2 := t.New_testcase(2, "Enter your test case description here.")
 	tc_func = func() common.Testcase_status {
-		tc_1.Info_log("tested info log")
+		lib.Logi(common.LOG_LEVEL_INFO, "tested info log")
 		return MUST_CHECK
 	}
 	tc_2.Set_function(tc_func)

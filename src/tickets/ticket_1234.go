@@ -69,7 +69,7 @@ func (t *Ticket_1234) Add_testcases() {
 	tc_1 := t.New_testcase(134, "Run WINRM Jobnet and check std out printed hostname.")
 	tc_func := func() common.Testcase_status {
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "WINRM_SRV_hostname"); err != nil {
-			tc_1.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return RunJobnetWinRMJobnetHostname("Icon_1", 1600, 80, tc_1, common.Client)
@@ -80,7 +80,7 @@ func (t *Ticket_1234) Add_testcases() {
 	tc_2 := t.New_testcase(135, "Run WINRM Jobnet and check std out printed hostname.")
 	tc_func = func() common.Testcase_status {
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "WINRM_SRV_hostname"); err != nil {
-			tc_2.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return RunJobnetWinRMJobnetIp("Icon_1", 1600, 80, tc_2, common.Client)
@@ -91,7 +91,7 @@ func (t *Ticket_1234) Add_testcases() {
 	tc_3 := t.New_testcase(136, "Run WINRM getHost Jobnet and check std out printed hostname.")
 	tc_func = func() common.Testcase_status {
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "WINRM_SRV"); err != nil {
-			tc_3.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return RunJobnetWinRMJobnetHostnameAndIp("Icon_1", 1600, 80, tc_3, common.Client)
@@ -147,13 +147,13 @@ func RunJobnetWinRMJobnetHostname(jobnetId string, processCount int, processChec
 	// Get hostname
 	hostname, _err := lib.GetOutputStrFromSSHCommand(client, "hostname")
 	if _err != nil {
-		fmt.Println(testcase.Err_log("Error fetching hostname: %v", _err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error fetching hostname: %v", _err))
 		return FAILED
 	}
 
 	// Trim any whitespace from the hostname
 	hostname = strings.TrimSpace(hostname)
-	fmt.Println(testcase.Info_log("hostname info: %s", hostname))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "hostname info: %s", hostname))
 
 	cmd := fmt.Sprintf(`bash -c 'export WINRM_SRV="%s"; 
 	export HOSTNAME="%s"; 
@@ -163,13 +163,13 @@ func RunJobnetWinRMJobnetHostname(jobnetId string, processCount int, processChec
 	_run_jobnet, _err := lib.GetOutputStrFromSSHCommand(client, cmd)
 
 	if _err != nil {
-		fmt.Println(testcase.Err_log("Error getting jobnet info: %v", _err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error getting jobnet info: %v", _err))
 		fmt.Println("Output from command:", _run_jobnet) // Print output for debugging
 		if exitErr, ok := _err.(*exec.ExitError); ok {
 			fmt.Println("Command exited with status:", exitErr.ExitCode())
 		}
 	} else {
-		fmt.Println(testcase.Info_log("Getting jobnet info: %s", _run_jobnet))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Getting jobnet info: %s", _run_jobnet))
 
 		// Adjusted regex pattern to account for spaces
 		pattern := `Registry number\s*:\s*\[\s*(\d+)\s*\]`
@@ -208,7 +208,7 @@ func RunJobnetWinRMJobnetHostname(jobnetId string, processCount int, processChec
 			// Print out the cleaned values
 			for _, value := range values {
 				if value != "" {
-					// fmt.Println(testcase.Info_log("Value: %s", value))
+					// fmt.Println(lib.Logi(common.LOG_LEVEL_INFO,"Value: %s", value))
 					// Assuming 'hostname' is already set and contains the correct value
 					hostname := strings.TrimSpace(hostname)
 					valueTrimmed := strings.TrimSpace(value)
@@ -216,7 +216,7 @@ func RunJobnetWinRMJobnetHostname(jobnetId string, processCount int, processChec
 
 					_, hostnameTrimmed := extractIPAndHostname(valueTrimmed)
 					// Print for debugging
-					fmt.Println(testcase.Info_log("Comparing Hostname: '%s' with Value: '%s'", hostnameTrimmed, valueTrimmed))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Comparing Hostname: '%s' with Value: '%s'", hostnameTrimmed, valueTrimmed))
 
 					if strings.EqualFold(hostname, hostnameTrimmed) { // Case insensitive comparison
 						return PASSED
@@ -228,7 +228,7 @@ func RunJobnetWinRMJobnetHostname(jobnetId string, processCount int, processChec
 		}
 
 		if _err_std_out != nil {
-			fmt.Println(testcase.Err_log("Error Std out log: %s", _err_std_out))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error Std out log: %s", _err_std_out))
 		}
 	}
 
@@ -245,13 +245,13 @@ func RunJobnetWinRMJobnetIp(jobnetId string, processCount int, processCheckTimeo
 	// Get hostname
 	hostname, _err := lib.GetOutputStrFromSSHCommand(client, "hostname")
 	if _err != nil {
-		fmt.Println(testcase.Err_log("Error fetching hostname: %v", _err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error fetching hostname: %v", _err))
 		return FAILED
 	}
 
 	// Trim any whitespace from the hostname
 	hostname = strings.TrimSpace(hostname)
-	fmt.Println(testcase.Info_log("hostname info: %s", hostname))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "hostname info: %s", hostname))
 
 	cmd := fmt.Sprintf(`bash -c 'export WINRM_SRV="getHost(%s)"; 
 	export HOSTNAME="%s"; 
@@ -261,13 +261,13 @@ func RunJobnetWinRMJobnetIp(jobnetId string, processCount int, processCheckTimeo
 	_run_jobnet, _err := lib.GetOutputStrFromSSHCommand(client, cmd)
 
 	if _err != nil {
-		fmt.Println(testcase.Err_log("Error getting jobnet info: %v", _err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error getting jobnet info: %v", _err))
 		fmt.Println("Output from command:", _run_jobnet) // Print output for debugging
 		if exitErr, ok := _err.(*exec.ExitError); ok {
 			fmt.Println("Command exited with status:", exitErr.ExitCode())
 		}
 	} else {
-		fmt.Println(testcase.Info_log("Getting jobnet info: %s", _run_jobnet))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Getting jobnet info: %s", _run_jobnet))
 
 		// Adjusted regex pattern to account for spaces
 		pattern := `Registry number\s*:\s*\[\s*(\d+)\s*\]`
@@ -306,7 +306,7 @@ func RunJobnetWinRMJobnetIp(jobnetId string, processCount int, processCheckTimeo
 			// Print out the cleaned values
 			for _, value := range values {
 				if value != "" {
-					// fmt.Println(testcase.Info_log("Value: %s", value))
+					// fmt.Println(lib.Logi(common.LOG_LEVEL_INFO,"Value: %s", value))
 					// Assuming 'hostname' is already set and contains the correct value
 					// hostname := strings.TrimSpace(hostname)
 					valueTrimmed := strings.TrimSpace(value)
@@ -314,7 +314,7 @@ func RunJobnetWinRMJobnetIp(jobnetId string, processCount int, processCheckTimeo
 
 					ipTrimed, hostnameTrimmed := extractIPAndHostname(valueTrimmed)
 					// Print for debugging
-					fmt.Println(testcase.Info_log("Comparing Hostname: '%s' with Value: '%s'", hostnameTrimmed, valueTrimmed))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Comparing Hostname: '%s' with Value: '%s'", hostnameTrimmed, valueTrimmed))
 
 					if strings.EqualFold(ip, ipTrimed) { // Case insensitive comparison
 						return PASSED
@@ -326,7 +326,7 @@ func RunJobnetWinRMJobnetIp(jobnetId string, processCount int, processCheckTimeo
 		}
 
 		if _err_std_out != nil {
-			fmt.Println(testcase.Err_log("Error Std out log: %s", _err_std_out))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error Std out log: %s", _err_std_out))
 		}
 	}
 
@@ -344,13 +344,13 @@ func RunJobnetWinRMJobnetHostnameAndIp(jobnetId string, processCount int, proces
 	// Get hostname
 	hostname, _err := lib.GetOutputStrFromSSHCommand(client, "hostname")
 	if _err != nil {
-		fmt.Println(testcase.Err_log("Error fetching hostname: %v", _err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error fetching hostname: %v", _err))
 		return FAILED
 	}
 
 	// Trim any whitespace from the hostname
 	hostname = strings.TrimSpace(hostname)
-	fmt.Println(testcase.Info_log("hostname info: %s", hostname))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "hostname info: %s", hostname))
 
 	cmd := fmt.Sprintf(`bash -c 'export WINRM_SRV="getHost(%s)"; 
 	export HOSTNAME="%s"; 
@@ -360,13 +360,13 @@ func RunJobnetWinRMJobnetHostnameAndIp(jobnetId string, processCount int, proces
 	_run_jobnet, _err := lib.GetOutputStrFromSSHCommand(client, cmd)
 
 	if _err != nil {
-		fmt.Println(testcase.Err_log("Error getting jobnet info: %v", _err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error getting jobnet info: %v", _err))
 		fmt.Println("Output from command:", _run_jobnet) // Print output for debugging
 		if exitErr, ok := _err.(*exec.ExitError); ok {
 			fmt.Println("Command exited with status:", exitErr.ExitCode())
 		}
 	} else {
-		fmt.Println(testcase.Info_log("Getting jobnet info: %s", _run_jobnet))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Getting jobnet info: %s", _run_jobnet))
 
 		// Adjusted regex pattern to account for spaces
 		pattern := `Registry number\s*:\s*\[\s*(\d+)\s*\]`
@@ -405,7 +405,7 @@ func RunJobnetWinRMJobnetHostnameAndIp(jobnetId string, processCount int, proces
 			// Print out the cleaned values
 			for _, value := range values {
 				if value != "" {
-					// fmt.Println(testcase.Info_log("Value: %s", value))
+					// fmt.Println(lib.Logi(common.LOG_LEVEL_INFO,"Value: %s", value))
 					// Assuming 'hostname' is already set and contains the correct value
 					hostname := strings.TrimSpace(hostname)
 					valueTrimmed := strings.TrimSpace(value)
@@ -413,7 +413,7 @@ func RunJobnetWinRMJobnetHostnameAndIp(jobnetId string, processCount int, proces
 
 					ipTrimed, hostnameTrimmed := extractIPAndHostname(valueTrimmed)
 					// Print for debugging
-					fmt.Println(testcase.Info_log("Comparing Hostname: '%s' with Value: '%s'", hostnameTrimmed, valueTrimmed))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Comparing Hostname: '%s' with Value: '%s'", hostnameTrimmed, valueTrimmed))
 
 					if strings.EqualFold(hostname, hostnameTrimmed) && strings.EqualFold(ip, ipTrimed) { // Case insensitive comparison
 						return PASSED
@@ -425,7 +425,7 @@ func RunJobnetWinRMJobnetHostnameAndIp(jobnetId string, processCount int, proces
 		}
 
 		if _err_std_out != nil {
-			fmt.Println(testcase.Err_log("Error Std out log: %s", _err_std_out))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error Std out log: %s", _err_std_out))
 		}
 	}
 
@@ -451,20 +451,20 @@ func RunScheduleLoadSpan(jobnetId string, processCount int, processCheckTimeout 
 	setCurrentDateQuery := fmt.Sprintf("UPDATE ja_calendar_detail_table SET operating_date = '%s' WHERE calendar_id = 'COMMON_CALENDAR';", formattedDate)
 	_, current_date_error := lib.ExecuteQuery(lib.DBQuery(setCurrentDateQuery))
 	if current_date_error != nil {
-		fmt.Println(testcase.Err_log("Error set calendar detail : %s", current_date_error))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error set calendar detail : %s", current_date_error))
 	}
 
 	setPublicFlagQuery := "UPDATE ja_calendar_control_table SET valid_flag  = 1 WHERE calendar_id = 'COMMON_CALENDAR';"
 	_, set_public_err := lib.ExecuteQuery(lib.DBQuery(setPublicFlagQuery))
 	if set_public_err != nil {
-		fmt.Println(testcase.Err_log("Error set public flag : %s", set_public_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error set public flag : %s", set_public_err))
 	}
 
 	/*
 		enable the jobnet
 	*/
 	if _enable_err := lib.Jobarg_enable_jobnet("Icon_1", "hostname"); _enable_err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", _enable_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", _enable_err))
 		return FAILED
 	}
 
@@ -477,7 +477,7 @@ func RunScheduleLoadSpan(jobnetId string, processCount int, processCheckTimeout 
 	_, standard_err := lib.ExecuteQuery(lib.DBQuery(setStandardTimeQuery))
 
 	if standard_err != nil {
-		fmt.Println(testcase.Err_log("Set Standard time to server time: %s", standard_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Set Standard time to server time: %s", standard_err))
 	}
 
 	/*
@@ -530,7 +530,7 @@ func RunScheduleLoadSpan(jobnetId string, processCount int, processCheckTimeout 
 	current_rows, _current_time_err := lib.GetData(lib.DBQuery(currentTimeQuery))
 
 	if _current_time_err != nil {
-		fmt.Println(testcase.Err_log("Error current time: %s", _current_time_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error current time: %s", _current_time_err))
 		return FAILED // Consider returning to avoid further processing
 	}
 	defer current_rows.Close() // Ensure rows are closed after processing
@@ -610,7 +610,7 @@ func RunScheduleLoadSpan(jobnetId string, processCount int, processCheckTimeout 
 	_, enable_err := lib.ExecuteQuery(lib.DBQuery(enableQuery))
 
 	if enable_err != nil {
-		fmt.Println(testcase.Err_log("Error schedule enable: %s", enable_err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error schedule enable: %s", enable_err))
 	}
 
 	time.Sleep(30 * time.Second)

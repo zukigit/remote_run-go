@@ -66,13 +66,13 @@ func (t *Ticket_962) setupJobnet(jobnetID, cmd string, tc *dao.TestCase) (string
 	if err := lib.Jobarg_cleanup_linux(); err != nil {
 		return "", fmt.Errorf("failed to cleanup jobarg, error: %s", err)
 	}
-	fmt.Println(tc.Info_log("Jobarg cleanup successfully."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobarg cleanup successfully."))
 
 	// Enable jobnet
 	if err := lib.Jobarg_enable_jobnet(jobnetID, cmd); err != nil {
 		return "", fmt.Errorf("failed to enable jobnet, error: %s", err)
 	}
-	fmt.Println(tc.Info_log("Jobnet enabled successfully."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet enabled successfully."))
 
 	// Execute jobnet
 	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 60")
@@ -80,7 +80,7 @@ func (t *Ticket_962) setupJobnet(jobnetID, cmd string, tc *dao.TestCase) (string
 	if err != nil {
 		return "", fmt.Errorf("error running jobnet: %s", err)
 	}
-	fmt.Println(tc.Info_log("%s has been successfully run with registry number: %s\n", jobnetID, runJobnetID))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s has been successfully run with registry number: %s\n", jobnetID, runJobnetID))
 
 	return runJobnetID, nil
 }
@@ -94,7 +94,7 @@ func (t *Ticket_962) addTestcase85() {
 		// Set up the jobnet
 		runJobnetID, err := t.setupJobnet(jobnetID, "agentless", tc)
 		if err != nil {
-			tc.Err_log(err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, err.Error())
 			return FAILED
 		}
 
@@ -103,13 +103,13 @@ func (t *Ticket_962) addTestcase85() {
 		targetJobStatus := "NORMAL"
 		jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(runJobnetID, targetJobnetStatus, targetJobStatus, 5)
 		if err != nil {
-			tc.Err_log("Error getting jobnet info: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Error getting jobnet info: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc.Info_log("%s with registry number %s is completed.\n", jobnetID, runJobnetID))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s with registry number %s is completed.\n", jobnetID, runJobnetID))
 
 		if jobnetRunInfo.Jobnet_status != targetJobnetStatus && jobnetRunInfo.Job_status != targetJobStatus {
-			tc.Err_log("Unexpected Jobnet status. Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Exit_cd)
+			lib.Logi(common.LOG_LEVEL_ERR, "Unexpected Jobnet status. Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Exit_cd)
 			return FAILED
 		}
 
@@ -128,41 +128,41 @@ func (t *Ticket_962) addTestcase86() {
 		// Set up the jobnet
 		runJobnetID, err := t.setupJobnet(jobnetID, "agentless", tc)
 		if err != nil {
-			tc.Err_log(err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, err.Error())
 			return FAILED
 		}
 
 		// Validate process count
 		if err := lib.JobProcessCountCheck(1, 2, common.Client); err != nil {
-			tc.Err_log("Failed to get process count, error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to get process count, error: %s", err.Error())
 			return FAILED
 		}
 
 		// Clear server log and restart Jaz server
 		logfilePath := "/var/log/jobarranger/jobarg_server.log"
 		if _, err := lib.Ssh_exec("echo > " + logfilePath); err != nil {
-			tc.Err_log("Failed to clear server log: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to clear server log: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc.Info_log("Server log file has been cleared."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Server log file has been cleared."))
 
 		if err := lib.Restart_jaz_server(); err != nil {
-			tc.Err_log("Failed to restart Jaz server, error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to restart Jaz server, error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc.Info_log("Jaz server restarted successfully."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jaz server restarted successfully."))
 
 		// Retrieve data from the server log
 		searchData := "\\[ERROR]\\ \\[JASESSIONCHCK000001]\\ The process of session_id"
 		output, err := getDataFromServerLog(logfilePath, searchData)
 		if err != nil {
-			tc.Err_log("Failed to get data from server log: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to get data from server log: %s", err.Error())
 			return FAILED
 		}
 		if output == "" {
 			fmt.Println("Output is empty!")
 		} else {
-			fmt.Println(tc.Info_log(output))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, output))
 		}
 
 		// Check jobnet run status
@@ -170,12 +170,12 @@ func (t *Ticket_962) addTestcase86() {
 		targetJobStatus := "ERROR"
 		jobnetRunInfo, err := lib.Jobarg_get_jobnet_info(runJobnetID, targetJobnetStatus, targetJobStatus, 5)
 		if err != nil {
-			tc.Err_log("Error getting jobnet info: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Error getting jobnet info: %s", err.Error())
 			return FAILED
 		}
 
 		if jobnetRunInfo.Jobnet_status != targetJobnetStatus && jobnetRunInfo.Job_status != targetJobStatus {
-			tc.Err_log("Unexpected Jobnet status. Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Exit_cd)
+			lib.Logi(common.LOG_LEVEL_ERR, "Unexpected Jobnet status. Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnetRunInfo.Jobnet_status, jobnetRunInfo.Job_status, jobnetRunInfo.Exit_cd)
 			return FAILED
 		}
 

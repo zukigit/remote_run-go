@@ -125,14 +125,14 @@ func (t *Ticket_940) applyConfigAndRunTests(tc *dao.TestCase, configs []string, 
 	logFilePath := "/var/log/jobarranger/jobarg_server.log"
 	cmd := fmt.Sprintf(`cat %s | grep "Process is taking"`, logFilePath)
 
-	tc.Info_log("Executing command: %s", cmd)
+	lib.Logi(common.LOG_LEVEL_INFO, "Executing command: %s", cmd)
 
 	output, err := lib.Ssh_exec_to_str(cmd)
 	if err != nil {
 		return t.logError(tc, "Failed to check timeout warnings, Error: %s", err.Error())
 	}
 
-	tc.Info_log("Command output: %s", output)
+	lib.Logi(common.LOG_LEVEL_INFO, "Command output: %s", output)
 
 	logCount := countOccurrences(output, "Process is taking")
 
@@ -160,7 +160,7 @@ func countOccurrences(str, substr string) int {
 }
 
 func (t *Ticket_940) logError(tc *dao.TestCase, format string, args ...interface{}) common.Testcase_status {
-	fmt.Println(tc.Err_log(format, args...))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, format, args...))
 	return FAILED
 }
 
@@ -188,7 +188,7 @@ func (t *Ticket_940) runIcon100(tc *dao.TestCase, job string) common.Testcase_st
 	fmt.Printf("jobnet status: %s, job status: %s\n", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status)
 
 	if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" {
-		tc.Info_log("%s completed successfully.", job)
+		lib.Logi(common.LOG_LEVEL_INFO, "%s completed successfully.", job)
 		fmt.Printf("%s completed successfully.", job)
 		return PASSED
 	}

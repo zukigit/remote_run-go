@@ -71,10 +71,10 @@ func (t *Ticket_844) Add_testcases() {
 		var jobnet_id string = "Icon_1" // This value must be the same value as Jobnet_ID
 
 		if err := lib.Jobarg_enable_jobnet(jobnet_id, "jobicon_linux"); err != nil {
-			tc_71.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		fmt.Println(tc_71.Info_log("Info: Jobnet enabled successfully."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Jobnet enabled successfully."))
 
 		// 1. Jobarg_cleanup_start.
 		// 2. Run Jobnet.
@@ -83,41 +83,41 @@ func (t *Ticket_844) Add_testcases() {
 		// 5. Restart the agent
 
 		if err := lib.Jobarg_cleanup_linux(); err != nil {
-			tc_71.Err_log("Failed to cleanup jobarg, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to cleanup jobarg, Error: %s", err)
 			return FAILED
 		}
-		fmt.Println(tc_71.Info_log("Info: Jobarg cleanup successfully."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Jobarg cleanup successfully."))
 
 		envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 10")
 		run_jobnet_id, error := lib.Jobarg_exec_E(jobnet_id, envs)
 		if error != nil {
-			fmt.Println(tc_71.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 			return FAILED
 		}
-		fmt.Println(tc_71.Info_log("%s has been successfully run with registry number: %s", jobnet_id, run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s has been successfully run with registry number: %s", jobnet_id, run_jobnet_id))
 
 		err := lib.JobProcessCountCheck(1, 2, common.Client)
 		if err != nil {
-			fmt.Println(tc_71.Err_log("Error: %s, Failed to get process count.", err.Error()))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, Failed to get process count.", err.Error()))
 			return FAILED
 		}
-		fmt.Println(tc_71.Info_log("Process count has reached %d", 1))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Process count has reached %d", 1))
 
 		err = lib.Stop_jaz_agent_linux()
 		if err != nil {
-			tc_71.Err_log("Failed to stop agent, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to stop agent, Error: %s", err)
 			return FAILED
 		}
-		fmt.Println(tc_71.Info_log("Info: Agent stopped successfully."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Agent stopped successfully."))
 
 		if err := lib.Cleanup_agent_linux(); err != nil {
-			tc_71.Err_log("Failed to cleanup agent, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to cleanup agent, Error: %s", err)
 			return FAILED
 		}
-		fmt.Println(tc_71.Info_log("Info: Agent cleanup successfully."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Agent cleanup successfully."))
 
 		if err := lib.Restart_jaz_agent_linux(); err != nil {
-			tc_71.Err_log("Failed to start agent, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to start agent, Error: %s", err)
 			return FAILED
 		}
 
@@ -125,14 +125,14 @@ func (t *Ticket_844) Add_testcases() {
 		targetJobStatus := "ERROR"
 		jobnet_run_info, err := lib.Jobarg_get_jobnet_info(run_jobnet_id, targetJobnetStatus, targetJobStatus, 10)
 		if err != nil {
-			fmt.Println(tc_71.Err_log("Error getting jobnet info: %s", err.Error()))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error getting jobnet info: %s", err.Error()))
 			return FAILED
 		}
-		fmt.Println(tc_71.Info_log("%s with registry number %s is completed.", jobnet_id, run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s with registry number %s is completed.", jobnet_id, run_jobnet_id))
 
 		// Check jobnet run status and exit code.
 		if jobnet_run_info.Jobnet_status != targetJobnetStatus && jobnet_run_info.Job_status != targetJobStatus {
-			fmt.Println(tc_71.Err_log("Unexpected Jobnet status. Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Unexpected Jobnet status. Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
 			return FAILED
 		}
 
@@ -245,7 +245,7 @@ func (t *Ticket_844) Add_testcases() {
 			}() &&
 			func() bool {
 				if num != 95 {
-					fmt.Println(tc_75.Err_log("Error: Looping count (total iteration) is incorrect. Looping count: %d", num))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: Looping count (total iteration) is incorrect. Looping count: %d", num))
 					return false
 				}
 				return true
@@ -255,7 +255,7 @@ func (t *Ticket_844) Add_testcases() {
 				end_time := time.Now()
 				duration := end_time.Sub(start_time)
 				if duration <= 8*time.Hour {
-					fmt.Println(tc_75.Err_log("Error: Jobnet ended earlier than expected 8 hour time. Total Elapsed time: %s", duration.String()))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: Jobnet ended earlier than expected 8 hour time. Total Elapsed time: %s", duration.String()))
 					return false
 				}
 				return true
@@ -276,7 +276,7 @@ func (t *Ticket_844) Add_testcases() {
 	tc_func = func() common.Testcase_status {
 		// enable common jobnet
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-			tc_76.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return RunJob800AndKillOneJobIconWithJobargCommand("Icon_800", 800, 4, tc_76, common.Client)
@@ -290,7 +290,7 @@ func (t *Ticket_844) Add_testcases() {
 	tc_func = func() common.Testcase_status {
 		// enable common jobnet
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-			tc_77.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return RunJob800AndForceStopOneJobIcon("Icon_800", 800, 4, tc_77, common.Client)
@@ -310,15 +310,15 @@ func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount i
 	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 500")
 	run_jobnet_id, error := lib.Jobarg_exec_E(jobnetId, envs)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
 	// Wait for all jobs to be in running state
 	lib.JobSleepProcessCountCheck(processCount, processCheckTimeout, sshClient)
 
-	fmt.Println(testcase.Info_log("Process count has reached %d", processCount))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Process count has reached %d", processCount))
 
 	/**************
 	Operation State
@@ -329,7 +329,7 @@ func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount i
 	output, err := lib.Ssh_exec(command)
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("Failed to run command: %v", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to run command: %v", err))
 		return FAILED
 	}
 
@@ -350,15 +350,15 @@ func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount i
 		killCommand := fmt.Sprintf("kill %s", pid)
 		_, err := lib.Ssh_exec(killCommand)
 		if err != nil {
-			fmt.Println(testcase.Err_log("Failed to kill process %s: %v", pid, err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to kill process %s: %v", pid, err))
 		}
-		fmt.Println(testcase.Info_log("Kill Job Icon using Process ID: %s", pid))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Kill Job Icon using Process ID: %s", pid))
 	} else {
-		fmt.Println(testcase.Err_log("No processes to kill."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "No processes to kill."))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("Job icon is being aborted..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job icon is being aborted..."))
 
 	/***************
 	Expected Results
@@ -372,7 +372,7 @@ func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount i
 	rows, err := common.DB.Query(DBQuery)
 	if err != nil {
 		// If there was an error executing the query, print an error message
-		fmt.Println(testcase.Err_log("Error executing query: %v\n", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error executing query: %v\n", err))
 		return FAILED
 	}
 	// Ensure the rows are closed after processing
@@ -388,7 +388,7 @@ func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount i
 		err := rows.Scan(&afterValue)
 		if err != nil {
 			// If there was an error scanning the row, print an error message
-			fmt.Println(testcase.Err_log("Error retrieving result: %v\n", err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error retrieving result: %v\n", err))
 			return FAILED
 		}
 		occurrenceCount++ // Increment the occurrence count
@@ -397,14 +397,14 @@ func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount i
 	// Check the number of occurrences
 	if occurrenceCount == 1 {
 		// Exactly one occurrence found
-		fmt.Println(testcase.Info_log("One occurrence found. Job Icon Result: %s", afterValue))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "One occurrence found. Job Icon Result: %s", afterValue))
 	} else if occurrenceCount == 0 {
 		// No occurrences found
-		fmt.Println(testcase.Err_log("No occurrences found with 'Check job status(end) failed.'."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "No occurrences found with 'Check job status(end) failed.'."))
 		return FAILED
 	} else {
 		// Multiple occurrences found
-		fmt.Println(testcase.Err_log("Multiple occurrences found: %d", occurrenceCount))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Multiple occurrences found: %d", occurrenceCount))
 		return FAILED
 	}
 
@@ -412,24 +412,24 @@ func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount i
 	err = lib.JobSleepProcessCountCheck(0, 10, sshClient)
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, Failed to get process count.", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, Failed to get process count.", err.Error()))
 		return FAILED
 	} else {
-		fmt.Println(testcase.Info_log("Process count remain %d", 0))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Process count remain %d", 0))
 	}
 
 	// check zombie process
 	zombieProcessCount, err := lib.CheckZombieProcess(2, sshClient)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error checking zombie process: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error checking zombie process: %s", err.Error()))
 		return FAILED
 	}
 
 	if zombieProcessCount != 0 {
-		fmt.Println(testcase.Err_log("There are zombie processes: %d", zombieProcessCount))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "There are zombie processes: %d", zombieProcessCount))
 		// return FAILED
 	} else {
-		fmt.Println(testcase.Info_log("There is no zombie process."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "There is no zombie process."))
 	}
 
 	return PASSED
@@ -447,15 +447,15 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 	run_jobnet_id, error := lib.Jobarg_exec_E(jobnetId, envs)
 
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
 	// Wait for all jobs to be in running state
 	lib.JobSleepProcessCountCheck(processCount, processCheckTimeout, sshClient)
 
-	fmt.Println(testcase.Info_log("Process count has reached %d", processCount))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Process count has reached %d", processCount))
 
 	/**************
 	Operation State
@@ -467,7 +467,7 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 	rows, err := common.DB.Query(DBQuery)
 	if err != nil {
 		// If there was an error executing the query, print an error message
-		fmt.Println(testcase.Err_log("Error executing query: %v\n", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error executing query: %v\n", err))
 		return FAILED
 	}
 	// Ensure the rows are closed after processing
@@ -481,7 +481,7 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 		err := rows.Scan(&inner_job_id)
 		if err != nil {
 			// If there was an error scanning the row, print an error message
-			fmt.Println(testcase.Err_log("Error retrieving inner_job_id: %v\n", err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error retrieving inner_job_id: %v\n", err))
 			return FAILED
 		}
 	}
@@ -489,16 +489,16 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 	// Convert string to int64 (if needed)
 	convert_inner_job_id, err := strconv.ParseInt(inner_job_id, 10, 64)
 	if err != nil {
-		fmt.Println(testcase.Info_log("Error converting inner_jobnet_id to int64: %v", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Error converting inner_jobnet_id to int64: %v", err))
 	}
 
-	fmt.Println(testcase.Info_log("Kill Job Icon using inner_job_id %d", convert_inner_job_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Kill Job Icon using inner_job_id %d", convert_inner_job_id))
 
 	// Execute the update query
 	_, err = lib.ExecuteQuery("UPDATE ja_run_job_table SET method_flag = 3 WHERE inner_job_id = $1", convert_inner_job_id)
 	if err != nil {
 		// Log error and return FAILED if the query execution fails
-		fmt.Println(testcase.Err_log("Error: %s, Failed to abort the job icon.", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, Failed to abort the job icon.", err.Error()))
 		return FAILED
 	}
 
@@ -515,7 +515,7 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 	rows, err = common.DB.Query(DBQuery)
 	if err != nil {
 		// If there was an error executing the query, print an error message
-		fmt.Println(testcase.Err_log("Error executing query: %v\n", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error executing query: %v\n", err))
 		return FAILED
 	}
 	// Ensure the rows are closed after processing
@@ -531,7 +531,7 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 		err := rows.Scan(&afterValue)
 		if err != nil {
 			// If there was an error scanning the row, print an error message
-			fmt.Println(testcase.Err_log("Error retrieving result: %v\n", err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error retrieving result: %v\n", err))
 			return FAILED
 		}
 		occurrenceCount++ // Increment the occurrence count
@@ -540,14 +540,14 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 	// Check the number of occurrences
 	if occurrenceCount == 1 {
 		// Exactly one occurrence found
-		fmt.Println(testcase.Info_log("One occurrence found. Job Icon Result: %s", afterValue))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "One occurrence found. Job Icon Result: %s", afterValue))
 	} else if occurrenceCount == 0 {
 		// No occurrences found
-		fmt.Println(testcase.Err_log("No occurrences found with 'Aborted the job'."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "No occurrences found with 'Aborted the job'."))
 		return FAILED
 	} else {
 		// Multiple occurrences found
-		fmt.Println(testcase.Err_log("Multiple occurrences found: %d", occurrenceCount))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Multiple occurrences found: %d", occurrenceCount))
 		return FAILED
 	}
 
@@ -555,23 +555,23 @@ func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processC
 	err = lib.JobSleepProcessCountCheck(0, 10, sshClient)
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, Failed to get process count.", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, Failed to get process count.", err.Error()))
 		return FAILED
 	} else {
-		fmt.Println(testcase.Info_log("Process count remain %d", 0))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Process count remain %d", 0))
 	}
 
 	zombieProcessCount, err := lib.CheckZombieProcess(2, sshClient)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error checking zombie process: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error checking zombie process: %s", err.Error()))
 		return FAILED
 	}
 
 	if zombieProcessCount != 0 {
-		fmt.Println(testcase.Err_log("There are zombie processes: %d", zombieProcessCount))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "There are zombie processes: %d", zombieProcessCount))
 		// return FAILED
 	} else {
-		fmt.Println(testcase.Info_log("There is no zombie process."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "There is no zombie process."))
 	}
 
 	return PASSED

@@ -119,7 +119,7 @@ func (t *Ticket_943) runJob(tc *dao.TestCase, job string) common.Testcase_status
 	}
 
 	if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" {
-		tc.Info_log("%s completed successfully.", job)
+		lib.Logi(common.LOG_LEVEL_INFO, "%s completed successfully.", job)
 		return PASSED
 	}
 
@@ -141,7 +141,7 @@ func (t *Ticket_943) runJob2(tc *dao.TestCase, job string) common.Testcase_statu
 	status, err := modifyHostnameForTestcaseWhenInRunningState(tc, run_jobnet_id)
 
 	if err != nil {
-		tc.Err_log("Failed at modifyHostnameForTestcaseWhenInRunningState(tc, run_jobnet_id)")
+		lib.Logi(common.LOG_LEVEL_ERR, "Failed at modifyHostnameForTestcaseWhenInRunningState(tc, run_jobnet_id)")
 		return FAILED
 	}
 	return status
@@ -153,22 +153,22 @@ const logFileWarning = `In jarun_status_check()`
 
 func (t *Ticket_943) LogNotFound(tc *dao.TestCase) common.Testcase_status {
 	cmd := fmt.Sprintf(`cat %s | grep "%s"`, logFilePath, logFileWarning)
-	tc.Info_log("Executing command: %s", cmd)
+	lib.Logi(common.LOG_LEVEL_INFO, "Executing command: %s", cmd)
 
 	warningLogOutput, err := lib.Ssh_exec_to_str(cmd)
 	fmt.Println(err)
 
 	if strings.Contains(warningLogOutput, logFileWarning) {
-		tc.Err_log("Warning log found, returning FAILED.")
+		lib.Logi(common.LOG_LEVEL_ERR, "Warning log found, returning FAILED.")
 		return FAILED
 	}
 
-	tc.Info_log("Warning log not found, returning PASSED.")
+	lib.Logi(common.LOG_LEVEL_INFO, "Warning log not found, returning PASSED.")
 	return PASSED
 }
 
 func (t *Ticket_943) logError(tc *dao.TestCase, format string, args ...interface{}) common.Testcase_status {
-	fmt.Println(tc.Err_log(format, args...))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, format, args...))
 	return FAILED
 }
 
@@ -180,22 +180,22 @@ func LogFound(tc_1 *dao.TestCase) bool {
 
 	for i := 0; i < maxRetries; i++ {
 		cmd := fmt.Sprintf(`cat %s | grep %s`, logFilePath, logFileWarning)
-		fmt.Println(tc_1.Info_log("Executing command: %s", cmd))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Executing command: %s", cmd))
 
 		warningLogOutput, err := lib.Ssh_exec_to_str(cmd)
 
-		fmt.Println(tc_1.Info_log("checking for warning log: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "checking for warning log: %s", err))
 
 		if warningLogOutput != "" || warningLogOutput == " " {
-			fmt.Println(tc_1.Info_log("Warning log found, returning Passed."))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Warning log found, returning Passed."))
 			return true
 		}
 
-		fmt.Println(tc_1.Info_log("Warning log not found. Retrying in %v...", retryInterval))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Warning log not found. Retrying in %v...", retryInterval))
 		time.Sleep(retryInterval)
 	}
 
-	fmt.Println(tc_1.Err_log("Warning log not found after retries, returning FAILED."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Warning log not found after retries, returning FAILED."))
 	return false
 }
 
@@ -207,23 +207,23 @@ func modifyHostnameForTestcase(tc *dao.TestCase) common.Testcase_status {
 		changeHostCmd = `UPDATE hosts SET host = 'new.hostname' WHERE host = 'oss.linux';`
 		_, err := common.DB.Exec(changeHostCmd)
 		if err != nil {
-			tc.Err_log("Failed to change hostname in MySQL database: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to change hostname in MySQL database: %s", err)
 			return FAILED
 		}
-		tc.Info_log("Hostname successfully changed in MySQL database.")
+		lib.Logi(common.LOG_LEVEL_INFO, "Hostname successfully changed in MySQL database.")
 
 		// Check if it's PostgreSQL
 	} else if common.Is_psql {
 		changeHostCmd = `UPDATE hosts SET host = 'new.hostname' WHERE host = 'oss.linux';`
 		_, err := common.DB.Exec(changeHostCmd)
 		if err != nil {
-			tc.Err_log("Failed to change hostname in PostgreSQL database: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to change hostname in PostgreSQL database: %s", err)
 			return FAILED
 		}
-		tc.Info_log("Hostname successfully changed in PostgreSQL database.")
+		lib.Logi(common.LOG_LEVEL_INFO, "Hostname successfully changed in PostgreSQL database.")
 	} else {
 		// Handle unsupported database types
-		tc.Err_log("Unsupported database type.")
+		lib.Logi(common.LOG_LEVEL_ERR, "Unsupported database type.")
 		return FAILED
 	}
 
@@ -238,21 +238,21 @@ func resetHostname(tc *dao.TestCase) common.Testcase_status {
 		resetHostCmd = `UPDATE hosts SET host = 'oss.linux' WHERE host = 'new.hostname';`
 		_, err := common.DB.Exec(resetHostCmd)
 		if err != nil {
-			tc.Err_log("Failed to reset hostname in MySQL database: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to reset hostname in MySQL database: %s", err.Error())
 			return FAILED
 		}
-		tc.Info_log("Hostname successfully reset in MySQL database.")
+		lib.Logi(common.LOG_LEVEL_INFO, "Hostname successfully reset in MySQL database.")
 
 	} else if common.Is_psql {
 		resetHostCmd = `UPDATE hosts SET host = 'oss.linux' WHERE host = 'new.hostname';`
 		_, err := common.DB.Exec(resetHostCmd)
 		if err != nil {
-			tc.Err_log("Failed to reset hostname in PostgreSQL database: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to reset hostname in PostgreSQL database: %s", err.Error())
 			return FAILED
 		}
-		tc.Info_log("Hostname successfully reset in PostgreSQL database.")
+		lib.Logi(common.LOG_LEVEL_INFO, "Hostname successfully reset in PostgreSQL database.")
 	} else {
-		tc.Err_log("Unsupported database type for resetting hostname.")
+		lib.Logi(common.LOG_LEVEL_ERR, "Unsupported database type for resetting hostname.")
 		return FAILED
 	}
 

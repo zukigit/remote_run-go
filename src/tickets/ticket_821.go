@@ -64,7 +64,7 @@ func (t *Ticket_821) Add_testcases() {
 	tc_func := func() common.Testcase_status {
 		// enable common jobnet
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "821Loop"); err != nil {
-			tc_1.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return CheckJobnetSuccess("Icon_1", tc_1, common.Client)
@@ -79,7 +79,7 @@ func (t *Ticket_821) Add_testcases() {
 	tc_func = func() common.Testcase_status {
 		// enable common jobnet
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "821Loop"); err != nil {
-			tc_2.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return CheckJobarrangerAgentfolderandFileCreationProcess("Icon_1", tc_2, common.Client)
@@ -94,7 +94,7 @@ func (t *Ticket_821) Add_testcases() {
 	tc_func = func() common.Testcase_status {
 		// enable common jobnet
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "821Loop"); err != nil {
-			tc_3.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return CheckJobarrangerserverProcess("Icon_1", tc_3, common.Client)
@@ -109,7 +109,7 @@ func (t *Ticket_821) Add_testcases() {
 	tc_func = func() common.Testcase_status {
 		// enable common jobnet
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "821Loop"); err != nil {
-			tc_4.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return ChecktheDatarecoveryProcess("Icon_1", tc_4, common.Client)
@@ -124,7 +124,7 @@ func (t *Ticket_821) Add_testcases() {
 	tc_func = func() common.Testcase_status {
 		// enable common jobnet
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "821Loop"); err != nil {
-			tc_5.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 		return AbnormalcaseDBdownretrycount20("Icon_1", tc_5, common.Client)
@@ -148,11 +148,11 @@ func CheckJobnetSuccess(jobnetId string, testcase *dao.TestCase, sshClient *ssh.
 	// Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
-	fmt.Println(testcase.Info_log("Waiting for the job complete..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Waiting for the job complete..."))
 	sleepDuration := 3 * time.Minute
 	time.Sleep(sleepDuration)
 
@@ -169,7 +169,7 @@ func CheckJobnetSuccess(jobnetId string, testcase *dao.TestCase, sshClient *ssh.
 
 	results, err := GetLoopCntAndStdOut(defaulQuery)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error : %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error : %s", err.Error()))
 		return FAILED
 	}
 
@@ -180,9 +180,9 @@ func CheckJobnetSuccess(jobnetId string, testcase *dao.TestCase, sshClient *ssh.
 	if len(results) > 0 {
 		// Print only the first result
 		result := results[0] // Get the first result
-		fmt.Println(testcase.Info_log("The value of LOOPCNT: %d, and  STD_OUT: %d", result.AfterValueLoopcnt, result.AfterValueStdOut))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "The value of LOOPCNT: %d, and  STD_OUT: %d", result.AfterValueLoopcnt, result.AfterValueStdOut))
 	} else {
-		fmt.Println(testcase.Err_log("STD_OUT and LOOPCNT data not found."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "STD_OUT and LOOPCNT data not found."))
 		return FAILED
 	}
 	return PASSED
@@ -196,10 +196,10 @@ func CheckJobarrangerAgentfolderandFileCreationProcess(jobnetId string, testcase
 	lib.Jobarg_cleanup_linux()
 	// Restart the jobarg agent
 	if err := lib.Restart_jaz_agent_linux(); err != nil {
-		fmt.Println(testcase.Err_log("Faild to restart the JAZ agent, Error: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Faild to restart the JAZ agent, Error: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("JAZ agent has been restarted."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ agent has been restarted."))
 
 	/**************
 	Operation State
@@ -208,51 +208,51 @@ func CheckJobarrangerAgentfolderandFileCreationProcess(jobnetId string, testcase
 	common.Client = lib.GetSSHClient(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password)
 	exists, err := lib.CheckRemoteDirectoryExists(common.Client, dirPath)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error checking directory: %v\n", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error checking directory: %v\n", err))
 		return FAILED
 	}
 	if exists {
-		fmt.Println(testcase.Info_log("Jobs Directory %s exists.", dirPath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobs Directory %s exists.", dirPath))
 	} else {
-		fmt.Println(testcase.Err_log("Jobs Directory %s does not exist.", dirPath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Jobs Directory %s does not exist.", dirPath))
 		return FAILED
 	}
 
 	err = lib.RemoveRemoteDirectory(common.Client, dirPath)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error:%v", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error:%v", err))
 	} else {
-		fmt.Println(testcase.Info_log("Jobs Directory removal successful."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobs Directory removal successful."))
 	}
 
 	// Restart the jobarg agent
 	if err := lib.Restart_jaz_agent_linux(); err != nil {
-		fmt.Println(testcase.Err_log("Faild to restart the JAZ agent, Error: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Faild to restart the JAZ agent, Error: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("JAZ agent has been restarted."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ agent has been restarted."))
 
 	exists, err = lib.CheckRemoteDirectoryExists(common.Client, dirPath)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error checking directory: %v\n", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error checking directory: %v\n", err))
 		return FAILED
 	}
 	if exists {
-		fmt.Println(testcase.Info_log("Jobs Directory %s exists.", dirPath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobs Directory %s exists.", dirPath))
 	} else {
-		fmt.Println(testcase.Err_log("Jobs Directory %s does not exist.", dirPath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Jobs Directory %s does not exist.", dirPath))
 		return FAILED
 	}
 
 	//Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Waiting for the .job file create in jobs folder..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Waiting for the .job file create in jobs folder..."))
 	sleepDuration := 1 * time.Minute
 	time.Sleep(sleepDuration)
 
@@ -264,9 +264,9 @@ func CheckJobarrangerAgentfolderandFileCreationProcess(jobnetId string, testcase
 	}
 
 	if exists {
-		fmt.Println(testcase.Info_log("Index file is successfully created."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Index file is successfully created."))
 	} else {
-		fmt.Println(testcase.Err_log("No index file found in the jobs directory."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "No index file found in the jobs directory."))
 		return FAILED
 	}
 
@@ -281,10 +281,10 @@ func CheckJobarrangerserverProcess(jobnetId string, testcase *dao.TestCase, sshC
 	lib.Jobarg_cleanup_linux()
 	// Restart the jobarg agent
 	if err := lib.Restart_jaz_server(); err != nil {
-		fmt.Println(testcase.Err_log("Faild to restart the JAZ server, Error: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Faild to restart the JAZ server, Error: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("JAZ server has been restarted."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ server has been restarted."))
 
 	/**************
 	Operation State
@@ -293,51 +293,51 @@ func CheckJobarrangerserverProcess(jobnetId string, testcase *dao.TestCase, sshC
 	common.Client = lib.GetSSHClient(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password)
 	exists, err := lib.CheckRemoteDirectoryExists(common.Client, dirPath)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error checking directory: %v\n", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error checking directory: %v\n", err))
 		return FAILED
 	}
 	if exists {
-		fmt.Println(testcase.Info_log("Job Directory %s exists.", dirPath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job Directory %s exists.", dirPath))
 	} else {
-		fmt.Println(testcase.Err_log("Job Directory %s does not exist.", dirPath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Job Directory %s does not exist.", dirPath))
 		return FAILED
 	}
 
 	err = lib.RemoveRemoteDirectory(common.Client, dirPath)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error:%v", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error:%v", err))
 	} else {
-		fmt.Println(testcase.Info_log("Job Directory removal successful."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job Directory removal successful."))
 	}
 
 	// Restart the jobarg server
 	if err := lib.Restart_jaz_server(); err != nil {
-		fmt.Println(testcase.Err_log("Faild to restart the JAZ server, Error: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Faild to restart the JAZ server, Error: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("JAZ server has been restarted."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ server has been restarted."))
 
 	exists, err = lib.CheckRemoteDirectoryExists(common.Client, dirPath)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error checking directory: %v\n", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error checking directory: %v\n", err))
 		return FAILED
 	}
 	if exists {
-		fmt.Println(testcase.Info_log("Job Directory %s exists.", dirPath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job Directory %s exists.", dirPath))
 	} else {
-		fmt.Println(testcase.Err_log("Job Directory %s does not exist.", dirPath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Job Directory %s does not exist.", dirPath))
 		return FAILED
 	}
 
 	//Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Waiting for the .job file create in jobs folder..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Waiting for the .job file create in jobs folder..."))
 	sleepDuration := 1 * time.Minute
 	time.Sleep(sleepDuration)
 
@@ -349,9 +349,9 @@ func CheckJobarrangerserverProcess(jobnetId string, testcase *dao.TestCase, sshC
 	}
 
 	if exists {
-		fmt.Println(testcase.Info_log("Index file is successfully created."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Index file is successfully created."))
 	} else {
-		fmt.Println(testcase.Err_log("No index file found in the jobs directory."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "No index file found in the jobs directory."))
 		return FAILED
 	}
 
@@ -367,15 +367,15 @@ func ChecktheDatarecoveryProcess(jobnetId string, testcase *dao.TestCase, sshCli
 	configFilePath := "/etc/jobarranger/jobarg_server.conf"
 	err := lib.UpdateDebugLevel(common.Client, configFilePath, 3)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error updating DebugLevel: %v", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error updating DebugLevel: %v", err))
 	}
 	lib.Restart_jaz_server()
 	// Restart the jobarg agent
 	if err := lib.Restart_jaz_agent_linux(); err != nil {
-		fmt.Println(testcase.Err_log("Faild to restart the JAZ agent, Error: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Faild to restart the JAZ agent, Error: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("JAZ agent has been restarted."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ agent has been restarted."))
 
 	/**************
 	Operation State
@@ -385,35 +385,35 @@ func ChecktheDatarecoveryProcess(jobnetId string, testcase *dao.TestCase, sshCli
 
 	result := lib.RemoveAllFilesInDirectory(common.Client, dirPath)
 	if result != nil {
-		fmt.Println(testcase.Err_log("Error: Remove all file within directory"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: Remove all file within directory"))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("All files within directory %s successfully removed.", dirPath))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "All files within directory %s successfully removed.", dirPath))
 
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "821Loop"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 		return FAILED
 	}
 
 	//Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Waiting for the .job file create in agent jobs folder..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Waiting for the .job file create in agent jobs folder..."))
 	sleepDuration := 1 * time.Minute
 	time.Sleep(sleepDuration)
 
 	result = lib.RemoveAllFilesInDirectory(common.Client, dirPath)
 	if result != nil {
-		fmt.Println(testcase.Err_log("Error: Remove index file within %s when running jobnet", dirPath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: Remove index file within %s when running jobnet", dirPath))
 		return FAILED
 	} else {
-		fmt.Println(testcase.Info_log("Successfully Remove index file within %s when running jobnet", dirPath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Successfully Remove index file within %s when running jobnet", dirPath))
 
 	}
 
@@ -425,9 +425,9 @@ func ChecktheDatarecoveryProcess(jobnetId string, testcase *dao.TestCase, sshCli
 
 	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error:%s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error:%s", err))
 	} else {
-		fmt.Println(testcase.Info_log("'Create recovery' alert message found in server log."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "'Create recovery' alert message found in server log."))
 	}
 	lib.Jobarg_cleanup_linux()
 
@@ -436,35 +436,35 @@ func ChecktheDatarecoveryProcess(jobnetId string, testcase *dao.TestCase, sshCli
 
 	result = lib.RemoveAllFilesInDirectory(common.Client, dirPath)
 	if result != nil {
-		fmt.Println(testcase.Err_log("Error: Remove all file within directory"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: Remove all file within directory"))
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("All files within directory %s successfully removed.", dirPath))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "All files within directory %s successfully removed.", dirPath))
 
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "821Loop"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 		return FAILED
 	}
 
 	//Run jobnet
 	run_jobnet_id, error = lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Waiting for the .job file create in server job folder..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Waiting for the .job file create in server job folder..."))
 	sleepDuration = 1 * time.Minute
 	time.Sleep(sleepDuration)
 
 	result = lib.RemoveAllFilesInDirectory(common.Client, dirPath)
 	if result != nil {
-		fmt.Println(testcase.Err_log("Error: Remove index file within %s when running jobnet", dirPath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: Remove index file within %s when running jobnet", dirPath))
 		return FAILED
 	} else {
-		fmt.Println(testcase.Info_log("Successfully Remove index file within %s when running jobnet", dirPath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Successfully Remove index file within %s when running jobnet", dirPath))
 	}
 	pattern = "Created backup file"
 	timeout = 30 * time.Second // Timeout duration
@@ -474,9 +474,9 @@ func ChecktheDatarecoveryProcess(jobnetId string, testcase *dao.TestCase, sshCli
 
 	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error:%s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error:%s", err))
 	} else {
-		fmt.Println(testcase.Info_log("'Created backup file' alert message found in server log."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "'Created backup file' alert message found in server log."))
 	}
 
 	lib.Jobarg_cleanup_linux()
@@ -489,40 +489,40 @@ func ChecktheDatarecoveryProcess(jobnetId string, testcase *dao.TestCase, sshCli
 	lib.Restart_jaz_agent_linux()
 
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "821Loop"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 		return FAILED
 	}
 
 	//Run jobnet
 	run_jobnet_id, error = lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Wating for the .job file create in both server and agent job folder..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Wating for the .job file create in both server and agent job folder..."))
 	sleepDuration = 1 * time.Minute
 	time.Sleep(sleepDuration)
 
 	// Call the FindandTrimServerJobFilePrefix function
 	ServerJobFileName, err := lib.FindandTrimServerJobFilePrefix(common.Client, dirPath1)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error finding job file in : %v", dirPath1))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error finding job file in : %v", dirPath1))
 		return FAILED
 	}
 
 	// Call the findJobFileName function
 	AgentJobFileName, err := lib.FindandTrimAgentJobFilePrefix(common.Client, dirPath2)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error finding job file in : %v", dirPath2))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error finding job file in : %v", dirPath2))
 		return FAILED
 	}
 
 	if ServerJobFileName == AgentJobFileName {
-		fmt.Println(testcase.Info_log("Both unique id is the same in server and agent job folder"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Both unique id is the same in server and agent job folder"))
 	} else {
-		fmt.Println(testcase.Err_log("No same unique id found"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "No same unique id found"))
 		return FAILED
 	}
 
@@ -537,7 +537,7 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, ssh
 	configFilePath := "/etc/jobarranger/jobarg_server.conf"
 	err := lib.UpdateDebugLevel(common.Client, configFilePath, 4)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error updating DebugLevel: %v", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error updating DebugLevel: %v", err))
 	}
 
 	lib.Jobarg_cleanup_linux()
@@ -551,7 +551,7 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, ssh
 
 	result := lib.RemoveAllFilesInDirectory(common.Client, dirPath)
 	if result != nil {
-		fmt.Println(testcase.Err_log("Error: Remove all file within agend directory"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: Remove all file within agend directory"))
 		return FAILED
 	}
 
@@ -560,7 +560,7 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, ssh
 
 	result = lib.RemoveAllFilesInDirectory(common.Client, dirPath)
 	if result != nil {
-		fmt.Println(testcase.Err_log("Error: Remove all file within server directory"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: Remove all file within server directory"))
 		return FAILED
 	}
 
@@ -569,19 +569,19 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, ssh
 	***************/
 
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "821Loop"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 		return FAILED
 	}
 
 	//Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Sleep the 1 minute to wait the next running job"))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Sleep the 1 minute to wait the next running job"))
 
 	sleepDuration := 1 * time.Minute
 	time.Sleep(sleepDuration)
@@ -605,12 +605,12 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, ssh
 
 	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath1, pattern, timeout, interval)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error:%s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error:%s", err))
 	} else {
-		fmt.Println(testcase.Info_log("%s show in server log", pattern))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s show in server log", pattern))
 	}
 
-	fmt.Println(testcase.Info_log("Wait for the log info from agent log ..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Wait for the log info from agent log ..."))
 	sleepDuration = 2 * time.Minute
 	time.Sleep(sleepDuration)
 
@@ -622,19 +622,19 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, ssh
 
 	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath2, pattern, timeout, interval)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error:%s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error:%s", err))
 	} else {
-		fmt.Println(testcase.Info_log("%s show in agent log", pattern))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s show in agent log", pattern))
 	}
 
-	fmt.Println(testcase.Info_log("start the database service and check the no index file remain from server side ..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "start the database service and check the no index file remain from server side ..."))
 
 	if common.Is_psql {
 		lib.StartDatabaseService(common.Client, "postgresql")
 	} else {
 		lib.StartDatabaseService(common.Client, "mysqld")
 	}
-	fmt.Println(testcase.Info_log("Waiting and Checking index file remain in server side ..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Waiting and Checking index file remain in server side ..."))
 	sleepDuration = 3 * time.Minute
 	time.Sleep(sleepDuration)
 
@@ -653,7 +653,7 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, ssh
 
 	results, err := GetLoopCntAndStdOut(defaulQuery)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error : %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error : %s", err.Error()))
 		return FAILED
 	}
 
@@ -664,9 +664,9 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, ssh
 	if len(results) > 0 {
 		// Print only the first result
 		result := results[0] // Get the first result
-		fmt.Println(testcase.Info_log("The value of LOOPCNT: %d, and  STD_OUT: %d", result.AfterValueLoopcnt, result.AfterValueStdOut))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "The value of LOOPCNT: %d, and  STD_OUT: %d", result.AfterValueLoopcnt, result.AfterValueStdOut))
 	} else {
-		fmt.Println(testcase.Err_log("STD_OUT and LOOPCNT data not found."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "STD_OUT and LOOPCNT data not found."))
 		return FAILED
 	}
 
@@ -681,11 +681,11 @@ ORDER BY min_seq_no ASC;`, run_jobnet_id)
 	rows, err := lib.GetData(lib.DBQuery(dbQuery))
 	if err != nil {
 		// If there was an error executing the query, print an error message
-		fmt.Println(testcase.Err_log("Error executing query: %v\n", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error executing query: %v\n", err))
 		configFilePath = "/etc/jobarranger/jobarg_server.conf"
 		err = lib.UpdateDebugLevel(common.Client, configFilePath, 3)
 		if err != nil {
-			fmt.Println(testcase.Err_log("Error updating DebugLevel: %v", err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error updating DebugLevel: %v", err))
 		}
 		return FAILED
 	}
@@ -693,18 +693,18 @@ ORDER BY min_seq_no ASC;`, run_jobnet_id)
 	defer rows.Close()
 
 	if !rows.Next() {
-		fmt.Println(testcase.Info_log("Data duplicate does not occur in the database"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Data duplicate does not occur in the database"))
 	} else {
-		fmt.Println(testcase.Err_log("Duplicate data found"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Duplicate data found"))
 		configFilePath = "/etc/jobarranger/jobarg_server.conf"
 		err = lib.UpdateDebugLevel(common.Client, configFilePath, 3)
 		if err != nil {
-			fmt.Println(testcase.Err_log("Error updating DebugLevel: %v", err))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error updating DebugLevel: %v", err))
 		}
 		return FAILED
 	}
 
-	fmt.Println(testcase.Info_log("Wait for the duplicate data message in the serverlog"))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Wait for the duplicate data message in the serverlog"))
 
 	pattern = "Duplicate Data"
 	timeout = 30 * time.Second // Timeout duration
@@ -713,15 +713,15 @@ ORDER BY min_seq_no ASC;`, run_jobnet_id)
 
 	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error:%s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error:%s", err))
 	} else {
-		fmt.Println(testcase.Info_log("Duplicate Data found in server log"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Duplicate Data found in server log"))
 	}
 
 	configFilePath = "/etc/jobarranger/jobarg_server.conf"
 	err = lib.UpdateDebugLevel(common.Client, configFilePath, 3)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error updating DebugLevel: %v", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error updating DebugLevel: %v", err))
 	}
 
 	dirPath = "/var/log/jobarranger/job"
@@ -733,10 +733,10 @@ ORDER BY min_seq_no ASC;`, run_jobnet_id)
 	}
 
 	if exists {
-		fmt.Println(testcase.Err_log("Index file remain"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Index file remain"))
 		return FAILED
 	} else {
-		fmt.Println(testcase.Info_log("Index file does not remain in %s ", dirPath))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Index file does not remain in %s ", dirPath))
 	}
 
 	// lib.Jobarg_cleanup_linux()
