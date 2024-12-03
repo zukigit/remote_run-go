@@ -3,11 +3,11 @@ package common
 type TestCase struct {
 	Testcase_no          uint
 	Testcase_description string
+	Testcase_status      *Testcase_status
+	Duration             *string
 	Pre_operation        *[]string
 	Operation            *[]string
 	Expected_results     *[]string
-	Testcase_status      *Testcase_status
-	Duration             *string
 	function             func() Testcase_status
 	ticket_no            *uint
 }
