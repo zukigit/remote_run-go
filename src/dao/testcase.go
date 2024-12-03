@@ -14,6 +14,7 @@ type TestCase struct {
 	Operation            *[]string
 	Expected_results     *[]string
 	Testcase_status      *common.Testcase_status
+	Duration             *string
 	function             func() common.Testcase_status
 	ticket_no            *uint
 }
@@ -24,6 +25,7 @@ func New_testcase(testcase_id uint, testcase_description string) *TestCase {
 	pre_opt := []string{}
 	opt := []string{}
 	expt_res := []string{}
+	var duration string
 
 	return &TestCase{
 		Testcase_no:          testcase_id,
@@ -33,6 +35,7 @@ func New_testcase(testcase_id uint, testcase_description string) *TestCase {
 		Operation:            &opt,
 		Expected_results:     &expt_res,
 		ticket_no:            &ticket_no,
+		Duration:             &duration,
 	}
 }
 
@@ -65,6 +68,10 @@ func (t *TestCase) Get_dsctn() string {
 
 func (t *TestCase) Set_status(status common.Testcase_status) {
 	*t.Testcase_status = status
+}
+
+func (t *TestCase) Set_duration(duration string) {
+	*t.Duration = duration
 }
 
 func (t *TestCase) Get_status() common.Testcase_status {

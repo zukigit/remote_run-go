@@ -2,6 +2,7 @@ package dao
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
 )
@@ -18,7 +19,16 @@ func Run_testcase(tc TestCase) {
 	common.Current_tc_no = tc.Get_no()
 
 	if !tc.Is_function_nil() {
+		// start time
+		startTime := time.Now()
+
 		tc.Set_status(tc.Run_function())
+
+		// total elasped time or duration of testcase
+		duration := time.Since(startTime)
+		durationStr := fmt.Sprintf("%02d:%02d:%02d", int(duration/time.Hour), int(duration/time.Minute)%60, int(duration/time.Second)%60)
+
+		tc.Set_duration(durationStr)
 	} else {
 		fmt.Println(tc.Err_log("has no function. SKIPPED!"))
 		tc.Set_status(FAILED)
