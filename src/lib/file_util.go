@@ -18,22 +18,19 @@ func Get_file_trunc(filepath string, flag int) *os.File {
 	return file
 }
 
-func Get_hosts_from_jsonfile(jsonfilepath string) *[]common.Host {
-	temp_hosts := make([]common.Host, 0)
+func Get_hosts_from_jsonfile(jsonfilepath string) {
 	host_jsonfile := Get_file_trunc(jsonfilepath, os.O_CREATE|os.O_RDONLY)
 	defer host_jsonfile.Close()
 
 	decoder := json.NewDecoder(host_jsonfile)
 
-	if err := decoder.Decode(&temp_hosts); err != nil {
+	if err := decoder.Decode(&common.Host_pool); err != nil {
 		if err == io.EOF {
-			return &temp_hosts
+			return
 		}
 		fmt.Printf("Failed to decode  hosts.json file, Error: %s\n", err.Error())
 		os.Exit(1)
 	}
-
-	return &temp_hosts
 }
 
 func Set_hosts_to_jsonfile(hosts *[]common.Host, json_filepath string) {

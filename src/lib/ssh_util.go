@@ -198,7 +198,7 @@ func Set_common_client(username, passwd, hostname string, port int) {
 }
 
 func Set_host_pool() error {
-	common.Host_pool = Get_hosts_from_jsonfile("hosts.json")
+	Get_hosts_from_jsonfile("hosts.json")
 
 	current_user, err := user.Current()
 	if err != nil {
@@ -206,8 +206,8 @@ func Set_host_pool() error {
 	}
 	ssh_key_filepath := filepath.Join(current_user.HomeDir, ".ssh")
 
-	for i := range *common.Host_pool {
-		host := &(*common.Host_pool)[i] // Get a pointer to the actual host
+	for i := range common.Host_pool {
+		host := &(common.Host_pool)[i] // Get a pointer to the actual host
 		if host.Host_use_ip {
 			host.Host_client, err = GetSSHClientWithKey(host.Host_ip, host.Host_port, host.Host_run_username, ssh_key_filepath)
 		} else {
