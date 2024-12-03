@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/xuri/excelize/v2"
+	"github.com/zukigit/remote_run-go/src/common"
 	"gopkg.in/yaml.v3"
 )
 
@@ -24,33 +25,23 @@ const (
 )
 
 // Define the structure to parse the YAML
-type TestCase struct {
-	TestcaseNo          int      `yaml:"testcase_no"`
-	TestcaseDescription string   `yaml:"testcase_description"`
-	PreOperation        []string `yaml:"pre_operation"`
-	Operation           []string `yaml:"operation"`
-	ExpectedResults     []string `yaml:"expected_results"`
-	TestcaseStatus      string   `yaml:"testcase_status"`
-	Duration            string   `yaml:"duration"`
-}
-
 type Ticket struct {
-	TicketNo          int        `yaml:"ticket_no"`
-	TicketDescription string     `yaml:"ticket_description"`
-	PassedCount       int        `yaml:"passed_count"`
-	FailedCount       int        `yaml:"failed_count"`
-	MustCheckCount    int        `yaml:"mustcheck_count"`
-	Testcases         []TestCase `yaml:"testcases"`
+	TicketNo          int               `yaml:"ticket_no"`
+	TicketDescription string            `yaml:"ticket_description"`
+	PassedCount       int               `yaml:"passed_count"`
+	FailedCount       int               `yaml:"failed_count"`
+	MustCheckCount    int               `yaml:"mustcheck_count"`
+	Testcases         []common.TestCase `yaml:"testcases"`
 	TestedDate        string
 }
 
-func (t *TestCase) getResult() string {
-	if t.TestcaseStatus == "PASSED" {
+func getResultSymbol(status common.Testcase_status) string {
+	if status == common.PASSED {
 		return "O"
-	} else if t.TestcaseStatus == "FAILED" {
+	} else if status == common.FAILED {
 		return "X"
-	} else if t.TestcaseStatus == "MUST_CHECK" {
-		return "-"
+	} else if status == common.MUST_CHECK {
+		return "C"
 	} else {
 		return "-"
 	}
@@ -152,25 +143,25 @@ func GenerateExcelFile(yamlFiles []string, outputExcel, testerName string) error
 
 		// Populate the test cases
 		for _, testcase := range ticket.Testcases {
-			fmt.Printf("    Generating for testcase [%d] %s\n", testcase.TestcaseNo, testcase.TestcaseDescription)
+			fmt.Printf("    Generating for testcase [%d] %s\n", testcase.Testcase_no, testcase.Testcase_description)
 
 			// Write testcase no
 			currRow++
 			startCol = incrementColumnBy(initialCol, 1)
-			f.SetCellValue(sheetName, getCell(currRow, startCol), testcase.TestcaseNo)
+			f.SetCellValue(sheetName, getCell(currRow, startCol), testcase.Testcase_no)
 
 			// Write testcase description
 			startCol = incrementColumnBy(startCol, 1)
 			f.MergeCell(sheetName, getCell(currRow, startCol), getCell(currRow, lastCol))
-			f.SetCellValue(sheetName, getCell(currRow, startCol), testcase.TestcaseDescription)
+			f.SetCellValue(sheetName, getCell(currRow, startCol), testcase.Testcase_description)
 
 			f.SetCellStyle(sheetName, getCell(currRow, initialCol), getCell(currRow, lastCol), testcaseHeaderStyleID)
 
 			// set a suitable height according to number of lines in a single cell
 			maxLines := getMaxNumber(
-				len(testcase.PreOperation),
-				len(testcase.Operation),
-				len(testcase.ExpectedResults),
+				len(*testcase.Pre_operation),
+				len(*testcase.Operation),
+				len(*testcase.Expected_results),
 			)
 
 			if maxLines <= 0 {
@@ -186,19 +177,19 @@ func GenerateExcelFile(yamlFiles []string, outputExcel, testerName string) error
 			startCol = incrementColumnBy(startCol, 1)
 			endCol := incrementColumnBy(startCol, PreOperationColCount-1)
 			f.MergeCell(sheetName, getCell(currRow, startCol), getCell(currRow, endCol))
-			f.SetCellValue(sheetName, getCell(currRow, startCol), strings.Join(testcase.PreOperation, "\n"))
+			f.SetCellValue(sheetName, getCell(currRow, startCol), strings.Join(*testcase.Pre_operation, "\n"))
 
 			// Write operation
 			startCol = incrementColumnBy(endCol, 1)
 			endCol = incrementColumnBy(startCol, OperationColCount-1)
 			f.MergeCell(sheetName, getCell(currRow, startCol), getCell(currRow, endCol))
-			f.SetCellValue(sheetName, getCell(currRow, startCol), strings.Join(testcase.Operation, "\n"))
+			f.SetCellValue(sheetName, getCell(currRow, startCol), strings.Join(*testcase.Operation, "\n"))
 
 			// Write expected results
 			startCol = incrementColumnBy(endCol, 1)
 			endCol = incrementColumnBy(startCol, OperationColCount-1)
 			f.MergeCell(sheetName, getCell(currRow, startCol), getCell(currRow, endCol))
-			f.SetCellValue(sheetName, getCell(currRow, startCol), strings.Join(testcase.ExpectedResults, "\n"))
+			f.SetCellValue(sheetName, getCell(currRow, startCol), strings.Join(*testcase.Expected_results, "\n"))
 
 			f.SetCellStyle(sheetName, getCell(currRow, initialCol), getCell(currRow, endCol), leftCenterStyle)
 
@@ -214,14 +205,14 @@ func GenerateExcelFile(yamlFiles []string, outputExcel, testerName string) error
 			endCol = incrementColumnBy(startCol, DurationColCount-1)
 			f.SetCellStyle(sheetName, getCell(currRow, startCol), getCell(currRow, lastCol), centerCenterStyle)
 			f.MergeCell(sheetName, getCell(currRow, startCol), getCell(currRow, endCol))
-			f.SetCellStr(sheetName, getCell(currRow, startCol), testcase.Duration)
+			f.SetCellStr(sheetName, getCell(currRow, startCol), *testcase.Duration)
 
 			// Write result
 			startCol = incrementColumnBy(endCol, 1)
 			endCol = incrementColumnBy(startCol, ResultColCount-1)
 			f.SetCellStyle(sheetName, getCell(currRow, startCol), getCell(currRow, lastCol), centerCenterStyle)
 			f.MergeCell(sheetName, getCell(currRow, startCol), getCell(currRow, endCol))
-			f.SetCellValue(sheetName, getCell(currRow, startCol), testcase.getResult())
+			f.SetCellValue(sheetName, getCell(currRow, startCol), getResultSymbol(*testcase.Testcase_status))
 
 			// Tested Date
 			startCol = incrementColumnBy(endCol, 1)
