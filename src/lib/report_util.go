@@ -31,6 +31,7 @@ type TestCase struct {
 	Operation           []string `yaml:"operation"`
 	ExpectedResults     []string `yaml:"expected_results"`
 	TestcaseStatus      string   `yaml:"testcase_status"`
+	Duration            string   `yaml:"duration"`
 }
 
 type Ticket struct {
@@ -206,14 +207,14 @@ func GenerateExcelFile(yamlFiles []string, outputExcel, testerName string) error
 			endCol = incrementColumnBy(startCol, DurationColCount-1)
 			f.SetCellStyle(sheetName, getCell(currRow, startCol), getCell(currRow, lastCol), centerCenterStyle)
 			f.MergeCell(sheetName, getCell(currRow, startCol), getCell(currRow, endCol))
-			f.SetCellValue(sheetName, getCell(currRow, startCol), "")
+			f.SetCellStr(sheetName, getCell(currRow, startCol), "00:00:00")
 
 			// Write actual duration
 			startCol = incrementColumnBy(endCol, 1)
 			endCol = incrementColumnBy(startCol, DurationColCount-1)
 			f.SetCellStyle(sheetName, getCell(currRow, startCol), getCell(currRow, lastCol), centerCenterStyle)
 			f.MergeCell(sheetName, getCell(currRow, startCol), getCell(currRow, endCol))
-			f.SetCellValue(sheetName, getCell(currRow, startCol), "")
+			f.SetCellStr(sheetName, getCell(currRow, startCol), testcase.Duration)
 
 			// Write result
 			startCol = incrementColumnBy(endCol, 1)
