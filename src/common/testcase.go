@@ -1,8 +1,4 @@
-package dao
-
-import (
-	"github.com/zukigit/remote_run-go/src/common"
-)
+package common
 
 type TestCase struct {
 	Testcase_no          uint
@@ -10,9 +6,9 @@ type TestCase struct {
 	Pre_operation        *[]string
 	Operation            *[]string
 	Expected_results     *[]string
-	Testcase_status      *common.Testcase_status
+	Testcase_status      *Testcase_status
 	Duration             *string
-	function             func() common.Testcase_status
+	function             func() Testcase_status
 	ticket_no            *uint
 }
 
@@ -36,13 +32,13 @@ func New_testcase(testcase_id uint, testcase_description string) *TestCase {
 	}
 }
 
-func (t *TestCase) Add_doc(doc_type common.Doc_data_type, doc string) {
+func (t *TestCase) Add_doc(doc_type Doc_data_type, doc string) {
 	switch doc_type {
-	case common.PRE_OPT:
+	case PRE_OPT:
 		*t.Pre_operation = append(*t.Pre_operation, doc)
-	case common.OPT:
+	case OPT:
 		*t.Operation = append(*t.Operation, doc)
-	case common.EXPT_RES:
+	case EXPT_RES:
 		*t.Expected_results = append(*t.Expected_results, doc)
 	}
 }
@@ -63,7 +59,7 @@ func (t *TestCase) Get_dsctn() string {
 	return t.Testcase_description
 }
 
-func (t *TestCase) Set_status(status common.Testcase_status) {
+func (t *TestCase) Set_status(status Testcase_status) {
 	*t.Testcase_status = status
 }
 
@@ -71,15 +67,15 @@ func (t *TestCase) Set_duration(duration string) {
 	*t.Duration = duration
 }
 
-func (t *TestCase) Get_status() common.Testcase_status {
+func (t *TestCase) Get_status() Testcase_status {
 	return *t.Testcase_status
 }
 
-func (t *TestCase) Set_function(function func() common.Testcase_status) {
+func (t *TestCase) Set_function(function func() Testcase_status) {
 	t.function = function
 }
 
-func (t *TestCase) Run_function() common.Testcase_status {
+func (t *TestCase) Run_function() Testcase_status {
 	return t.function()
 }
 

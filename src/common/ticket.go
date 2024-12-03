@@ -1,4 +1,4 @@
-package dao
+package common
 
 type Ticket interface {
 	Set_values()

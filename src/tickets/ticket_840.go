@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/text/encoding/japanese"
@@ -22,11 +21,11 @@ type Ticket_840 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_840) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_840) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_840) Get_no() uint {
@@ -49,11 +48,11 @@ func (t *Ticket_840) Set_MUSTCHECK_count(mustcheck_count int) {
 	t.MUSTCHECK_count = mustcheck_count
 }
 
-func (t *Ticket_840) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_840) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_840) Get_testcases() []dao.TestCase {
+func (t *Ticket_840) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -246,7 +245,7 @@ func (t *Ticket_840) Add_testcases() {
 }
 
 // this function is for the testcase of rebooting the server
-func rebootIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase_status {
+func rebootIconTestcase(testcase *common.TestCase, env Environment) common.Testcase_status {
 	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_no(), env.Encoding, env.OSType, testcase.Get_dsctn())
 
 	// set AllowRoot to 1 for reboot
@@ -355,7 +354,7 @@ func rebootIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 }
 
 // This function checks the testcase for waiting file creation with FWait Icon
-func fileWaitTestcase(testcase *dao.TestCase, env Environment) common.Testcase_status {
+func fileWaitTestcase(testcase *common.TestCase, env Environment) common.Testcase_status {
 	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_no(), env.Encoding, env.OSType, testcase.Get_dsctn())
 
 	// File to be waited for creation or checked for existence (must be japanese name)
@@ -458,7 +457,7 @@ func fileWaitTestcase(testcase *dao.TestCase, env Environment) common.Testcase_s
 
 // This function checks the testcase for file existence with FWait Icon
 // It can check for both conditions: file exisis, and file does not exist
-func fileCheckTestcase(testcase *dao.TestCase, env Environment, shouldFileExist bool) common.Testcase_status {
+func fileCheckTestcase(testcase *common.TestCase, env Environment, shouldFileExist bool) common.Testcase_status {
 	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_no(), env.Encoding, env.OSType, testcase.Get_dsctn())
 
 	// File to be waited for creation or checked for existence (must be japanese name)
@@ -580,7 +579,7 @@ func fileCheckTestcase(testcase *dao.TestCase, env Environment, shouldFileExist 
 }
 
 // This function runs a job icon that performs file copy
-func normalIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase_status {
+func normalIconTestcase(testcase *common.TestCase, env Environment) common.Testcase_status {
 	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_no(), env.Encoding, env.OSType, testcase.Get_dsctn())
 
 	// File to be waited for creation or checked for existence (must be japanese name)
@@ -704,7 +703,7 @@ func normalIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 	return PASSED
 }
 
-func fcopyIconTestcase(testcase *dao.TestCase, env Environment, envs map[string]string) common.Testcase_status {
+func fcopyIconTestcase(testcase *common.TestCase, env Environment, envs map[string]string) common.Testcase_status {
 	fmt.Printf("====== %d - %s (%s) : %s ======\n", testcase.Get_no(), env.Encoding, env.OSType, testcase.Get_dsctn())
 
 	// File to be waited for creation or checked for existence (must be japanese name)

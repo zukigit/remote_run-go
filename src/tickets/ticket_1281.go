@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"golang.org/x/crypto/ssh"
 )
@@ -17,11 +16,11 @@ type Ticket_1281 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_1281) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_1281) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_1281) Get_no() uint {
@@ -44,11 +43,11 @@ func (t *Ticket_1281) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_1281) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_1281) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_1281) Get_testcases() []dao.TestCase {
+func (t *Ticket_1281) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -130,7 +129,7 @@ func (t *Ticket_1281) Add_testcases() {
 	t.Add_testcase(*tc_7)
 }
 
-func CheckJobProcessStartOrExit(testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func CheckJobProcessStartOrExit(testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 
 	var ServerProcessID string
 	// var ProcessID string
@@ -190,7 +189,7 @@ func CheckJobProcessStartOrExit(testcase *dao.TestCase, client *ssh.Client) comm
 	return FAILED
 }
 
-func AgentlessInteractCheckSTDOut(jobnetId string, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func AgentlessInteractCheckSTDOut(jobnetId string, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 
 	hostname_cmd := "hostname"
 
@@ -244,7 +243,7 @@ func AgentlessInteractCheckSTDOut(jobnetId string, testcase *dao.TestCase, clien
 	return FAILED
 }
 
-func AgentlessNoInteractCheckSTDOut(jobnetId string, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func AgentlessNoInteractCheckSTDOut(jobnetId string, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 
 	hostname_cmd := "hostname"
 
@@ -283,7 +282,7 @@ func AgentlessNoInteractCheckSTDOut(jobnetId string, testcase *dao.TestCase, cli
 	}
 }
 
-func AgentlessInteractRegexCheckSTDOut(jobnetId string, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func AgentlessInteractRegexCheckSTDOut(jobnetId string, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 
 	config_cmd := "sudo sed -i -e '$a AgentLessRegex=.' /etc/jobarranger/jobarg_server.conf"
 
@@ -350,7 +349,7 @@ func AgentlessInteractRegexCheckSTDOut(jobnetId string, testcase *dao.TestCase, 
 	return FAILED
 }
 
-func CharacterEncodingIssue(jobnetId string, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func CharacterEncodingIssue(jobnetId string, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 
 	// envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", `echo -e "\xFFF"`)
 	run_jobnet_id, job_run_err := lib.Jobarg_exec(jobnetId)
@@ -452,7 +451,7 @@ func getDirectoryContents() ([]string, error) {
 	return result, nil
 }
 
-func BackupThread(jobnetId string, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func BackupThread(jobnetId string, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 
 	rm_cmd := "sudo rm -rf /var/lib/jobarranger/tmp/close/*"
 	_, rm_err := lib.Ssh_exec(rm_cmd)
@@ -728,7 +727,7 @@ func lineExistsInFile(filePath, searchString string) (bool, error) {
 	return true, nil
 }
 
-func CheckIconCountForSendingStatus(jobnetId string, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func CheckIconCountForSendingStatus(jobnetId string, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 
 	//clean up before job count
 	lib.Jobarg_cleanup_linux()

@@ -9,7 +9,6 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
@@ -17,11 +16,11 @@ type Ticket_800 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_800) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_800) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_800) Get_no() uint {
@@ -44,11 +43,11 @@ func (t *Ticket_800) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_800) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_800) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_800) Get_testcases() []dao.TestCase {
+func (t *Ticket_800) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -73,7 +72,7 @@ func (t *Ticket_800) Add_testcases() {
 }
 
 // RunJobnet cleans the environment and runs the jobnet while simulating jobab-termination and restart.
-func RunJobnet(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func RunJobnet(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 	// Cleanup jobarg server and agent
 	err := lib.Jobarg_cleanup_linux()
 	if err != nil {

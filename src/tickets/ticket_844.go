@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"golang.org/x/crypto/ssh"
 )
@@ -17,11 +16,11 @@ type Ticket_844 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_844) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_844) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_844) Get_no() uint {
@@ -44,11 +43,11 @@ func (t *Ticket_844) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_844) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_844) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_844) Get_testcases() []dao.TestCase {
+func (t *Ticket_844) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -300,7 +299,7 @@ func (t *Ticket_844) Add_testcases() {
 	t.Add_testcase(*tc_77)
 }
 
-func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, sshClient *ssh.Client) common.Testcase_status {
 
 	/******************
 	Pre-Operation State
@@ -435,7 +434,7 @@ func RunJob800AndKillOneJobIconWithJobargCommand(jobnetId string, processCount i
 	return PASSED
 }
 
-func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func RunJob800AndForceStopOneJobIcon(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, sshClient *ssh.Client) common.Testcase_status {
 
 	/******************
 	Pre-Operation State

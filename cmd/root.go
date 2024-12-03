@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"github.com/zukigit/remote_run-go/src/tickets"
 	"gopkg.in/yaml.v3"
@@ -16,10 +15,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var tkts, run_tickets []dao.Ticket
-var run_testcases []dao.TestCase
+var tkts, run_tickets []common.Ticket
+var run_testcases []common.TestCase
 
-func set_ticket_values(t []dao.Ticket) {
+func set_ticket_values(t []common.Ticket) {
 	for _, ticket := range t {
 		ticket.Set_values()
 	}
@@ -83,11 +82,18 @@ func save_runtks_records() {
 
 func run_tc() {
 	for _, testcase := range run_testcases {
-		dao.Run_testcase(testcase)
+		common.Current_tk_no = testcase.Get_ticket_no()
+		common.Current_tc_no = testcase.Get_no()
+
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "running..."))
+		if err := common.Run_testcase(testcase); err != nil {
+			lib.Logi(common.LOG_LEVEL_ERR, err.Error())
+		}
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "finished!"))
 	}
 
 	if len(run_testcases) > 0 {
-		dao.Update_testcase_results_in_tickets(run_tickets)
+		common.Update_testcase_results_in_tickets(run_tickets)
 		save_runtks_records()
 
 		fmt.Println(lib.Formatted_log(common.LOG_LEVEL_INFO, "Logged File: %s.log", common.Log_filepath))
@@ -174,31 +180,31 @@ func init() {
 }
 
 // Add your tickets here
-func add_tickets(t *[]dao.Ticket) {
+func add_tickets(t *[]common.Ticket) {
 	*t = append(*t, new(tickets.Ticket_000))
 	*t = append(*t, new(tickets.Ticket_010))
-	*t = append(*t, new(tickets.Ticket_698))
-	*t = append(*t, new(tickets.Ticket_775))
-	*t = append(*t, new(tickets.Ticket_794))
-	*t = append(*t, new(tickets.Ticket_800))
-	*t = append(*t, new(tickets.Ticket_811))
-	*t = append(*t, new(tickets.Ticket_821))
-	*t = append(*t, new(tickets.Ticket_825))
-	*t = append(*t, new(tickets.Ticket_840))
-	*t = append(*t, new(tickets.Ticket_844))
-	*t = append(*t, new(tickets.Ticket_919))
-	*t = append(*t, new(tickets.Ticket_923))
-	*t = append(*t, new(tickets.Ticket_940))
-	*t = append(*t, new(tickets.Ticket_943))
-	*t = append(*t, new(tickets.Ticket_952))
-	*t = append(*t, new(tickets.Ticket_962))
-	*t = append(*t, new(tickets.Ticket_968))
-	*t = append(*t, new(tickets.Ticket_1021))
-	*t = append(*t, new(tickets.Ticket_1089))
-	*t = append(*t, new(tickets.Ticket_1225))
-	*t = append(*t, new(tickets.Ticket_1234))
-	*t = append(*t, new(tickets.Ticket_1281))
-	*t = append(*t, new(tickets.Ticket_1292))
-	*t = append(*t, new(tickets.Ticket_1318))
-	*t = append(*t, new(tickets.Ticket_1341))
+	// *t = append(*t, new(tickets.Ticket_698))
+	// *t = append(*t, new(tickets.Ticket_775))
+	// *t = append(*t, new(tickets.Ticket_794))
+	// *t = append(*t, new(tickets.Ticket_800))
+	// *t = append(*t, new(tickets.Ticket_811))
+	// *t = append(*t, new(tickets.Ticket_821))
+	// *t = append(*t, new(tickets.Ticket_825))
+	// *t = append(*t, new(tickets.Ticket_840))
+	// *t = append(*t, new(tickets.Ticket_844))
+	// *t = append(*t, new(tickets.Ticket_919))
+	// *t = append(*t, new(tickets.Ticket_923))
+	// *t = append(*t, new(tickets.Ticket_940))
+	// *t = append(*t, new(tickets.Ticket_943))
+	// *t = append(*t, new(tickets.Ticket_952))
+	// *t = append(*t, new(tickets.Ticket_962))
+	// *t = append(*t, new(tickets.Ticket_968))
+	// *t = append(*t, new(tickets.Ticket_1021))
+	// *t = append(*t, new(tickets.Ticket_1089))
+	// *t = append(*t, new(tickets.Ticket_1225))
+	// *t = append(*t, new(tickets.Ticket_1234))
+	// *t = append(*t, new(tickets.Ticket_1281))
+	// *t = append(*t, new(tickets.Ticket_1292))
+	// *t = append(*t, new(tickets.Ticket_1318))
+	// *t = append(*t, new(tickets.Ticket_1341))
 }

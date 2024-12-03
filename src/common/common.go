@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"syscall"
+	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -24,9 +25,6 @@ type Testcase_status string
 type Database string
 type Doc_data_type string
 
-const LOG_LEVEL_INFO = 1
-const LOG_LEVEL_ERR = 2
-
 const (
 	MYSQL    Database      = "mysql"
 	PSQL     Database      = "postgres"
@@ -40,6 +38,13 @@ const (
 	PRE_OPT  Doc_data_type = "pre_operation"
 	OPT      Doc_data_type = "operation"
 	EXPT_RES Doc_data_type = "expected_results"
+
+	PASSED     Testcase_status = "PASSED"
+	FAILED     Testcase_status = "FAILED"
+	MUST_CHECK Testcase_status = "MUST_CHECK"
+
+	LOG_LEVEL_INFO = 1
+	LOG_LEVEL_ERR  = 2
 )
 
 var Log_filepath, DB_hostname, DB_user, DB_passwd, DB_name string
@@ -123,4 +128,43 @@ func Set_passwd() {
 		os.Exit(1)
 	}
 	Login_info.Password = string(bytepw)
+}
+
+func Run_testcase(tc TestCase) error {
+	if !tc.Is_function_nil() {
+		// start time
+		startTime := time.Now()
+
+		tc.Set_status(tc.Run_function())
+
+		// total elasped time or duration of testcase
+		duration := time.Since(startTime)
+		durationStr := fmt.Sprintf("%02d:%02d:%02d", int(duration/time.Hour), int(duration/time.Minute)%60, int(duration/time.Second)%60)
+
+		tc.Set_duration(durationStr)
+
+		return nil
+	} else {
+		tc.Set_status(FAILED)
+		return fmt.Errorf("has no function. SKIPPED")
+	}
+}
+
+func Update_testcase_results_in_tickets(tks []Ticket) {
+	var passed_count, failed_count, mustcheck_count int
+	for _, ticket := range tks {
+		for _, testcase := range ticket.Get_testcases() {
+			switch testcase.Get_status() {
+			case PASSED:
+				passed_count++
+			case FAILED:
+				failed_count++
+			default:
+				mustcheck_count++
+			}
+		}
+		ticket.Set_PASSED_count(passed_count)
+		ticket.Set_FAILED_count(failed_count)
+		ticket.Set_MUSTCHECK_count(mustcheck_count)
+	}
 }

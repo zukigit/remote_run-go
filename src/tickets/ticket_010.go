@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"golang.org/x/crypto/ssh"
 )
@@ -13,11 +12,11 @@ type Ticket_010 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_010) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_010) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_010) Get_no() uint {
@@ -38,11 +37,11 @@ func (t *Ticket_010) Set_FAILED_count(failed_count int) {
 func (t *Ticket_010) Set_MUSTCHECK_count(mustcheck_count int) {
 	t.MUSTCHECK_count = mustcheck_count
 }
-func (t *Ticket_010) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_010) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_010) Get_testcases() []dao.TestCase {
+func (t *Ticket_010) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -79,7 +78,7 @@ func (t *Ticket_010) Add_testcases() {
 }
 
 // Run 800 Jobnets, all jobs icons are running and then stop the agent and delete all transactions file after deleting restart the agent
-func RunJobnetAndStopTheAgentAndDeleteTransactionFileAndRestartTheAgent(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func RunJobnetAndStopTheAgentAndDeleteTransactionFileAndRestartTheAgent(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, sshClient *ssh.Client) common.Testcase_status {
 
 	// Clean up the agent
 	err := lib.Jobarg_cleanup_linux()
@@ -155,7 +154,7 @@ func RunJobnetAndStopTheAgentAndDeleteTransactionFileAndRestartTheAgent(jobnetId
 	return PASSED
 }
 
-func RunJobnetAndForceStopTheAgent(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func RunJobnetAndForceStopTheAgent(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, sshClient *ssh.Client) common.Testcase_status {
 
 	// Clean up the agent
 	err := lib.Jobarg_cleanup_linux()

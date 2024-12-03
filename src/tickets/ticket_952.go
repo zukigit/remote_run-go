@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
@@ -13,11 +12,11 @@ type Ticket_952 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_952) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_952) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_952) Get_no() uint {
@@ -40,11 +39,11 @@ func (t *Ticket_952) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_952) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_952) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_952) Get_testcases() []dao.TestCase {
+func (t *Ticket_952) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -105,12 +104,12 @@ func (t *Ticket_952) Add_testcases() {
 	t.Add_testcase(*tc_3)
 }
 
-func (t *Ticket_952) logError(tc *dao.TestCase, format string, args ...interface{}) common.Testcase_status {
+func (t *Ticket_952) logError(tc *common.TestCase, format string, args ...interface{}) common.Testcase_status {
 	fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, format, args...))
 	return FAILED
 }
 
-func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_status {
+func (t *Ticket_952) runTestCase(tc *common.TestCase, job string) common.Testcase_status {
 	const defaultTestFolderPath = `C:\test_folder` //change default
 
 	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "oss.windows", "JA_CMD", fmt.Sprintf("echo mkdir %s", defaultTestFolderPath))
@@ -177,7 +176,7 @@ func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_s
 		return FAILED
 	}
 }
-func (t *Ticket_952) commonTask(tc *dao.TestCase, ticket string) common.Testcase_status {
+func (t *Ticket_952) commonTask(tc *common.TestCase, ticket string) common.Testcase_status {
 
 	if err := lib.Jobarg_cleanup_windows(); err != nil {
 		return t.logError(tc, "Error during cleanup: %s", err)

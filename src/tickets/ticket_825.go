@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
@@ -14,11 +13,11 @@ type Ticket_825 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_825) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_825) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_825) Get_no() uint {
@@ -41,11 +40,11 @@ func (t *Ticket_825) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_825) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_825) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_825) Get_testcases() []dao.TestCase {
+func (t *Ticket_825) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -146,7 +145,7 @@ func (t *Ticket_825) Add_testcases() {
 
 }
 
-func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testcase *dao.TestCase) common.Testcase_status {
+func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testcase *common.TestCase) common.Testcase_status {
 
 	/******************
 	Pre-Operation State
@@ -254,7 +253,7 @@ func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testc
 
 }
 
-func UpdateHostLockAfterRetryCountwithHostNameForceReboot(jobnetId string, testcase *dao.TestCase) common.Testcase_status {
+func UpdateHostLockAfterRetryCountwithHostNameForceReboot(jobnetId string, testcase *common.TestCase) common.Testcase_status {
 
 	/******************
 	Pre-Operation State
@@ -356,7 +355,7 @@ func UpdateHostLockAfterRetryCountwithHostNameForceReboot(jobnetId string, testc
 
 }
 
-func UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter(jobnetId string, testcase *dao.TestCase) common.Testcase_status {
+func UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter(jobnetId string, testcase *common.TestCase) common.Testcase_status {
 
 	/******************
 	Pre-Operation State
@@ -457,7 +456,7 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter(jobnetId st
 
 }
 
-func UpdateHostLockAfterRetryCountwithEnvironmentVariableForceReboot(jobnetId string, testcase *dao.TestCase) common.Testcase_status {
+func UpdateHostLockAfterRetryCountwithEnvironmentVariableForceReboot(jobnetId string, testcase *common.TestCase) common.Testcase_status {
 
 	/******************
 	Pre-Operation State
@@ -587,7 +586,7 @@ func GetJobnetStatusFromDB(query string) (int, error) {
 }
 
 // runProcess monitors the count and aborts if it exceeds a threshold
-func runStatusJobnetProcess(query *string, processCheckTimeout int, maxCount *int, testcase *dao.TestCase) (int, error) {
+func runStatusJobnetProcess(query *string, processCheckTimeout int, maxCount *int, testcase *common.TestCase) (int, error) {
 	// Use default query if none provided
 	defaultQuery := "SELECT COUNT(*) FROM ja_run_jobnet_table WHERE status = 3;"
 	actualQuery := defaultQuery

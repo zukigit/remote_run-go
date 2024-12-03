@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"golang.org/x/crypto/ssh"
 )
@@ -18,11 +17,11 @@ type Ticket_1341 struct {
 	no                                          uint
 	description                                 string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	testcases                                   []dao.TestCase
+	testcases                                   []common.TestCase
 }
 
-func (t *Ticket_1341) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_1341) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_1341) Get_no() uint {
@@ -45,11 +44,11 @@ func (t *Ticket_1341) Get_dsctn() string {
 	return t.description
 }
 
-func (t *Ticket_1341) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_1341) Add_testcase(tc common.TestCase) {
 	t.testcases = append(t.testcases, tc)
 }
 
-func (t *Ticket_1341) Get_testcases() []dao.TestCase {
+func (t *Ticket_1341) Get_testcases() []common.TestCase {
 	return t.testcases
 }
 
@@ -100,7 +99,7 @@ func (t *Ticket_1341) Add_testcases() {
 	t.Add_testcase(*tc_4)
 }
 
-func JaRunLoopNormalTest(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func JaRunLoopNormalTest(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 
 	_set_param_err := lib.Ja_set_server_config_linux("JaRunInterval", "1")
 	if _set_param_err != nil {
@@ -134,7 +133,7 @@ func JaRunLoopNormalTest(jobnetId string, processCount int, processCheckTimeout 
 	return FAILED
 }
 
-func JaRunLoopNormalTestWithJaRunInterval(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func JaRunLoopNormalTestWithJaRunInterval(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 
 	/*
 		Prepare process before execute the ext jobnet
@@ -281,7 +280,7 @@ func ExtractJobStartTimes(logData string) (string, string, error) {
 	}
 }
 
-func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client, searchTerm string, jatype string) common.Testcase_status {
+func JaRunIntervalTestWithDatabase(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, client *ssh.Client, searchTerm string, jatype string) common.Testcase_status {
 
 	var getInterval string
 	var err error

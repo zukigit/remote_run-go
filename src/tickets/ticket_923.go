@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
@@ -14,7 +13,7 @@ type Ticket_923 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
 func (t *Ticket_923) Set_PASSED_count(passed_count int) {
@@ -29,8 +28,8 @@ func (t *Ticket_923) Set_MUSTCHECK_count(mustcheck_count int) {
 	t.MUSTCHECK_count = mustcheck_count
 }
 
-func (t *Ticket_923) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_923) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_923) Get_no() uint {
@@ -41,11 +40,11 @@ func (t *Ticket_923) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_923) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_923) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_923) Get_testcases() []dao.TestCase {
+func (t *Ticket_923) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 

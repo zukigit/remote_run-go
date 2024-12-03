@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
@@ -14,11 +13,11 @@ type Ticket_919 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_919) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_919) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_919) Get_no() uint {
@@ -41,11 +40,11 @@ func (t *Ticket_919) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_919) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_919) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_919) Get_testcases() []dao.TestCase {
+func (t *Ticket_919) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -110,7 +109,7 @@ func (t *Ticket_919) Add_testcases() {
 	tc_1.Set_function(tc_func)
 	t.Add_testcase(*tc_1)
 }
-func (t *Ticket_919) lockTable(tc *dao.TestCase) error {
+func (t *Ticket_919) lockTable(tc *common.TestCase) error {
 	var err error
 
 	if common.Is_mysql {
@@ -157,7 +156,7 @@ func (t *Ticket_919) lockTable(tc *dao.TestCase) error {
 	return nil
 }
 
-func (t *Ticket_919) checkLog(tc_1 *dao.TestCase) common.Testcase_status {
+func (t *Ticket_919) checkLog(tc_1 *common.TestCase) common.Testcase_status {
 	const logFilePath = "/var/log/jobarranger/jobarg_agentd.log"
 	const logFileWarning = `retry count`
 	const maxRetries = 10

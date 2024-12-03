@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"golang.org/x/crypto/ssh"
 )
@@ -23,11 +22,11 @@ type Ticket_1234 struct {
 	no                                          uint
 	description                                 string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	testcases                                   []dao.TestCase
+	testcases                                   []common.TestCase
 }
 
-func (t *Ticket_1234) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_1234) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_1234) Get_no() uint {
@@ -50,11 +49,11 @@ func (t *Ticket_1234) Get_dsctn() string {
 	return t.description
 }
 
-func (t *Ticket_1234) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_1234) Add_testcase(tc common.TestCase) {
 	t.testcases = append(t.testcases, tc)
 }
 
-func (t *Ticket_1234) Get_testcases() []dao.TestCase {
+func (t *Ticket_1234) Get_testcases() []common.TestCase {
 	return t.testcases
 }
 
@@ -137,7 +136,7 @@ func extractIPAndHostname(valueTrimmed string) (string, string) {
 }
 
 // Run the WINRM Jobnet and check the std out
-func RunJobnetWinRMJobnetHostname(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func RunJobnetWinRMJobnetHostname(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 	/*
 		Prepare process before execute the ext jobnet
 		1. cleanup data from ja_run_jobnet_table
@@ -235,7 +234,7 @@ func RunJobnetWinRMJobnetHostname(jobnetId string, processCount int, processChec
 	return FAILED
 }
 
-func RunJobnetWinRMJobnetIp(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func RunJobnetWinRMJobnetIp(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 	/*
 		Prepare process before execute the ext jobnet
 		1. cleanup data from ja_run_jobnet_table
@@ -334,7 +333,7 @@ func RunJobnetWinRMJobnetIp(jobnetId string, processCount int, processCheckTimeo
 }
 
 // Run the WINRM Jobnet and check the std out
-func RunJobnetWinRMJobnetHostnameAndIp(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func RunJobnetWinRMJobnetHostnameAndIp(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 	/*
 		Prepare process before execute the ext jobnet
 		1. cleanup data from ja_run_jobnet_table
@@ -433,7 +432,7 @@ func RunJobnetWinRMJobnetHostnameAndIp(jobnetId string, processCount int, proces
 
 }
 
-func RunScheduleLoadSpan(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, client *ssh.Client) common.Testcase_status {
+func RunScheduleLoadSpan(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
 	/*
 		Prepare process before execute the ext jobnet
 		1. cleanup data from ja_run_jobnet_table

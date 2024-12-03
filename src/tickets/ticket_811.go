@@ -8,7 +8,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 
 	"golang.org/x/crypto/ssh"
@@ -22,11 +21,11 @@ type Ticket_811 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_811) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_811) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_811) Get_no() uint {
@@ -49,11 +48,11 @@ func (t *Ticket_811) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_811) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_811) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_811) Get_testcases() []dao.TestCase {
+func (t *Ticket_811) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -271,7 +270,7 @@ func (t *Ticket_811) Add_testcases() {
 }
 
 // Run the jobnet, abort it after all jobs are in running state, and confirm ENDERR status of the jobnet
-func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, sshClient *ssh.Client) common.Testcase_status {
 	err := lib.Jobarg_cleanup_linux()
 	if err != nil {
 		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, Jobarg_cleanup_linux() failed.", err.Error()))
@@ -353,7 +352,7 @@ func RunJobnetAndAbort(jobnetId string, processCount int, processCheckTimeout in
 }
 
 // Run the jobnet, abort the fwait job icon after all jobs are in running state, and confirm ENDERR status of the jobnet
-func RunJobnetAndAbortJobIcon(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func RunJobnetAndAbortJobIcon(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, sshClient *ssh.Client) common.Testcase_status {
 	// Clean the ja_run_jobnet_table
 	_, err := lib.ExecuteQuery(lib.DeleteRunJobnetQuery)
 	if err != nil {
@@ -434,7 +433,7 @@ func RunJobnetAndAbortJobIcon(jobnetId string, processCount int, processCheckTim
 }
 
 // Run the jobnet, abort the fwait job icon after all jobs are in running state, and confirm ENDERR status of the jobnet
-func RunJobnetAndAbortExtJobIcon(jobnetId string, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client, jobCount int) common.Testcase_status {
+func RunJobnetAndAbortExtJobIcon(jobnetId string, processCheckTimeout int, testcase *common.TestCase, sshClient *ssh.Client, jobCount int) common.Testcase_status {
 	/*
 		Prepare process before execute the ext jobnet
 		1. cleanup data from ja_run_jobnet_table

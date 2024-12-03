@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"golang.org/x/crypto/ssh"
 )
@@ -16,11 +15,11 @@ type Ticket_821 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_821) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_821) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_821) Get_no() uint {
@@ -43,11 +42,11 @@ func (t *Ticket_821) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_821) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_821) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_821) Get_testcases() []dao.TestCase {
+func (t *Ticket_821) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -135,7 +134,7 @@ func (t *Ticket_821) Add_testcases() {
 	t.Add_testcase(*tc_5)
 }
 
-func CheckJobnetSuccess(jobnetId string, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func CheckJobnetSuccess(jobnetId string, testcase *common.TestCase, sshClient *ssh.Client) common.Testcase_status {
 
 	/******************
 	Pre-Operation State
@@ -188,7 +187,7 @@ func CheckJobnetSuccess(jobnetId string, testcase *dao.TestCase, sshClient *ssh.
 	return PASSED
 }
 
-func CheckJobarrangerAgentfolderandFileCreationProcess(jobnetId string, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func CheckJobarrangerAgentfolderandFileCreationProcess(jobnetId string, testcase *common.TestCase, sshClient *ssh.Client) common.Testcase_status {
 
 	/******************
 	Pre-Operation State
@@ -273,7 +272,7 @@ func CheckJobarrangerAgentfolderandFileCreationProcess(jobnetId string, testcase
 	return PASSED
 }
 
-func CheckJobarrangerserverProcess(jobnetId string, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func CheckJobarrangerserverProcess(jobnetId string, testcase *common.TestCase, sshClient *ssh.Client) common.Testcase_status {
 
 	/******************
 	Pre-Operation State
@@ -358,7 +357,7 @@ func CheckJobarrangerserverProcess(jobnetId string, testcase *dao.TestCase, sshC
 	return PASSED
 }
 
-func ChecktheDatarecoveryProcess(jobnetId string, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func ChecktheDatarecoveryProcess(jobnetId string, testcase *common.TestCase, sshClient *ssh.Client) common.Testcase_status {
 
 	/******************
 	Pre-Operation State
@@ -529,7 +528,7 @@ func ChecktheDatarecoveryProcess(jobnetId string, testcase *dao.TestCase, sshCli
 	return PASSED
 }
 
-func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
+func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *common.TestCase, sshClient *ssh.Client) common.Testcase_status {
 
 	/******************
 	Pre-Operation State

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"golang.org/x/crypto/ssh"
 )
@@ -15,11 +14,11 @@ type Ticket_698 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_698) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_698) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_698) Get_no() uint {
@@ -42,11 +41,11 @@ func (t *Ticket_698) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_698) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_698) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_698) Get_testcases() []dao.TestCase {
+func (t *Ticket_698) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -405,7 +404,7 @@ func (t *Ticket_698) Add_testcases() {
 
 }
 
-func CheckWhetherTheJobIconRunsNormally(jobnetId string, testcase *dao.TestCase, targetJobnetStatus string, targetJobStatus string, processCheckTimeout int, fileName string, sshClient *ssh.Client) common.Testcase_status {
+func CheckWhetherTheJobIconRunsNormally(jobnetId string, testcase *common.TestCase, targetJobnetStatus string, targetJobStatus string, processCheckTimeout int, fileName string, sshClient *ssh.Client) common.Testcase_status {
 	// Clean up the agent
 	err := lib.Jobarg_cleanup_linux()
 	if err != nil {
@@ -473,7 +472,7 @@ func CheckWhetherTheJobIconRunsNormally(jobnetId string, testcase *dao.TestCase,
 	return PASSED
 }
 
-func AgentConnectionReconnection(jobnetId string, sleepCount int, testcase *dao.TestCase, targetJobnetStatus string, targetJobStatus string, processCheckTimeout int, fileName string, sshClient *ssh.Client) common.Testcase_status {
+func AgentConnectionReconnection(jobnetId string, sleepCount int, testcase *common.TestCase, targetJobnetStatus string, targetJobStatus string, processCheckTimeout int, fileName string, sshClient *ssh.Client) common.Testcase_status {
 
 	// Clean up the agent
 	err := lib.Jobarg_cleanup_linux()
@@ -567,7 +566,7 @@ func AgentConnectionReconnection(jobnetId string, sleepCount int, testcase *dao.
 	return PASSED
 }
 
-func AllowRootFileTransfer(jobnetId string, testcase *dao.TestCase, targetJobnetStatus string, targetJobStatus string, processCheckTimeout int, sshClient *ssh.Client) common.Testcase_status {
+func AllowRootFileTransfer(jobnetId string, testcase *common.TestCase, targetJobnetStatus string, targetJobStatus string, processCheckTimeout int, sshClient *ssh.Client) common.Testcase_status {
 
 	// Clean up the agent
 	err := lib.Jobarg_cleanup_linux()
@@ -658,7 +657,7 @@ func AllowRootFileTransfer(jobnetId string, testcase *dao.TestCase, targetJobnet
 	return PASSED
 }
 
-func RebootAfterCompletingJob_30(jobnetId string, testcase *dao.TestCase, normalJobnetStatus string, normalJobStatus string, rebootJobnetStatus string, rebootJobStatus string, processCheckTimeout int, sshClient *ssh.Client) common.Testcase_status {
+func RebootAfterCompletingJob_30(jobnetId string, testcase *common.TestCase, normalJobnetStatus string, normalJobStatus string, rebootJobnetStatus string, rebootJobStatus string, processCheckTimeout int, sshClient *ssh.Client) common.Testcase_status {
 
 	// Clean up the agent
 	err := lib.Jobarg_cleanup_linux()
@@ -757,7 +756,7 @@ func RebootAfterCompletingJob_30(jobnetId string, testcase *dao.TestCase, normal
 
 }
 
-func RebootAfterCompletingJob_120(jobnetId string, testcase *dao.TestCase, normalJobnetStatus string, normalJobStatus string, rebootJobnetStatus string, rebootJobStatus string, processCheckTimeout int, sshClient *ssh.Client) common.Testcase_status {
+func RebootAfterCompletingJob_120(jobnetId string, testcase *common.TestCase, normalJobnetStatus string, normalJobStatus string, rebootJobnetStatus string, rebootJobStatus string, processCheckTimeout int, sshClient *ssh.Client) common.Testcase_status {
 
 	// Clean up the agent
 	err := lib.Jobarg_cleanup_linux()

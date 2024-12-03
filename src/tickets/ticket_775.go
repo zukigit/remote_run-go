@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
@@ -13,11 +12,11 @@ type Ticket_775 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_775) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_775) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_775) Get_no() uint {
@@ -40,11 +39,11 @@ func (t *Ticket_775) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_775) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_775) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_775) Get_testcases() []dao.TestCase {
+func (t *Ticket_775) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -90,7 +89,7 @@ func (t *Ticket_775) Add_testcases() {
 	addTestCase(5, "execute command with 264 characters", "Icon_1", "jobicon_linux", charaterString264)
 }
 
-func executejobnet(jobnetId string, charcommand string, tc *dao.TestCase) common.Testcase_status {
+func executejobnet(jobnetId string, charcommand string, tc *common.TestCase) common.Testcase_status {
 
 	runcharcommand := fmt.Sprintf("echo %s", charcommand)
 
