@@ -24,17 +24,6 @@ const (
 	TestedByColCount        = 3
 )
 
-// Define the structure to parse the YAML
-type Ticket struct {
-	TicketNo          int               `yaml:"ticket_no"`
-	TicketDescription string            `yaml:"ticket_description"`
-	PassedCount       int               `yaml:"passed_count"`
-	FailedCount       int               `yaml:"failed_count"`
-	MustCheckCount    int               `yaml:"mustcheck_count"`
-	Testcases         []common.TestCase `yaml:"testcases"`
-	TestedDate        string
-}
-
 func getResultSymbol(status common.Testcase_status) string {
 	if status == common.PASSED {
 		return "O"
@@ -76,10 +65,10 @@ func init() {
 }
 
 func GenerateExcelFile(yamlFiles []string, outputExcel, testerName string) error {
-	var tickets []Ticket
+	var tickets []common.TicketStruct
 
 	for _, yamlFilePath := range yamlFiles {
-		var tmpTickets []Ticket
+		var tmpTickets []common.TicketStruct
 
 		// Read the YAML file
 		yamlFile, err := os.ReadFile(yamlFilePath)

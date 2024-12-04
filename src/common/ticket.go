@@ -12,3 +12,13 @@ type Ticket interface {
 	Get_testcases() []TestCase
 	New_testcase(testcase_id uint, testcase_description string) *TestCase
 }
+
+type TicketStruct struct {
+	TicketNo          int        `yaml:"ticket_no"`
+	TicketDescription string     `yaml:"ticket_description"`
+	PassedCount       int        `yaml:"passed_count"`
+	FailedCount       int        `yaml:"failed_count"`
+	MustCheckCount    int        `yaml:"mustcheck_count"`
+	Testcases         []TestCase `yaml:"testcases"`
+	TestedDate        string
+}
