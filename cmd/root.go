@@ -69,7 +69,7 @@ func add_run_testcases(testcase_number uint) {
 func save_runtks_records() {
 	yaml_data, err := yaml.Marshal(run_tickets)
 	if err != nil {
-		fmt.Println("Failed in getting password, Error:", err.Error())
+		fmt.Println("Failed in Marshaling run_tickets, Error:", err.Error())
 		os.Exit(1)
 	}
 
