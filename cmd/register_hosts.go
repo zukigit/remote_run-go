@@ -56,7 +56,7 @@ func check_id_rsa() error {
 
 func get_hosts() {
 	rows, err := common.DB.Query(`select h.host, i.useip, i.dns, i.ip from hosts h, interface i
-		where h.hostid = i.hostid and i.main = 1 and i.type = 1 and h.host LIKE 'auto.linux%'`)
+		where h.hostid = i.hostid and i.main = 1 and i.type = 1 and h.host LIKE 'auto.linux.agent.%'`)
 	if err != nil {
 		fmt.Println("Failed in quering hosts, Error:", err.Error())
 		os.Exit(1)
@@ -174,7 +174,7 @@ func register() {
 var registerHostsCmd = &cobra.Command{
 	Use:   "register_hosts",
 	Short: "Register new hosts.",
-	Long:  "This command will scan the zabbix database to find hosts that has names started with 'auto.' and register in hosts.ini file.",
+	Long:  "This command will scan hosts that starts with 'auto.linux.agent.' from zabbix database and register it in hosts.ini file.",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := check_id_rsa(); err != nil {
 			return err
