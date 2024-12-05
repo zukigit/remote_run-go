@@ -15,10 +15,11 @@ import (
 )
 
 type Host struct {
-	Host_name, Host_ip, Host_dns, Host_run_username string
-	Host_client                                     *ssh.Client
-	Host_use_ip                                     bool
-	Host_port                                       int
+	Host_name, Host_run_username string
+	Host_ip, Host_dns            string      `json:"-"`
+	Host_client                  *ssh.Client `json:"-"`
+	Host_use_ip                  bool        `json:"-"`
+	Host_port                    int
 }
 
 type Testcase_status string
