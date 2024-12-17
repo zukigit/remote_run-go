@@ -95,7 +95,7 @@ func (t *Ticket_940) applyConfigAndRunTests(tc *common.TestCase, configs []strin
 	}
 
 	// Delete logs
-	if err := lib.Delete_server_log(); err != nil {
+	if err := lib.Clear_linux_jaz_server_log(); err != nil {
 		return t.logError(tc, "Error during deleting log: %s", err)
 	}
 

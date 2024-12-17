@@ -125,7 +125,7 @@ func (t *Ticket_943) runJob(tc *common.TestCase, job string) common.Testcase_sta
 	return t.logError(tc, "%s failed. Jobnet_status: %s, Job_status: %s, Exit_cd: %d", job, jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd)
 }
 func (t *Ticket_943) runJob2(tc *common.TestCase, job string) common.Testcase_status {
-	lib.Delete_server_log()
+	lib.Clear_linux_jaz_server_log()
 	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 120")
 	if err != nil {
 		return t.logError(tc, "Error retrieving environment variables: %s", err)
