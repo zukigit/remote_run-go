@@ -14,7 +14,7 @@ import (
 	"golang.org/x/term"
 )
 
-type Host struct {
+type Host_temp struct {
 	Host_name, Host_run_username string
 	Host_ip, Host_dns            string      `json:"-"`
 	Host_client                  *ssh.Client `json:"-"`
@@ -25,6 +25,7 @@ type Host struct {
 type Testcase_status string
 type Database string
 type Doc_data_type string
+type Host_type string
 
 const (
 	MYSQL    Database      = "mysql"
@@ -44,6 +45,11 @@ const (
 	FAILED     Testcase_status = "FAILED"
 	MUST_CHECK Testcase_status = "MUST_CHECK"
 
+	LINUX_SERVER   Host_type = "LINUX_SERVER"
+	LINUX_AGENT    Host_type = "LINUX_AGENT"
+	WINDOWS_SERVER Host_type = "WINDOWS_SERVER"
+	WINDOWS_AGNET  Host_type = "WINDOWS_AGNET"
+
 	LOG_LEVEL_INFO = 1
 	LOG_LEVEL_ERR  = 2
 )
@@ -56,7 +62,7 @@ var Is_mysql, Is_psql bool
 var DB_type Database
 var DB *sql.DB
 var Sugar *zap.SugaredLogger
-var Host_pool []Host
+var Host_pool []Host_temp
 
 func Set_sugar(logfile_path string) {
 	logger_conf := zap.NewProductionConfig()
