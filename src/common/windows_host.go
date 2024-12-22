@@ -120,20 +120,23 @@ func (host *Windows_host) Set_Host_type(hostType Host_type) {
 
 // Get_Windows_host creates and returns a new instance of Windows_host with default values.
 // Fields with pointer types are initialized to avoid nil pointer dereferences.
-func Get_Windows_host() Host {
-	defaultName := ""                // Default empty string for Host_name and Host_run_username.
-	defaultBool := false             // Default value for Host_use_ip.
-	defaultPort := 22                // Default SSH port.
-	defaultHostType := Host_type("") // Default Host_type value (customize if necessary).
+func New_windows_host() Host {
+	default_Host_name := "" // Default empty string for Host_name and Host_run_username.
+	default_run_username := ""
+	default_Host_ip := ""
+	default_Host_dns := ""
+	default_Host_use_ip := false       // Default value for Host_use_ip.
+	default_Host_connect_port := 22    // Default SSH port.
+	default_Host_type := Host_type("") // Default Host_type value (customize if necessary).
 
 	return &Windows_host{
-		Host_name:         &defaultName,
-		Host_run_username: &defaultName,
-		Host_ip:           &defaultName,
-		Host_dns:          &defaultName,
+		Host_name:         &default_Host_name,
+		Host_run_username: &default_run_username,
+		Host_ip:           &default_Host_ip,
+		Host_dns:          &default_Host_dns,
 		Host_ssh_client:   nil, // Default to nil; SSH client not initialized.
-		Host_use_ip:       &defaultBool,
-		Host_connect_port: &defaultPort,
-		Host_type:         &defaultHostType,
+		Host_use_ip:       &default_Host_use_ip,
+		Host_connect_port: &default_Host_connect_port,
+		Host_type:         &default_Host_type,
 	}
 }

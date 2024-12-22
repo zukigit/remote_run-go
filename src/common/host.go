@@ -24,3 +24,12 @@ type Host interface {
 	Set_Host_connect_port(port int)
 	Set_Host_type(hostType Host_type)
 }
+
+type Host_struct struct {
+	Host_name, Host_run_username *string     // The host name and username for running commands.
+	Host_ip, Host_dns            *string     `json:"-"` // IP and DNS of the host (excluded from JSON serialization).
+	Host_ssh_client              *ssh.Client `json:"-"` // SSH client for connecting to the host (excluded from JSON).
+	Host_use_ip                  *bool       `json:"-"` // Whether to use the IP address for connection (excluded from JSON).
+	Host_connect_port            *int        // The port to use for SSH connection.
+	Host_type                    *Host_type  // The type of host (custom type).
+}

@@ -45,10 +45,9 @@ const (
 	FAILED     Testcase_status = "FAILED"
 	MUST_CHECK Testcase_status = "MUST_CHECK"
 
-	LINUX_SERVER   Host_type = "LINUX_SERVER"
-	LINUX_AGENT    Host_type = "LINUX_AGENT"
-	WINDOWS_SERVER Host_type = "WINDOWS_SERVER"
-	WINDOWS_AGNET  Host_type = "WINDOWS_AGNET"
+	LINUX_SERVER  Host_type = "auto.linux.server."
+	LINUX_AGENT   Host_type = "auto.linux.agent."
+	WINDOWS_AGENT Host_type = "auto.windows.agent."
 
 	LOG_LEVEL_INFO = 1
 	LOG_LEVEL_ERR  = 2
