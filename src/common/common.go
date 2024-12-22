@@ -14,13 +14,13 @@ import (
 	"golang.org/x/term"
 )
 
-type Host_temp struct {
-	Host_name, Host_run_username string
-	Host_ip, Host_dns            string      `json:"-"`
-	Host_client                  *ssh.Client `json:"-"`
-	Host_use_ip                  bool        `json:"-"`
-	Host_port                    int
-}
+// type Host_temp struct {
+// 	Host_name, Host_run_username string
+// 	Host_ip, Host_dns            string      `json:"-"`
+// 	Host_client                  *ssh.Client `json:"-"`
+// 	Host_use_ip                  bool        `json:"-"`
+// 	Host_port                    int
+// }
 
 type Testcase_status string
 type Database string
@@ -62,7 +62,7 @@ var Is_mysql, Is_psql bool
 var DB_type Database
 var DB *sql.DB
 var Sugar *zap.SugaredLogger
-var Host_pool []Host_temp
+var Host_pool []Host
 
 func Set_sugar(logfile_path string) {
 	logger_conf := zap.NewProductionConfig()

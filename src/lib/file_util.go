@@ -33,7 +33,7 @@ func Get_hosts_from_jsonfile(jsonfilepath string) {
 	}
 }
 
-func Set_hosts_to_jsonfile(hosts *[]common.Host_temp, json_filepath string) {
+func Set_hosts_to_jsonfile(hosts *[]common.Host, json_filepath string) {
 	host_jsonfile := Get_file_trunc(json_filepath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC)
 	defer host_jsonfile.Close()
 

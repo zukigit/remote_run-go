@@ -55,6 +55,8 @@ func check_id_rsa() error {
 }
 
 func get_hosts() {
+	var host_name, host_use_ip, host_dns, host_ip string
+
 	rows, err := common.DB.Query(`select h.host, i.useip, i.dns, i.ip from hosts h, interface i
 		where h.hostid = i.hostid and i.main = 1 and i.type = 1 and h.host LIKE 'auto.linux.agent.%'`)
 	if err != nil {
@@ -66,19 +68,20 @@ func get_hosts() {
 	for rows.Next() {
 		var host common.Host
 
-		if err := rows.Scan(&host.Host_name, &host.Host_use_ip, &host.Host_dns, &host.Host_ip); err != nil {
+		if err := rows.Scan(&host_name, &host_use_ip, &host_dns, &host_ip); err != nil {
 			fmt.Println("Failed in scanning hosts, Error:", err.Error())
 			os.Exit(1)
 		}
+		// need to fix here
 		found_hosts = append(found_hosts, host)
 	}
 }
 
-func get_host(hostname string) *common.Host {
+func get_host(hostname string) common.Host {
 	for index, host := range found_hosts {
-		if hostname == host.Host_name {
+		if hostname == host.Get_Host_name() {
 			chosen_hosts_index = index
-			return &host
+			return host
 		}
 	}
 
@@ -93,7 +96,7 @@ func ask_userinput_hostname() string {
 
 	fmt.Println("Found hosts:")
 	for index, host := range found_hosts {
-		fmt.Printf("%d) %s\n", index+1, host.Host_name)
+		fmt.Printf("%d) %s\n", index+1, host.Get_Host_name())
 	}
 	fmt.Println("--------------")
 
@@ -103,7 +106,7 @@ func ask_userinput_hostname() string {
 func check_duplicated_hosts(temp_hosts *[]common.Host, temp_host common.Host) {
 	// Iterate through the slice to check for duplicates
 	for index, host := range *temp_hosts {
-		if host.Host_name == temp_host.Host_name {
+		if host.Get_Host_name() == temp_host.Get_Host_name() {
 			// If a duplicate is found, update the existing host
 			(*temp_hosts)[index] = temp_host
 			return
@@ -115,7 +118,7 @@ func check_duplicated_hosts(temp_hosts *[]common.Host, temp_host common.Host) {
 }
 
 func register() {
-	var temp_host *common.Host
+	var temp_host common.Host
 	var temp_passwd string
 	var err error
 	var temp_sshcli *ssh.Client
@@ -138,34 +141,35 @@ func register() {
 			fmt.Print("you entered wrong hostname, ")
 			continue
 		}
-		temp_host.Host_port = temp_port
+
+		temp_host.Set_Host_connect_port(temp_port)
 		break
 	}
 
-	temp_host.Host_run_username = lib.Ask_usrinput_string("Enter ssh username to register")
+	temp_host.Set_Host_run_username(lib.Ask_usrinput_string("Enter ssh username to register"))
 	temp_passwd = lib.Ask_usrinput_passwd_string("Enter ssh password to register")
 
 	fmt.Print("Connecting to")
-	if temp_host.Host_use_ip {
-		fmt.Printf(" %s:%d ...\n", temp_host.Host_ip, temp_host.Host_port)
-		temp_sshcli = lib.GetSSHClient(temp_host.Host_ip, temp_host.Host_port, temp_host.Host_run_username, temp_passwd)
+	if temp_host.Get_Host_use_ip() {
+		fmt.Printf(" %s:%d ...\n", temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port())
+		temp_sshcli = lib.GetSSHClient(temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
 	} else {
-		fmt.Printf("%s:%d\n", temp_host.Host_dns, temp_host.Host_port)
-		temp_sshcli = lib.GetSSHClient(temp_host.Host_dns, temp_host.Host_port, temp_host.Host_run_username, temp_passwd)
+		fmt.Printf("%s:%d\n", temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port())
+		temp_sshcli = lib.GetSSHClient(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
 	}
 
 	cmd := fmt.Sprintf("echo '%s' >> ~/.ssh/authorized_keys", rsa_pub_key)
 	if _, err = lib.ExecuteSSHCommand(temp_sshcli, cmd); err != nil {
-		fmt.Printf("Failed to register host[%s], Error: %s\n", temp_host.Host_name, err.Error())
+		fmt.Printf("Failed to register host[%s], Error: %s\n", temp_host.Get_Host_name(), err.Error())
 		os.Exit(1)
 	}
 
 	lib.Get_hosts_from_jsonfile("hosts.json")
-	check_duplicated_hosts(&common.Host_pool, *temp_host)
+	check_duplicated_hosts(&common.Host_pool, temp_host)
 
 	lib.Set_hosts_to_jsonfile(&common.Host_pool, "hosts.json")
 
-	fmt.Printf("Registered host[%s]\n", temp_host.Host_name)
+	fmt.Printf("Registered host[%s]\n", temp_host.Get_Host_name())
 	found_hosts = append(found_hosts[:chosen_hosts_index], found_hosts[chosen_hosts_index+1:]...)
 	fmt.Println()
 }
