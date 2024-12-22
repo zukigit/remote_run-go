@@ -178,7 +178,7 @@ func register() {
 var registerHostsCmd = &cobra.Command{
 	Use:   "register_hosts",
 	Short: "Register new hosts.",
-	Long:  "This command will scan hosts that starts with 'auto.linux.agent.' from zabbix database and register it in hosts.ini file.",
+	Long:  "This command will scan hosts that starts with 'auto.' from zabbix database and register it in hosts.json file.",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := check_id_rsa(); err != nil {
 			return err
