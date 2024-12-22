@@ -86,10 +86,12 @@ func run_tc() {
 		common.Current_tc_no = testcase.Get_no()
 
 		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "running..."))
-		if err := common.Run_testcase(testcase); err != nil {
-			lib.Logi(common.LOG_LEVEL_ERR, err.Error())
+		if testcase.Is_function_nil() {
+			testcase.Set_status(common.FAILED)
+			fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "has no function. SKIPPED"))
+		} else {
+			common.Run_testcase(testcase)
 		}
-		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "finished!"))
 	}
 
 	if len(run_testcases) > 0 {

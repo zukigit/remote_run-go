@@ -137,24 +137,17 @@ func Set_passwd() {
 	Login_info.Password = string(bytepw)
 }
 
-func Run_testcase(tc TestCase) error {
-	if !tc.Is_function_nil() {
-		// start time
-		startTime := time.Now()
+func Run_testcase(tc TestCase) {
+	// start time
+	startTime := time.Now()
 
-		tc.Set_status(tc.Run_function())
+	tc.Set_status(tc.Run_function())
 
-		// total elasped time or duration of testcase
-		duration := time.Since(startTime)
-		durationStr := fmt.Sprintf("%02d:%02d:%02d", int(duration/time.Hour), int(duration/time.Minute)%60, int(duration/time.Second)%60)
+	// total elasped time or duration of testcase
+	duration := time.Since(startTime)
+	durationStr := fmt.Sprintf("%02d:%02d:%02d", int(duration/time.Hour), int(duration/time.Minute)%60, int(duration/time.Second)%60)
 
-		tc.Set_duration(durationStr)
-
-		return nil
-	} else {
-		tc.Set_status(FAILED)
-		return fmt.Errorf("has no function. SKIPPED")
-	}
+	tc.Set_duration(durationStr)
 }
 
 func Update_testcase_results_in_tickets(tks []Ticket) {
