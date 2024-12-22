@@ -55,10 +55,13 @@ func check_id_rsa() error {
 }
 
 func get_hosts() {
-	var host_name, host_use_ip, host_dns, host_ip string
+	var host_name, host_dns, host_ip string
+	var host_use_ip bool
 
+	// rows, err := common.DB.Query(`select h.host, i.useip, i.dns, i.ip from hosts h, interface i
+	// 	where h.hostid = i.hostid and i.main = 1 and i.type = 1 and h.host LIKE 'auto.linux.agent.%'`)
 	rows, err := common.DB.Query(`select h.host, i.useip, i.dns, i.ip from hosts h, interface i
-		where h.hostid = i.hostid and i.main = 1 and i.type = 1 and h.host LIKE 'auto.linux.agent.%'`)
+		where h.hostid = i.hostid and i.main = 1 and i.type = 1 and h.host LIKE 'auto.%'`)
 	if err != nil {
 		fmt.Println("Failed in quering hosts, Error:", err.Error())
 		os.Exit(1)
@@ -72,16 +75,38 @@ func get_hosts() {
 			fmt.Println("Failed in scanning hosts, Error:", err.Error())
 			os.Exit(1)
 		}
-		// need to fix here
+
+		switch {
+		case strings.HasPrefix(host_name, string(common.LINUX_SERVER)):
+			host = common.New_linux_host()
+			host.Set_Host_type(common.LINUX_SERVER)
+		case strings.HasPrefix(host_name, string(common.LINUX_AGENT)):
+			host = common.New_linux_host()
+			host.Set_Host_type(common.LINUX_AGENT)
+		case strings.HasPrefix(host_name, string(common.WINDOWS_AGENT)):
+			host = common.New_windows_host()
+			host.Set_Host_type(common.WINDOWS_AGENT)
+		default:
+			fmt.Printf("Host_name: %s does not match formats('%s' or '%s' or '%s') and will not be registered.", host_name, common.LINUX_SERVER, common.LINUX_AGENT, common.WINDOWS_AGENT)
+			continue
+		}
+
+		host.Set_Host_name(host_name)
+		host.Set_Host_use_ip(host_use_ip)
+		host.Set_Host_dns(host_dns)
+		host.Set_Host_ip(host_ip)
+
 		found_hosts = append(found_hosts, host)
 	}
 }
 
 func get_host(hostname string) common.Host {
-	for index, host := range found_hosts {
-		if hostname == host.Get_Host_name() {
-			chosen_hosts_index = index
-			return host
+	if hostname != "" {
+		for index, host := range found_hosts {
+			if hostname == host.Get_Host_name() {
+				chosen_hosts_index = index
+				return host
+			}
 		}
 	}
 
@@ -96,7 +121,11 @@ func ask_userinput_hostname() string {
 
 	fmt.Println("Found hosts:")
 	for index, host := range found_hosts {
-		fmt.Printf("%d) %s\n", index+1, host.Get_Host_name())
+		if host.Get_Host_type() == common.LINUX_AGENT || host.Get_Host_type() == common.LINUX_SERVER {
+			fmt.Printf("%d) %s\n", index+1, host.Get_Host_name())
+		} else {
+			fmt.Printf("%d) %s (not avaliable yet)\n", index+1, host.Get_Host_name())
+		}
 	}
 	fmt.Println("--------------")
 
@@ -104,8 +133,10 @@ func ask_userinput_hostname() string {
 }
 
 func check_duplicated_hosts(temp_hosts *[]common.Host, temp_host common.Host) {
+	fmt.Println("temp_host.Get_Host_name()", temp_host.Get_Host_name())
 	// Iterate through the slice to check for duplicates
 	for index, host := range *temp_hosts {
+		fmt.Println("host.Get_Host_name()", host.Get_Host_name())
 		if host.Get_Host_name() == temp_host.Get_Host_name() {
 			// If a duplicate is found, update the existing host
 			(*temp_hosts)[index] = temp_host
@@ -117,6 +148,13 @@ func check_duplicated_hosts(temp_hosts *[]common.Host, temp_host common.Host) {
 	*temp_hosts = append(*temp_hosts, temp_host)
 }
 
+func copy_sshid_linux(temp_sshcli *ssh.Client) error {
+	cmd := fmt.Sprintf("echo '%s' >> ~/.ssh/authorized_keys", rsa_pub_key)
+	_, err := lib.ExecuteSSHCommand(temp_sshcli, cmd)
+
+	return err
+}
+
 func register() {
 	var temp_host common.Host
 	var temp_passwd string
@@ -125,6 +163,7 @@ func register() {
 	temp_port := 22
 
 	for {
+		fmt.Println()
 		temp_hostname := ask_userinput_hostname()
 
 		parts := strings.Split(temp_hostname, ":")
@@ -132,13 +171,18 @@ func register() {
 			temp_hostname = parts[0]
 			temp_port, err = strconv.Atoi(parts[1])
 			if err != nil {
-				fmt.Print("you entered wrong port, ")
+				fmt.Println("Err: you entered wrong port")
 				continue
 			}
 		}
 
 		if temp_host = get_host(temp_hostname); temp_host == nil {
-			fmt.Print("you entered wrong hostname, ")
+			fmt.Println("Err: you entered wrong hostname")
+			continue
+		}
+
+		if temp_host.Get_Host_type() == common.WINDOWS_AGENT {
+			fmt.Println("Err: WINDOWS_AGENT is not supported yet, skipping... ")
 			continue
 		}
 
@@ -158,10 +202,11 @@ func register() {
 		temp_sshcli = lib.GetSSHClient(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
 	}
 
-	cmd := fmt.Sprintf("echo '%s' >> ~/.ssh/authorized_keys", rsa_pub_key)
-	if _, err = lib.ExecuteSSHCommand(temp_sshcli, cmd); err != nil {
-		fmt.Printf("Failed to register host[%s], Error: %s\n", temp_host.Get_Host_name(), err.Error())
-		os.Exit(1)
+	if temp_host.Get_Host_type() == common.LINUX_SERVER || temp_host.Get_Host_type() == common.LINUX_AGENT {
+		if err = copy_sshid_linux(temp_sshcli); err != nil {
+			fmt.Printf("Failed to register host[%s], Error: %s\n", temp_host.Get_Host_name(), err.Error())
+			os.Exit(1)
+		}
 	}
 
 	lib.Get_hosts_from_jsonfile("hosts.json")
@@ -180,13 +225,15 @@ var registerHostsCmd = &cobra.Command{
 	Short: "Register new hosts.",
 	Long:  "This command will scan hosts that starts with 'auto.' from zabbix database and register it in hosts.json file.",
 	Args: func(cmd *cobra.Command, args []string) error {
-		if err := check_id_rsa(); err != nil {
-			return err
-		}
 		if common.DB_hostname == "" {
 			return fmt.Errorf("specify database hostname using --db-hostname flag")
 		}
-		return common.Set_db_type()
+
+		if err := common.Set_db_type(); err != nil {
+			return err
+		}
+
+		return check_id_rsa()
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		common.Set_db_hostname()
