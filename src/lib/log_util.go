@@ -68,10 +68,6 @@ func Spinner_log(index int, log string) {
 // This function will write log with ticket and testcase numbers.
 // If you call this function outside of testcase function, ticket and testcase numbers will be zero.
 func Logi(level int, unfmt string, arg ...any) string {
-	// log := fmt.Sprintf(unfmt, arg...)
-	// log = fmt.Sprintf("[%d] [%d] %s", common.Current_tk_no, common.Current_tc_no, log)
-	// log = Formatted_log(level, log)
-
 	log := Formatted_log(level, unfmt, arg...)
 
 	common.Sugar.Infof(log)
