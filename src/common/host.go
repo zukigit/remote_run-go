@@ -3,7 +3,6 @@ package common
 import "golang.org/x/crypto/ssh"
 
 // Host defines the interface for host operations.
-// Any struct implementing this interface must define these methods.
 type Host interface {
 	// Getters
 	Get_Host_name() string
@@ -13,7 +12,7 @@ type Host interface {
 	Get_Host_ssh_client() *ssh.Client
 	Get_Host_use_ip() bool
 	Get_Host_connect_port() int
-	Get_Host_type() *Host_type
+	Get_Host_type() Host_type
 
 	// Setters
 	Set_Host_name(name string)

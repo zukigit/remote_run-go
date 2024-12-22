@@ -198,11 +198,14 @@ func Set_common_client(username, passwd, hostname string, port int) {
 }
 
 func update_hosts_ips() {
+	var host_dns, host_ip string
+	var host_use_ip bool
+
 	for i := range common.Host_pool {
-		host := &(common.Host_pool)[i]
+		host := common.Host_pool[i]
 
 		rows, err := GetData(`select i.useip, i.dns, i.ip from hosts h, interface i
-							where h.hostid = i.hostid and i.main = 1 and i.type = 1 and h.host = $1`, host.Host_name)
+							where h.hostid = i.hostid and i.main = 1 and i.type = 1 and h.host = $1`, host.Get_Host_name())
 		if err != nil {
 			fmt.Println("Failed in quering hosts, Error:", err.Error())
 			os.Exit(1)
@@ -211,10 +214,15 @@ func update_hosts_ips() {
 
 		i := 0
 		for rows.Next() {
-			if err := rows.Scan(&host.Host_use_ip, &host.Host_dns, &host.Host_ip); err != nil {
+			if err := rows.Scan(&host_use_ip, &host_dns, &host_ip); err != nil {
 				fmt.Println("Failed in scanning hosts, Error:", err.Error())
 				os.Exit(1)
 			}
+
+			host.Set_Host_use_ip(host_use_ip)
+			host.Set_Host_dns(host_dns)
+			host.Set_Host_ip(host_ip)
+
 			i++
 		}
 	}
@@ -231,16 +239,24 @@ func Set_host_pool() error {
 	ssh_key_filepath := filepath.Join(current_user.HomeDir, ".ssh")
 
 	for i := range common.Host_pool {
-		host := &(common.Host_pool)[i] // Get a pointer to the actual host
-		if host.Host_use_ip {
-			host.Host_client, err = GetSSHClientWithKey(host.Host_ip, host.Host_port, host.Host_run_username, ssh_key_filepath)
-		} else {
-			host.Host_client, err = GetSSHClientWithKey(host.Host_dns, host.Host_port, host.Host_run_username, ssh_key_filepath)
-		}
+		host := common.Host_pool[i]
 
-		if err != nil {
-			return err
+		if host.Get_Host_use_ip() {
+			client, err := GetSSHClientWithKey(host.Get_Host_ip(), host.Get_Host_connect_port(), host.Get_Host_run_username(), ssh_key_filepath)
+			if err != nil {
+				return err
+			}
+
+			host.Set_Host_ssh_client(client)
+		} else {
+			client, err := GetSSHClientWithKey(host.Get_Host_dns(), host.Get_Host_connect_port(), host.Get_Host_run_username(), ssh_key_filepath)
+			if err != nil {
+				return err
+			}
+
+			host.Set_Host_ssh_client(client)
 		}
 	}
+
 	return nil
 }

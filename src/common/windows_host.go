@@ -109,8 +109,8 @@ func (host *Windows_host) Set_Host_connect_port(port int) {
 
 // Get_Host_type retrieves the host type.
 // Returns nil if the Host_type field is not set.
-func (host *Windows_host) Get_Host_type() *Host_type {
-	return host.Host_type
+func (host *Windows_host) Get_Host_type() Host_type {
+	return *host.Host_type
 }
 
 // Set_Host_type sets the host type directly.
