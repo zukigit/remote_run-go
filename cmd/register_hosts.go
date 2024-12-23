@@ -133,7 +133,6 @@ func ask_userinput_hostname() string {
 }
 
 func check_duplicated_hosts(temp_hosts *[]common.Host, temp_host common.Host) {
-	fmt.Println("temp_host.Get_Host_name()", temp_host.Get_Host_name())
 	// Iterate through the slice to check for duplicates
 	for index, host := range *temp_hosts {
 		fmt.Println("host.Get_Host_name()", host.Get_Host_name())
