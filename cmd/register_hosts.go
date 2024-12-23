@@ -226,7 +226,6 @@ func register(ssh_key_filepath string) {
 
 	fmt.Printf("Registered host[%s]\n", temp_host.Get_Host_name())
 	found_hosts = append(found_hosts[:chosen_hosts_index], found_hosts[chosen_hosts_index+1:]...)
-	fmt.Println()
 }
 
 // registerHostsCmd represents the registerHosts command
