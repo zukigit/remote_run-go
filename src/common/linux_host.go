@@ -53,6 +53,9 @@ func (host *Linux_host) Get_Host_ip() string {
 
 // Set_Host_ip sets the IP address of the host directly.
 func (host *Linux_host) Set_Host_ip(ip string) {
+	if host.Host_ip == nil {
+		host.Host_ip = new(string)
+	}
 	*host.Host_ip = ip
 }
 
@@ -67,6 +70,9 @@ func (host *Linux_host) Get_Host_dns() string {
 
 // Set_Host_dns sets the DNS of the host directly.
 func (host *Linux_host) Set_Host_dns(dns string) {
+	if host.Host_dns == nil {
+		host.Host_dns = new(string)
+	}
 	*host.Host_dns = dns
 }
 
@@ -92,6 +98,10 @@ func (host *Linux_host) Get_Host_use_ip() bool {
 
 // Set_Host_use_ip sets whether the IP address is used for connections directly.
 func (host *Linux_host) Set_Host_use_ip(useIP bool) {
+	if host.Host_use_ip == nil {
+		// Initialize the pointer if it's nil
+		host.Host_use_ip = new(bool)
+	}
 	*host.Host_use_ip = useIP
 }
 

@@ -50,7 +50,7 @@ func Get_hosts_from_jsonfile(jsonfilepath string) {
 				Host_dns:          temp_host.Host_dns,
 				Host_connect_port: temp_host.Host_connect_port,
 				Host_use_ip:       temp_host.Host_use_ip,
-				Host_type:         temp_host.Host_type, // Set specific Host_type
+				Host_type:         temp_host.Host_type,
 			}
 
 			// Append the created host to the hosts slice
