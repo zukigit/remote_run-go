@@ -154,12 +154,13 @@ func copy_sshid_linux(temp_sshcli *ssh.Client) error {
 	return err
 }
 
-func register() {
+func register(ssh_key_filepath string) {
 	var temp_host common.Host
 	var temp_passwd string
 	var err error
 	var temp_sshcli *ssh.Client
 	temp_port := 22
+	var already_registered bool
 
 	for {
 		fmt.Println()
@@ -195,13 +196,24 @@ func register() {
 	fmt.Print("Connecting to")
 	if temp_host.Get_Host_use_ip() {
 		fmt.Printf(" %s:%d ...\n", temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port())
-		temp_sshcli = lib.GetSSHClient(temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
+
+		temp_sshcli, err = lib.GetSSHClientWithKey(temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), ssh_key_filepath)
+		if err != nil {
+			temp_sshcli = lib.GetSSHClient(temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
+		} else {
+			already_registered = true
+		}
 	} else {
 		fmt.Printf("%s:%d\n", temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port())
-		temp_sshcli = lib.GetSSHClient(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
+		temp_sshcli, err = lib.GetSSHClientWithKey(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), ssh_key_filepath)
+		if err != nil {
+			temp_sshcli = lib.GetSSHClient(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
+		} else {
+			already_registered = true
+		}
 	}
 
-	if temp_host.Get_Host_type() == common.LINUX_SERVER || temp_host.Get_Host_type() == common.LINUX_AGENT {
+	if !already_registered && (temp_host.Get_Host_type() == common.LINUX_SERVER || temp_host.Get_Host_type() == common.LINUX_AGENT) {
 		if err = copy_sshid_linux(temp_sshcli); err != nil {
 			fmt.Printf("Failed to register host[%s], Error: %s\n", temp_host.Get_Host_name(), err.Error())
 			os.Exit(1)
@@ -242,9 +254,16 @@ var registerHostsCmd = &cobra.Command{
 		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_name)
 		defer common.DB.Close()
 
+		current_user, err := user.Current()
+		if err != nil {
+			fmt.Printf("Err: failed in getting run user, Error: %v", err.Error())
+			os.Exit(1)
+		}
+		ssh_key_filepath := filepath.Join(current_user.HomeDir, ".ssh")
+
 		get_hosts()
 		for {
-			register()
+			register(ssh_key_filepath)
 		}
 	},
 }
