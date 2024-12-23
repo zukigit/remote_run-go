@@ -136,7 +136,7 @@ func check_duplicated_hosts(temp_hosts *[]common.Host, temp_host common.Host) {
 	// Iterate through the slice to check for duplicates
 	for index, host := range *temp_hosts {
 		fmt.Println("host.Get_Host_name()", host.Get_Host_name())
-		if host.Get_Host_name() == temp_host.Get_Host_name() {
+		if host.Get_Host_name() == temp_host.Get_Host_name() || (host.Get_Host_type() == common.LINUX_SERVER && temp_host.Get_Host_type() == common.LINUX_SERVER) {
 			// If a duplicate is found, update the existing host
 			(*temp_hosts)[index] = temp_host
 			return

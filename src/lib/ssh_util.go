@@ -258,5 +258,7 @@ func Set_host_pool() error {
 		}
 	}
 
+	common.Set_linux_server_host()
+
 	return nil
 }
