@@ -35,7 +35,6 @@ func check_id_rsa() error {
 		fmt.Printf("expected key[%s] not found, generating new key files...\n", ssh_pub_filepath)
 		lib.Generate_sshkeys(key_file_path)
 		return nil
-		// return fmt.Errorf("expected key[%s] not found, use the following command to generate keys 'ssh-keygen -t rsa -b 4096'", ssh_pub_filepath)
 	}
 
 	if _, err := os.Stat(ssh_private_filepath); err != nil {
@@ -136,7 +135,7 @@ func check_duplicated_hosts(temp_hosts *[]common.Host, temp_host common.Host) {
 	// Iterate through the slice to check for duplicates
 	for index, host := range *temp_hosts {
 		fmt.Println("host.Get_Host_name()", host.Get_Host_name())
-		if host.Get_Host_name() == temp_host.Get_Host_name() {
+		if host.Get_Host_name() == temp_host.Get_Host_name() || (host.Get_Host_type() == common.LINUX_SERVER && temp_host.Get_Host_type() == common.LINUX_SERVER) {
 			// If a duplicate is found, update the existing host
 			(*temp_hosts)[index] = temp_host
 			return
