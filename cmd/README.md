@@ -8,9 +8,9 @@ The `register_hosts` command will get hosts from Zabbix database and categorizin
 
 The command uses specific naming conventions to determine the type and category of each host:
 
-- **Linux Server**: Hostnames starting with `auto.linux.server.` are registered as Linux hosts with the type `server`.
-- **Linux Agent**: Hostnames starting with `auto.linux.agent.` are registered as Linux hosts with the type `agent`.
-- **Windows Agent**: Hostnames starting with `auto.windows.agent.` are registered as Windows hosts with the type `agent`.
+- **Linux Server**: Hostnames starting with `auto.linux.server.` will be registered as Linux host with the type `server`.
+- **Linux Agent**: Hostnames starting with `auto.linux.agent.` will be registered as Linux host with the type `agent`.
+- **Windows Agent (not avaliable yet)**: Hostnames starting with `auto.windows.agent.` will be registered as Windows host with the type `agent`.
 
 ### Usage
 
@@ -28,3 +28,4 @@ The command uses specific naming conventions to determine the type and category 
 
 3. **Verification**:
    - Check the `hosts.json` file in the parent folder. If the registration is successful, the registered hosts will be listed there.
+   - If the hosts are registered properly, you will be able to use them from common.Host_pool slice.
