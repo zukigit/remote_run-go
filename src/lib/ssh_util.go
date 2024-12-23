@@ -228,13 +228,14 @@ func update_hosts_ips() {
 	}
 }
 
-func Set_host_pool() error {
+func Set_host_pool() {
 	Get_hosts_from_jsonfile("hosts.json")
 	update_hosts_ips()
 
 	current_user, err := user.Current()
 	if err != nil {
-		return fmt.Errorf("failed in getting run user, Error: %v", err)
+		fmt.Printf("failed in getting run user, Error: %s\n", err.Error())
+		os.Exit(1)
 	}
 	ssh_key_filepath := filepath.Join(current_user.HomeDir, ".ssh")
 
@@ -244,14 +245,16 @@ func Set_host_pool() error {
 		if host.Get_Host_use_ip() {
 			client, err := GetSSHClientWithKey(host.Get_Host_ip(), host.Get_Host_connect_port(), host.Get_Host_run_username(), ssh_key_filepath)
 			if err != nil {
-				return err
+				fmt.Printf("GetSSHClientWithKey failed, Error: %s\n", err.Error())
+				os.Exit(1)
 			}
 
 			host.Set_Host_ssh_client(client)
 		} else {
 			client, err := GetSSHClientWithKey(host.Get_Host_dns(), host.Get_Host_connect_port(), host.Get_Host_run_username(), ssh_key_filepath)
 			if err != nil {
-				return err
+				fmt.Printf("GetSSHClientWithKey failed, Error: %s\n", err.Error())
+				os.Exit(1)
 			}
 
 			host.Set_Host_ssh_client(client)
@@ -260,5 +263,8 @@ func Set_host_pool() error {
 
 	common.Set_linux_server_host()
 
-	return nil
+	if common.Server_host == nil {
+		fmt.Println("Error: no server host to run, use 'register_hosts' command to register.")
+		os.Exit(1)
+	}
 }

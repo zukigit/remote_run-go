@@ -14,14 +14,6 @@ import (
 	"golang.org/x/term"
 )
 
-// type Host_temp struct {
-// 	Host_name, Host_run_username string
-// 	Host_ip, Host_dns            string      `json:"-"`
-// 	Host_client                  *ssh.Client `json:"-"`
-// 	Host_use_ip                  bool        `json:"-"`
-// 	Host_port                    int
-// }
-
 type Testcase_status string
 type Database string
 type Doc_data_type string
@@ -55,19 +47,19 @@ const (
 
 var Log_filepath, DB_hostname, DB_user, DB_passwd, DB_name string
 var Specific_ticket_no, Specific_testcase_no, DB_port, Timeout, Current_tk_no, Current_tc_no uint
-var Client *ssh.Client // server's ssh client
+var Client *ssh.Client // will be deleted.
 var Login_info Auth
 var Is_mysql, Is_psql bool
 var DB_type Database
 var DB *sql.DB
 var Sugar *zap.SugaredLogger
 var Host_pool []Host
-var Linux_server_host Host // only supports single server.
+var Server_host Host // only supports single server.
 
 func Set_linux_server_host() {
 	for _, host := range Host_pool {
 		if host.Get_Host_type() == LINUX_SERVER {
-			Linux_server_host = host
+			Server_host = host
 		}
 	}
 }

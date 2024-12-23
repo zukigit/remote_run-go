@@ -141,10 +141,7 @@ var rootCmd = &cobra.Command{
 		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_name)
 		defer common.DB.Close()
 
-		if err := lib.Set_host_pool(); err != nil {
-			fmt.Println("Failed in creating host pool, use 'register_hosts' command to fix, Err:", err.Error())
-			os.Exit(1)
-		}
+		lib.Set_host_pool()
 
 		lib.Enable_common_jobnets()
 
