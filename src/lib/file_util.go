@@ -21,6 +21,8 @@ func Get_file_trunc(filepath string, flag int) *os.File {
 func Get_hosts_from_jsonfile(jsonfilepath string) {
 	var temp_hosts []common.Host_struct
 
+	common.Host_pool = common.Host_pool[:0] // clean readed hosts
+
 	// Open the JSON file
 	host_jsonfile := Get_file_trunc(jsonfilepath, os.O_CREATE|os.O_RDONLY)
 	defer host_jsonfile.Close()
