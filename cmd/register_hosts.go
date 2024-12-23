@@ -35,7 +35,6 @@ func check_id_rsa() error {
 		fmt.Printf("expected key[%s] not found, generating new key files...\n", ssh_pub_filepath)
 		lib.Generate_sshkeys(key_file_path)
 		return nil
-		// return fmt.Errorf("expected key[%s] not found, use the following command to generate keys 'ssh-keygen -t rsa -b 4096'", ssh_pub_filepath)
 	}
 
 	if _, err := os.Stat(ssh_private_filepath); err != nil {
