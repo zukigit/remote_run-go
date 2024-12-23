@@ -231,7 +231,7 @@ func register(ssh_key_filepath string) {
 
 // registerHostsCmd represents the registerHosts command
 var registerHostsCmd = &cobra.Command{
-	Use:   "register_hosts",
+	Use:   "register_hosts --db-hostname YOUR_DB_HOSTNAME [--with-postgresql | --with-mysql]",
 	Short: "Register new hosts.",
 	Long:  "This command will scan hosts that starts with 'auto.' from zabbix database and register it in hosts.json file.",
 	Args: func(cmd *cobra.Command, args []string) error {

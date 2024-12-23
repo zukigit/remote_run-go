@@ -263,8 +263,8 @@ func Set_host_pool() {
 
 	common.Set_linux_server_host()
 
-	if common.Server_host == nil {
-		fmt.Println("Error: no server host to run, use 'register_hosts' command to register.")
-		os.Exit(1)
-	}
+	// if common.Server_host == nil {
+	// 	fmt.Println("Error: no server host to run, use 'register_hosts' command to register.")
+	// 	os.Exit(1)
+	// }
 }
