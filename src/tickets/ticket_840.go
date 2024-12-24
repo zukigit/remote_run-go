@@ -91,7 +91,7 @@ func (t *Ticket_840) Add_testcases() {
 		{Encoding: SJIS, OSType: Linux, Hostname: "oss.linux"},
 		// {Encoding: SJIS, OSType: Windows, Hostname: "oss.windows"},
 		{Encoding: UTF8, OSType: Linux, Hostname: "oss.linux"},
-		{Encoding: UTF8, OSType: Windows, Hostname: "oss.windows"},
+		{Encoding: UTF8, OSType: Windows, Hostname: "DESKTOP-PC29824"},
 	}
 
 	var testcaseCounter uint = 0
@@ -238,7 +238,7 @@ func rebootIconTestcase(testcase *dao.TestCase, env Environment) common.Testcase
 	common.Client, err = ssh.Dial("tcp", fmt.Sprintf("%s:%d", common.Login_info.Hostname, common.Login_info.Port), &ssh.ClientConfig{
 		User: common.Login_info.Username,
 		Auth: []ssh.AuthMethod{
-			ssh.Password(common.Login_info.Username),
+			ssh.Password(common.Login_info.Password),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	})

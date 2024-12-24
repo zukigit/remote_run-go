@@ -190,4 +190,7 @@ func add_tickets(t *[]dao.Ticket) {
 	*t = append(*t, new(tickets.Ticket_943))
 	*t = append(*t, new(tickets.Ticket_919))
 	*t = append(*t, new(tickets.Ticket_952))
+	*t = append(*t, new(tickets.Ticket_1021))
+	*t = append(*t, new(tickets.Ticket_923))
+	*t = append(*t, new(tickets.Ticket_962))
 }

@@ -75,7 +75,7 @@ func (t *Ticket_962) setupJobnet(jobnetID, cmd string, tc *dao.TestCase) (string
 	fmt.Println(tc.Info_log("Jobnet enabled successfully."))
 
 	// Execute jobnet
-	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "moon8", "JA_CMD", "sleep 60")
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 60")
 	runJobnetID, err := lib.Jobarg_exec_E(jobnetID, envs)
 	if err != nil {
 		return "", fmt.Errorf("error running jobnet: %s", err)

@@ -195,7 +195,7 @@ func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testc
 
 	fmt.Println(testcase.Info_log("Waiting for Reboot..."))
 
-	result := lib.CheckSSHforRebootingAfterDelay(common.Client, 210)
+	result := lib.CheckSSHforRebootingAfterDelay(common.Client, 1)
 	if result {
 		fmt.Println(testcase.Info_log("SSH connection failed. The system might be rebooting."))
 	} else {
@@ -204,7 +204,7 @@ func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testc
 		return FAILED
 	}
 
-	sleepDuration := 1 * time.Minute
+	sleepDuration := 3 * time.Minute
 	time.Sleep(sleepDuration)
 
 	common.Client = lib.ConnectWithRetry(common.Login_info.Hostname, common.Login_info.Port, common.Login_info.Username, common.Login_info.Password, 60)
