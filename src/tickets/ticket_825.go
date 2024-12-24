@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
@@ -14,11 +13,11 @@ type Ticket_825 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_825) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_825) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_825) Get_no() uint {
@@ -41,11 +40,11 @@ func (t *Ticket_825) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_825) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_825) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_825) Get_testcases() []dao.TestCase {
+func (t *Ticket_825) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -62,16 +61,16 @@ func (t *Ticket_825) Add_testcases() {
 	tc_func := func() common.Testcase_status {
 
 		if err := lib.Start_jaz_server(); err != nil {
-			tc_1.Err_log("Failed to start jobarg-server, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to start jobarg-server, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_1.Info_log("JAZ Server has been started."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ Server has been started."))
 
 		if err := lib.Disable_jaz_server(); err != nil {
-			tc_1.Err_log("Failed to disable jobarg-server, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to disable jobarg-server, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_1.Info_log("JAZ Server has been disabled."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ Server has been disabled."))
 
 		return UpdateHostLockAfterRetryCountwithHostNameRebootAfter("Icon_1", tc_1)
 	}
@@ -84,16 +83,16 @@ func (t *Ticket_825) Add_testcases() {
 	tc_func = func() common.Testcase_status {
 
 		if err := lib.Start_jaz_server(); err != nil {
-			tc_2.Err_log("Failed to start jobarg-server, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to start jobarg-server, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_2.Info_log("JAZ Server has been started."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ Server has been started."))
 
 		if err := lib.Disable_jaz_server(); err != nil {
-			tc_2.Err_log("Failed to disable jobarg-server, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to disable jobarg-server, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_2.Info_log("JAZ Server has been disabled."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ Server has been disabled."))
 
 		return UpdateHostLockAfterRetryCountwithHostNameForceReboot("Icon_1", tc_2)
 	}
@@ -105,16 +104,16 @@ func (t *Ticket_825) Add_testcases() {
 	tc_func = func() common.Testcase_status {
 
 		if err := lib.Start_jaz_server(); err != nil {
-			tc_3.Err_log("Failed to start jobarg-server, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to start jobarg-server, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_3.Info_log("JAZ Server has been started."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ Server has been started."))
 
 		if err := lib.Disable_jaz_server(); err != nil {
-			tc_3.Err_log("Failed to disable jobarg-server, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to disable jobarg-server, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_3.Info_log("JAZ Server has been disabled."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ Server has been disabled."))
 
 		return UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter("Icon_1", tc_3)
 
@@ -127,16 +126,16 @@ func (t *Ticket_825) Add_testcases() {
 	tc_func = func() common.Testcase_status {
 
 		if err := lib.Start_jaz_server(); err != nil {
-			tc_4.Err_log("Failed to start jobarg-server, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to start jobarg-server, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_4.Info_log("JAZ Server has been started."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ Server has been started."))
 
 		if err := lib.Disable_jaz_server(); err != nil {
-			tc_4.Err_log("Failed to disable jobarg-server, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to disable jobarg-server, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_4.Info_log("JAZ Server has been disabled."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ Server has been disabled."))
 
 		return UpdateHostLockAfterRetryCountwithEnvironmentVariableForceReboot("Icon_1", tc_4)
 
@@ -146,7 +145,7 @@ func (t *Ticket_825) Add_testcases() {
 
 }
 
-func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testcase *dao.TestCase) common.Testcase_status {
+func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testcase *common.TestCase) common.Testcase_status {
 
 	/******************
 	Pre-Operation State
@@ -154,7 +153,7 @@ func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testc
 
 	error := lib.Ja_set_agent_config_linux("AllowRoot", "1")
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error Allow Root : %s", error))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error Allow Root : %s", error))
 		return FAILED
 	}
 
@@ -168,39 +167,39 @@ func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testc
 	***************/
 
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux_hostname(sleep200)"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 		return FAILED
 	}
 
 	// Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "reboot_icon_hostname(RebootAfter)"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 		return FAILED
 	}
 
 	// Run jobnet
 	run_jobnet_id, error = lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Reboot Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Reboot Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Waiting for Reboot..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Waiting for Reboot..."))
 
 	result := lib.CheckSSHforRebootingAfterDelay(common.Client, 1)
 	if result {
-		fmt.Println(testcase.Info_log("SSH connection failed. The system might be rebooting."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "SSH connection failed. The system might be rebooting."))
 	} else {
 
-		fmt.Println(testcase.Err_log("Does not reboot"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Does not reboot"))
 		return FAILED
 	}
 
@@ -212,11 +211,11 @@ func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testc
 	result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("error"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "error"))
 		return FAILED
 	}
 
-	fmt.Print(testcase.Info_log("Successfully rebooted hostname : %s", result2))
+	fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Successfully rebooted hostname : %s", result2))
 
 	pattern := "[WARN] In ja_job_exec_close() agent close failed. retry count :[29]"
 	timeout := 2 * time.Minute  // Timeout duration
@@ -224,17 +223,17 @@ func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testc
 
 	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error:%s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error:%s", err))
 	} else {
-		fmt.Println(testcase.Info_log("Agent try to connect server retry count is over."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Agent try to connect server retry count is over."))
 	}
 
 	// Restart the jobarg server
 	if err := lib.Restart_jaz_server(); err != nil {
-		fmt.Println(testcase.Err_log("Faild to restart the JAZ server, Error: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Faild to restart the JAZ server, Error: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("JAZ server has been restarted.Waiting for Jobnet status ..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ server has been restarted.Waiting for Jobnet status ..."))
 
 	// /***************
 	// Expected Results
@@ -246,7 +245,7 @@ func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testc
 	maxCount := 2
 	_, errJobCountWithDone := runStatusJobnetProcess(nil, 1, &maxCount, testcase) // Correctly capturing count and error
 	if errJobCountWithDone != nil {
-		fmt.Println(testcase.Err_log("Job check status fail: %s", errJobCountWithDone))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Job check status fail: %s", errJobCountWithDone))
 		return FAILED
 	}
 
@@ -254,7 +253,7 @@ func UpdateHostLockAfterRetryCountwithHostNameRebootAfter(jobnetId string, testc
 
 }
 
-func UpdateHostLockAfterRetryCountwithHostNameForceReboot(jobnetId string, testcase *dao.TestCase) common.Testcase_status {
+func UpdateHostLockAfterRetryCountwithHostNameForceReboot(jobnetId string, testcase *common.TestCase) common.Testcase_status {
 
 	/******************
 	Pre-Operation State
@@ -270,39 +269,39 @@ func UpdateHostLockAfterRetryCountwithHostNameForceReboot(jobnetId string, testc
 	***************/
 
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux_hostname(sleep200)"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 		return FAILED
 	}
 
 	// Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "reboot_icon_hostname(ForceReboot)"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 		return FAILED
 	}
 
 	// Run jobnet
 	run_jobnet_id, error = lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Reboot Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Reboot Icon %s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Waiting for Reboot..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Waiting for Reboot..."))
 
 	result := lib.CheckSSHforRebootingAfterDelay(common.Client, 10)
 	if result {
-		fmt.Println(testcase.Info_log("SSH connection failed. The system might be rebooting."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "SSH connection failed. The system might be rebooting."))
 	} else {
 
-		fmt.Println(testcase.Err_log("Does not reboot"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Does not reboot"))
 		return FAILED
 	}
 
@@ -314,11 +313,11 @@ func UpdateHostLockAfterRetryCountwithHostNameForceReboot(jobnetId string, testc
 	result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("error"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "error"))
 		return FAILED
 	}
 
-	fmt.Print(testcase.Info_log("Successfully rebooted hostname : %s", result2))
+	fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Successfully rebooted hostname : %s", result2))
 
 	pattern := "[WARN] In ja_job_exec_close() agent close failed. retry count :[29]"
 	timeout := 2 * time.Minute  // Timeout duration
@@ -326,17 +325,17 @@ func UpdateHostLockAfterRetryCountwithHostNameForceReboot(jobnetId string, testc
 
 	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error:%s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error:%s", err))
 	} else {
-		fmt.Println(testcase.Info_log("Agent try to connect server retry count is over."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Agent try to connect server retry count is over."))
 	}
 
 	// Restart the jobarg server
 	if err := lib.Restart_jaz_server(); err != nil {
-		fmt.Println(testcase.Err_log("Faild to restart the JAZ server, Error: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Faild to restart the JAZ server, Error: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("JAZ server has been restarted.Waiting for Jobnet status ..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ server has been restarted.Waiting for Jobnet status ..."))
 
 	// /***************
 	// Expected Results
@@ -348,7 +347,7 @@ func UpdateHostLockAfterRetryCountwithHostNameForceReboot(jobnetId string, testc
 	maxCount := 1
 	_, errJobCountWithDone := runStatusJobnetProcess(nil, 1, &maxCount, testcase) // Correctly capturing count and error
 	if errJobCountWithDone != nil {
-		fmt.Println(testcase.Err_log("Job check status fail: %s", errJobCountWithDone))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Job check status fail: %s", errJobCountWithDone))
 		return FAILED
 	}
 
@@ -356,7 +355,7 @@ func UpdateHostLockAfterRetryCountwithHostNameForceReboot(jobnetId string, testc
 
 }
 
-func UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter(jobnetId string, testcase *dao.TestCase) common.Testcase_status {
+func UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter(jobnetId string, testcase *common.TestCase) common.Testcase_status {
 
 	/******************
 	Pre-Operation State
@@ -371,39 +370,39 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter(jobnetId st
 	***************/
 
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux_environment_variable(sleep200)"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 		return FAILED
 	}
 
 	// Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "reboot_icon_environment_variable(RebootAfter)"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 		return FAILED
 	}
 
 	// Run jobnet
 	run_jobnet_id, error = lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Waiting for Reboot..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Waiting for Reboot..."))
 
 	result := lib.CheckSSHforRebootingAfterDelay(common.Client, 210)
 	if result {
-		fmt.Println(testcase.Info_log("SSH connection failed. The system might be rebooting."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "SSH connection failed. The system might be rebooting."))
 	} else {
 
-		fmt.Println(testcase.Err_log("Does not reboot"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Does not reboot"))
 		return FAILED
 	}
 
@@ -415,11 +414,11 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter(jobnetId st
 	result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("error"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "error"))
 		return FAILED
 	}
 
-	fmt.Print(testcase.Info_log("Successfully rebooted hostname : %s", result2))
+	fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Successfully rebooted hostname : %s", result2))
 
 	pattern := "[WARN] In ja_job_exec_close() agent close failed. retry count :[29]"
 	timeout := 2 * time.Minute  // Timeout duration
@@ -427,17 +426,17 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter(jobnetId st
 
 	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error:%s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error:%s", err))
 	} else {
-		fmt.Println(testcase.Info_log("Agent try to connect server retry count is over."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Agent try to connect server retry count is over."))
 	}
 
 	// Restart the jobarg server
 	if err := lib.Restart_jaz_server(); err != nil {
-		fmt.Println(testcase.Err_log("Faild to restart the JAZ server, Error: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Faild to restart the JAZ server, Error: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("JAZ server has been restarted.Waiting for Jobnet status ..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ server has been restarted.Waiting for Jobnet status ..."))
 
 	// /***************
 	// Expected Results
@@ -449,7 +448,7 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter(jobnetId st
 	maxCount := 2
 	_, errJobCountWithDone := runStatusJobnetProcess(nil, 1, &maxCount, testcase) // Correctly capturing count and error
 	if errJobCountWithDone != nil {
-		fmt.Println(testcase.Err_log("Job check status fail: %s", errJobCountWithDone))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Job check status fail: %s", errJobCountWithDone))
 		return FAILED
 	}
 
@@ -457,7 +456,7 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableRebootAfter(jobnetId st
 
 }
 
-func UpdateHostLockAfterRetryCountwithEnvironmentVariableForceReboot(jobnetId string, testcase *dao.TestCase) common.Testcase_status {
+func UpdateHostLockAfterRetryCountwithEnvironmentVariableForceReboot(jobnetId string, testcase *common.TestCase) common.Testcase_status {
 
 	/******************
 	Pre-Operation State
@@ -478,39 +477,39 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableForceReboot(jobnetId st
 	***************/
 
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux_environment_variable(sleep200)"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 		return FAILED
 	}
 
 	// Run jobnet
 	run_jobnet_id, error := lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
 	if err := lib.Jobarg_enable_jobnet("Icon_1", "reboot_icon_environment_variable(ForceReboot)"); err != nil {
-		fmt.Println(testcase.Err_log("Failed to enable jobnet, Error: %s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err))
 		return FAILED
 	}
 
 	// Run jobnet
 	run_jobnet_id, error = lib.Jobarg_exec(jobnetId)
 	if error != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
-	fmt.Println(testcase.Info_log("Waiting for Reboot..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Waiting for Reboot..."))
 
 	result := lib.CheckSSHforRebootingAfterDelay(common.Client, 10)
 	if result {
-		fmt.Println(testcase.Info_log("SSH connection failed. The system might be rebooting."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "SSH connection failed. The system might be rebooting."))
 	} else {
 
-		fmt.Println(testcase.Err_log("Does not reboot"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Does not reboot"))
 		return FAILED
 	}
 
@@ -522,11 +521,11 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableForceReboot(jobnetId st
 	result2, err := lib.GetOutputStrFromSSHCommand(common.Client, "hostname")
 
 	if err != nil {
-		fmt.Println(testcase.Err_log("error"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "error"))
 		return FAILED
 	}
 
-	fmt.Print(testcase.Info_log("Successfully rebooted hostname : %s", result2))
+	fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Successfully rebooted hostname : %s", result2))
 
 	pattern := "[WARN] In ja_job_exec_close() agent close failed. retry count :[29]"
 	timeout := 2 * time.Minute  // Timeout duration
@@ -534,17 +533,17 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableForceReboot(jobnetId st
 
 	_, err = lib.WaitForPatternInLogFile(common.Client, logFilePath, pattern, timeout, interval)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error:%s", err))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error:%s", err))
 	} else {
-		fmt.Println(testcase.Info_log("Agent try to connect server retry count is over."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Agent try to connect server retry count is over."))
 	}
 
 	// Restart the jobarg server
 	if err := lib.Restart_jaz_server(); err != nil {
-		fmt.Println(testcase.Err_log("Faild to restart the JAZ server, Error: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Faild to restart the JAZ server, Error: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("JAZ server has been restarted.Waiting for Jobnet status ..."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ server has been restarted.Waiting for Jobnet status ..."))
 
 	// /***************
 	// Expected Results
@@ -556,7 +555,7 @@ func UpdateHostLockAfterRetryCountwithEnvironmentVariableForceReboot(jobnetId st
 	maxCount := 1
 	_, errJobCountWithDone := runStatusJobnetProcess(nil, 1, &maxCount, testcase) // Correctly capturing count and error
 	if errJobCountWithDone != nil {
-		fmt.Println(testcase.Err_log("Job check status fail: %s", errJobCountWithDone))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Job check status fail: %s", errJobCountWithDone))
 		return FAILED
 	}
 
@@ -587,7 +586,7 @@ func GetJobnetStatusFromDB(query string) (int, error) {
 }
 
 // runProcess monitors the count and aborts if it exceeds a threshold
-func runStatusJobnetProcess(query *string, processCheckTimeout int, maxCount *int, testcase *dao.TestCase) (int, error) {
+func runStatusJobnetProcess(query *string, processCheckTimeout int, maxCount *int, testcase *common.TestCase) (int, error) {
 	// Use default query if none provided
 	defaultQuery := "SELECT COUNT(*) FROM ja_run_jobnet_table WHERE status = 3;"
 	actualQuery := defaultQuery
@@ -626,9 +625,9 @@ func runStatusJobnetProcess(query *string, processCheckTimeout int, maxCount *in
 
 			if count == actualMaxCount {
 				if actualMaxCount == 2 {
-					fmt.Println(testcase.Info_log("Both jobnet execution is complete successfully"))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Both jobnet execution is complete successfully"))
 				} else if actualMaxCount == 1 {
-					fmt.Println(testcase.Info_log("Reboot jobnet execution is complete successfully"))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Reboot jobnet execution is complete successfully"))
 				}
 				return count, nil
 			}

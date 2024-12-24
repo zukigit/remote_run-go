@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
@@ -12,11 +11,11 @@ type Ticket_1318 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_1318) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_1318) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_1318) Get_no() uint {
@@ -39,11 +38,11 @@ func (t *Ticket_1318) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_1318) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_1318) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_1318) Get_testcases() []dao.TestCase {
+func (t *Ticket_1318) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -61,7 +60,7 @@ func (t *Ticket_1318) Add_testcases() {
 		// Set joabrg agent config value
 		err := lib.Ja_set_agent_config_windows("ExtUnsignedFlag", "0")
 		if err != nil {
-			tc_168.Err_log("Failed to set joabrg agent config value. Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to set joabrg agent config value. Error: %s", err.Error())
 			return FAILED
 		}
 		fmt.Println(tc_168.Info_log("Jobarg-agent's config ExtUnsignedFlag=0"))
@@ -69,14 +68,14 @@ func (t *Ticket_1318) Add_testcases() {
 		// Restart jobarg-agentd
 		err = lib.Restart_jaz_agent_windows()
 		if err != nil {
-			tc_168.Err_log("Failed to restart windows service. Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to restart windows service. Error: %s", err.Error())
 			return FAILED
 		}
 		fmt.Println(tc_168.Info_log("Jobarg-agentd service restarted successfully."))
 
 		// Enable jobnet
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_windows"); err != nil {
-			tc_168.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 
@@ -85,7 +84,7 @@ func (t *Ticket_1318) Add_testcases() {
 		// Run jobnet
 		run_jobnet_id, error := lib.Jobarg_exec_E("Icon_1", envs)
 		if error != nil {
-			tc_168.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id)
+			lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id)
 			return FAILED
 		}
 		fmt.Println(tc_168.Info_log("Jobnet run info: %+v", run_jobnet_id))
@@ -93,7 +92,7 @@ func (t *Ticket_1318) Add_testcases() {
 		// Wait jobnet finishes and get jobnet run info.
 		jobnet_run_info, error := lib.Jobarg_get_jobnet_run_info(run_jobnet_id)
 		if error != nil {
-			tc_168.Err_log("Error: %s", error.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Error: %s", error.Error())
 			return FAILED
 		}
 		fmt.Println(tc_168.Info_log("Jobnet run info: %+v", jobnet_run_info))
@@ -103,7 +102,7 @@ func (t *Ticket_1318) Add_testcases() {
 			return PASSED
 		}
 
-		tc_168.Err_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd)
+		lib.Logi(common.LOG_LEVEL_ERR, "Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd)
 		return FAILED
 	}
 	tc_168.Set_function(tc_func)
@@ -117,7 +116,7 @@ func (t *Ticket_1318) Add_testcases() {
 		tc_169.Add_doc(common.PRE_OPT, "Change jobarg-agent's config ExtUnsignedFlag=1")
 		err := lib.Ja_set_agent_config_windows("ExtUnsignedFlag", "1")
 		if err != nil {
-			tc_169.Err_log("Failed to set joabrg agent config value. Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to set joabrg agent config value. Error: %s", err.Error())
 			return FAILED
 		}
 		fmt.Println(tc_169.Info_log("Jobarg-agent's config ExtUnsignedFlag=1"))
@@ -126,7 +125,7 @@ func (t *Ticket_1318) Add_testcases() {
 		tc_169.Add_doc(common.PRE_OPT, "Restart jobarg-agentd service")
 		err = lib.Restart_jaz_agent_windows()
 		if err != nil {
-			tc_169.Err_log("Failed to restart windows service. Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to restart windows service. Error: %s", err.Error())
 			return FAILED
 		}
 		fmt.Println(tc_169.Info_log("Jobarg-agentd service restarted successfully."))
@@ -134,7 +133,7 @@ func (t *Ticket_1318) Add_testcases() {
 		// Enable jobnet
 		tc_169.Add_doc(common.PRE_OPT, "Enable jobnet for windows agent.")
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_windows"); err != nil {
-			tc_169.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 
@@ -144,14 +143,14 @@ func (t *Ticket_1318) Add_testcases() {
 		tc_169.Add_doc(common.PRE_OPT, "Run jobnet. JA_HOSTNAME: C01-DAT0341, JA_CMD: exit -100000;.")
 		run_jobnet_id, error := lib.Jobarg_exec_E("Icon_1", envs)
 		if error != nil {
-			tc_169.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id)
+			lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id)
 			return FAILED
 		}
 
 		// Wait jobnet finishes and get jobnet run info.
 		jobnet_run_info, error := lib.Jobarg_get_jobnet_run_info(run_jobnet_id)
 		if error != nil {
-			tc_169.Err_log("Error: %s", error.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Error: %s", error.Error())
 			return FAILED
 		}
 		fmt.Println(tc_169.Info_log("Jobnet run info: %+v", jobnet_run_info))
@@ -161,7 +160,7 @@ func (t *Ticket_1318) Add_testcases() {
 			return PASSED
 		}
 
-		tc_169.Err_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd)
+		lib.Logi(common.LOG_LEVEL_ERR, "Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd)
 		return FAILED
 	}
 	tc_169.Set_function(tc_func)
@@ -172,19 +171,19 @@ func (t *Ticket_1318) Add_testcases() {
 	tc_func = func() common.Testcase_status {
 		err := lib.Ja_set_agent_config_linux("ExtUnsignedFlag", "0")
 		if err != nil {
-			tc_170.Err_log("Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Error: %s", err.Error())
 			return FAILED
 		}
 
 		err = lib.Restart_jaz_agent_linux()
 		if err != nil {
-			tc_170.Err_log("Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Error: %s", err.Error())
 			return FAILED
 		}
 
 		// Enable jobnet
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-			tc_170.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
 
@@ -192,13 +191,13 @@ func (t *Ticket_1318) Add_testcases() {
 
 		run_jobnet_id, err := lib.Jobarg_exec_E("Icon_1", envs)
 		if err != nil {
-			tc_170.Err_log("Error: %s, std_out: %s", err.Error(), run_jobnet_id)
+			lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", err.Error(), run_jobnet_id)
 			return FAILED
 		}
 
 		jobnet_run_info, err := lib.Jobarg_get_jobnet_run_info(run_jobnet_id)
 		if err != nil {
-			tc_170.Err_log("Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Error: %s", err.Error())
 			return FAILED
 		}
 
@@ -206,7 +205,7 @@ func (t *Ticket_1318) Add_testcases() {
 			return PASSED
 		}
 
-		tc_170.Err_log("Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd)
+		lib.Logi(common.LOG_LEVEL_ERR, "Jobnet_status: %s, Job_status: %s, Exit_cd: %d", jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd)
 		return FAILED
 	}
 	tc_170.Set_function(tc_func)

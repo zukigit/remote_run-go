@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
@@ -13,11 +12,11 @@ type Ticket_775 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_775) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_775) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_775) Get_no() uint {
@@ -40,11 +39,11 @@ func (t *Ticket_775) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_775) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_775) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_775) Get_testcases() []dao.TestCase {
+func (t *Ticket_775) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -69,12 +68,12 @@ func (t *Ticket_775) Add_testcases() {
 		tc_func := func() common.Testcase_status {
 
 			if err := lib.Jobarg_cleanup_linux(); err != nil {
-				tc.Err_log("Error during cleanup: %s", err)
+				lib.Logi(common.LOG_LEVEL_ERR, "Error during cleanup: %s", err)
 				return FAILED
 			}
 
 			if err := lib.Jobarg_enable_jobnet(jobnetId, jobname); err != nil {
-				tc.Err_log("Failed to enable jobnet, Error: %s", err)
+				lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 				return FAILED
 			}
 			return executejobnet(jobnetId, charcommand, tc)
@@ -90,7 +89,7 @@ func (t *Ticket_775) Add_testcases() {
 	addTestCase(5, "execute command with 264 characters", "Icon_1", "jobicon_linux", charaterString264)
 }
 
-func executejobnet(jobnetId string, charcommand string, tc *dao.TestCase) common.Testcase_status {
+func executejobnet(jobnetId string, charcommand string, tc *common.TestCase) common.Testcase_status {
 
 	runcharcommand := fmt.Sprintf("echo %s", charcommand)
 
@@ -99,27 +98,27 @@ func executejobnet(jobnetId string, charcommand string, tc *dao.TestCase) common
 	run_jobnet_id, error := lib.Jobarg_exec_E(jobnetId, envs)
 
 	if error != nil {
-		fmt.Println(tc.Err_log("Error: %s, std_out: %s", error.Error(), run_jobnet_id))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
 
-	fmt.Println(tc.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
 	jobnet_run_info, error := lib.Jobarg_get_jobnet_run_info(run_jobnet_id)
 
 	if error != nil {
-		tc.Err_log("Error: %s", error.Error())
+		lib.Logi(common.LOG_LEVEL_ERR, "Error: %s", error.Error())
 		return FAILED
 	}
 	output_command := jobnet_run_info.Std_out
 
 	if strings.Contains(output_command, charcommand) {
-		fmt.Println(tc.Info_log("Characters are match in STD_ERR"))
-		fmt.Println(tc.Info_log("Original Text: %q", charcommand))
-		fmt.Println(tc.Info_log("Job Output: %q", output_command))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Characters are match in STD_ERR"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Original Text: %q", charcommand))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Job Output: %q", output_command))
 		return PASSED
 	} else {
-		tc.Err_log("Error: %s", "Characters are not match in STD_ERR")
+		lib.Logi(common.LOG_LEVEL_ERR, "Error: %s", "Characters are not match in STD_ERR")
 		return FAILED
 	}
 

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
@@ -14,11 +13,11 @@ type Ticket_1091 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_1091) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_1091) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_1091) Get_no() uint {
@@ -41,11 +40,11 @@ func (t *Ticket_1091) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_1091) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_1091) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_1091) Get_testcases() []dao.TestCase {
+func (t *Ticket_1091) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -104,39 +103,39 @@ func (t *Ticket_1091) Add_testcases() {
 		// 9. Looping until timeout for the log to write.
 
 		if func() bool {
-			Run_Jobarg_cleanup_window(tc_99)
+			lib.Run_Jobarg_cleanup_window()
 			return true
 		}() &&
-			Run_Jobarg_cleanup_linux(tc_99) &&
-			Run_Clear_Linux_Agent_log(tc_99) &&
-			Run_Clear_Linux_Server_log(tc_99) &&
-			Run_enable_jobnet(tc_99, jobnet_id, jobnet_name) &&
+			lib.Run_Jobarg_cleanup_linux() &&
+			lib.Run_Clear_Linux_Agent_log() &&
+			lib.Run_Clear_Linux_Server_log() &&
+			lib.Run_enable_jobnet(jobnet_id, jobnet_name) &&
 			func() bool {
-				result, _ = Run_Jobnet_Envs_And_Exec(tc_99, jobnet_id, envs)
+				result, _ = lib.Run_Jobnet_Envs_And_Exec(jobnet_id, envs)
 				return result
 			}() &&
 			//Run_Job_process_count(tc_99, 1, 10) && // Process count is commented out since it's impossible/hard to count window process.
-			Run_Timeout(tc_99, 10) && //Instead, a simple sleep is here.
-			Run_Restart_Linux_Jaz_server(tc_99) &&
+			lib.Run_Timeout(10) && //Instead, a simple sleep is here.
+			lib.Run_Restart_Linux_Jaz_server() &&
 			func() bool {
 				var executeResult string
 				var index int = 0
 				timeoutDuration := time.Duration(timeout_time) * time.Second
 				timeout := time.Now().Add(timeoutDuration)
 				for time.Now().Before(timeout) {
-					result, executeResult = Run_Linux_Command_Str(tc_99, "cat /var/log/jobarranger/jobarg_server.log | grep 'In ja_send_ipchange_request(), Server Ip is up to date in'")
+					result, executeResult = lib.Run_Linux_Command_Str("cat /var/log/jobarranger/jobarg_server.log | grep 'In ja_send_ipchange_request(), Server Ip is up to date in'")
 					if executeResult != "" && executeResult != " " {
 						break
 					}
-					fmt.Println(tc_99.Info_log("Info: Executing the command Again. Retry count %d", index))
+					fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Executing the command Again. Retry count %d", index))
 					index++
 					time.Sleep(1 * time.Second)
 				}
 				if executeResult == "" || executeResult == " " {
-					fmt.Print(tc_99.Err_log("Error: There's no 'In ja_send_ipchange_request(), Server Ip is up to date in' log jobarranger_server log."))
+					fmt.Print(lib.Logi(common.LOG_LEVEL_ERR, "Error: There's no 'In ja_send_ipchange_request(), Server Ip is up to date in' log jobarranger_server log."))
 					return false
 				}
-				fmt.Print(tc_99.Info_log("Info: Execution result: %s", executeResult))
+				fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Info: Execution result: %s", executeResult))
 				return result
 			}() {
 			fmt.Println("All operations completed successfully")
@@ -198,22 +197,22 @@ func (t *Ticket_1091) Add_testcases() {
 			return FAILED
 		}
 
-		if Run_Jobarg_cleanup_linux(tc_100) &&
-			Run_Clear_Linux_Agent_log(tc_100) &&
-			Run_Clear_Linux_Server_log(tc_100) &&
-			Run_enable_jobnet(tc_100, jobnet_id, jobnet_name) &&
+		if lib.Run_Jobarg_cleanup_linux() &&
+			lib.Run_Clear_Linux_Agent_log() &&
+			lib.Run_Clear_Linux_Server_log() &&
+			lib.Run_enable_jobnet(jobnet_id, jobnet_name) &&
 			func() bool {
-				result, jobnet_run_manage_id = Run_Jobnet_Envs_And_Exec(tc_100, jobnet_id, envs)
+				result, jobnet_run_manage_id = lib.Run_Jobnet_Envs_And_Exec(jobnet_id, envs)
 				return result
 			}() &&
 			// Run_Job_process_count(tc_100, 1, 10) && // Process count is commented out since it's impossible/hard to count processes of multiple agents
-			Run_Timeout(tc_100, 10) && //Instead, a simple sleep is here.
-			Run_Linux_Command(tc_100, "rm -rf /var/lib/jobarranger/tmp/serverIPs/serverIPs.json") &&
-			Run_Restart_Linux_Jaz_server(tc_100) &&
+			lib.Run_Timeout(10) && //Instead, a simple sleep is here.
+			lib.Run_Linux_Command("rm -rf /var/lib/jobarranger/tmp/serverIPs/serverIPs.json") &&
+			lib.Run_Restart_Linux_Jaz_server() &&
 			func() bool {
 				var jobnet_run_info *common.Jobnet_run_info
-				result, jobnet_run_info = Run_Jobarg_get_jobnet_run_info(tc_100, jobnet_run_manage_id)
-				fmt.Print(tc_100.Info_log("Info: Jobnet Status: %s", jobnet_run_info.Jobnet_status))
+				result, jobnet_run_info = lib.Run_Jobarg_get_jobnet_run_info(jobnet_run_manage_id)
+				fmt.Print(lib.Logi(common.LOG_LEVEL_INFO, "Info: Jobnet Status: %s", jobnet_run_info.Jobnet_status))
 				return result
 			}() &&
 			func() bool {
@@ -221,17 +220,17 @@ func (t *Ticket_1091) Add_testcases() {
 				timeoutDuration := time.Duration(timeout_time) * time.Second
 				timeout := time.Now().Add(timeoutDuration)
 				for time.Now().Before(timeout) {
-					result, executeResult = Run_Linux_Command_Str(tc_99, "cat /var/log/jobarranger/jobarg_server.log | grep 'In ja_send_ipchange_request(), Server Ip is up to date in'")
+					result, executeResult = lib.Run_Linux_Command_Str("cat /var/log/jobarranger/jobarg_server.log | grep 'In ja_send_ipchange_request(), Server Ip is up to date in'")
 					if !result || (executeResult != "" && executeResult != " ") {
 						break
 					}
 					time.Sleep(1 * time.Second)
 				}
 				if executeResult == "" || executeResult == " " {
-					fmt.Print(tc_99.Err_log("Error: There's no 'In ja_send_ipchange_request(), Server Ip is up to date in' log jobarranger_server log."))
+					fmt.Print(lib.Logi(common.LOG_LEVEL_ERR, "Error: There's no 'In ja_send_ipchange_request(), Server Ip is up to date in' log jobarranger_server log."))
 					return false
 				}
-				fmt.Println(tc_100.Info_log("Info: Execution result: %s", executeResult))
+				fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Execution result: %s", executeResult))
 				return result
 			}() {
 			fmt.Println("All operations completed successfully")

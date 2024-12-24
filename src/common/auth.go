@@ -4,6 +4,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+// to delete
 type Auth struct {
 	Username, Password, Hostname string
 	Port                         int

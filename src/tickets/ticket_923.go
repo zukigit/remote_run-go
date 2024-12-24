@@ -6,15 +6,14 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
 type Ticket_923 struct {
-	no          uint
-	description string
+	Ticket_no                                   uint
+	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	testcases   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
 func (t *Ticket_923) Set_PASSED_count(passed_count int) {
@@ -29,30 +28,29 @@ func (t *Ticket_923) Set_MUSTCHECK_count(mustcheck_count int) {
 	t.MUSTCHECK_count = mustcheck_count
 }
 
-
-func (t *Ticket_923) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_923) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_923) Get_no() uint {
-	return t.no
+	return t.Ticket_no
 }
 
 func (t *Ticket_923) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
 }
 
-func (t *Ticket_923) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+func (t *Ticket_923) Add_testcase(tc common.TestCase) {
+	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_923) Get_testcases() []dao.TestCase {
-	return t.testcases
+func (t *Ticket_923) Get_testcases() []common.TestCase {
+	return t.Testcases
 }
 
 func (t *Ticket_923) Set_values() {
-	t.no = 923
-	t.description = "Check whether agentd can run with different listener process with parallel"
+	t.Ticket_no = 923
+	t.Ticket_description = "Check whether agentd can run with different listener process with parallel"
 }
 
 func (t *Ticket_923) Add_testcases() {
@@ -63,39 +61,39 @@ func (t *Ticket_923) addTestCase87() {
 	tc := t.New_testcase(87, "Abnormal job execution")
 	tc_func := func() common.Testcase_status {
 		if err := t.cleanupJobArg(); err != nil {
-			tc.Err_log("Failed to cleanup jobarg, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to cleanup jobarg, Error: %s", err)
 			return FAILED
 		}
-		fmt.Println(tc.Info_log("Jobarg cleanup successfully."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobarg cleanup successfully."))
 
 		logfilePath := "/var/log/jobarranger/jobarg_agentd.log"
 		if err := t.clearLogFile(logfilePath); err != nil {
-			tc.Err_log("Failed to clear log file, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to clear log file, Error: %s", err)
 			return FAILED
 		}
-		fmt.Println(tc.Info_log("Agent log file has been cleared."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Agent log file has been cleared."))
 
 		if err := t.enableJobnet("Icon_1", "jobicon_linux"); err != nil {
-			tc.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		fmt.Println(tc.Info_log("Jobnet 'Icon_1' enabled successfully.",))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet 'Icon_1' enabled successfully."))
 
 		if err := t.enableJobnet("Icon_10", "Icon_10"); err != nil {
-			tc.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		fmt.Println(tc.Info_log("Jobnet 'Icon_10' enabled successfully."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet 'Icon_10' enabled successfully."))
 
 		run_jobnet_id, err := t.runJobnet("Icon_10", "oss.linux", "sleep 60")
 		if err != nil {
-			tc.Err_log("Error: %s, std_out: %s", err.Error(), run_jobnet_id)
+			lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", err.Error(), run_jobnet_id)
 			return FAILED
 		}
 
 		output, err := getProcessIdFromAgentLog(logfilePath)
 		if err != nil {
-			tc.Err_log("Failed to get process id from agent log")
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to get process id from agent log")
 			return FAILED
 		}
 
@@ -103,7 +101,7 @@ func (t *Ticket_923) addTestCase87() {
 		processId1, processId2 := processIds[0], processIds[1]
 
 		if processId1 != processId2 {
-			fmt.Println(tc.Info_log("Info: Process IDs are different."))
+			fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Info: Process IDs are different."))
 			return PASSED
 		}
 

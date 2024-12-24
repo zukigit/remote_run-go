@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"syscall"
+	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -16,9 +17,7 @@ import (
 type Testcase_status string
 type Database string
 type Doc_data_type string
-
-const INFO = 1
-const ERR = 2
+type Host_type string
 
 const (
 	MYSQL    Database      = "mysql"
@@ -33,16 +32,37 @@ const (
 	PRE_OPT  Doc_data_type = "pre_operation"
 	OPT      Doc_data_type = "operation"
 	EXPT_RES Doc_data_type = "expected_results"
+
+	PASSED     Testcase_status = "PASSED"
+	FAILED     Testcase_status = "FAILED"
+	MUST_CHECK Testcase_status = "MUST_CHECK"
+
+	LINUX_SERVER  Host_type = "auto.linux.server."
+	LINUX_AGENT   Host_type = "auto.linux.agent."
+	WINDOWS_AGENT Host_type = "auto.windows.agent."
+
+	LOG_LEVEL_INFO = 1
+	LOG_LEVEL_ERR  = 2
 )
 
 var Log_filepath, DB_hostname, DB_user, DB_passwd, DB_name string
-var Specific_ticket_no, Specific_testcase_no, DB_port, Timeout uint
-var Client *ssh.Client
+var Specific_ticket_no, Specific_testcase_no, DB_port, Timeout, Current_tk_no, Current_tc_no uint
+var Client *ssh.Client // will be deleted.
 var Login_info Auth
 var Is_mysql, Is_psql bool
 var DB_type Database
 var DB *sql.DB
 var Sugar *zap.SugaredLogger
+var Host_pool []Host
+var Server_host Host // only supports single server.
+
+func Set_linux_server_host() {
+	for _, host := range Host_pool {
+		if host.Get_Host_type() == LINUX_SERVER {
+			Server_host = host
+		}
+	}
+}
 
 func Set_sugar(logfile_path string) {
 	logger_conf := zap.NewProductionConfig()
@@ -81,7 +101,7 @@ func Set_default_db_port() {
 
 func Set_db_type() error {
 	if !Is_mysql && !Is_psql {
-		return fmt.Errorf("please choose db type using --with-mysql --with-postgresql")
+		return fmt.Errorf("choose db type using --with-mysql or --with-postgresql flag")
 	}
 
 	if Is_mysql {
@@ -117,22 +137,34 @@ func Set_passwd() {
 	Login_info.Password = string(bytepw)
 }
 
-func Set_client() {
-	config := &ssh.ClientConfig{
-		User: Login_info.Username,
-		Auth: []ssh.AuthMethod{
-			ssh.Password(Login_info.Password),
-		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+func Run_testcase(tc TestCase) {
+	// start time
+	startTime := time.Now()
+
+	tc.Set_status(tc.Run_function())
+
+	// total elasped time or duration of testcase
+	duration := time.Since(startTime)
+	durationStr := fmt.Sprintf("%02d:%02d:%02d", int(duration/time.Hour), int(duration/time.Minute)%60, int(duration/time.Second)%60)
+
+	tc.Set_duration(durationStr)
+}
+
+func Update_testcase_results_in_tickets(tks []Ticket) {
+	var passed_count, failed_count, mustcheck_count int
+	for _, ticket := range tks {
+		for _, testcase := range ticket.Get_testcases() {
+			switch testcase.Get_status() {
+			case PASSED:
+				passed_count++
+			case FAILED:
+				failed_count++
+			default:
+				mustcheck_count++
+			}
+		}
+		ticket.Set_PASSED_count(passed_count)
+		ticket.Set_FAILED_count(failed_count)
+		ticket.Set_MUSTCHECK_count(mustcheck_count)
 	}
-
-	hostname_with_port := fmt.Sprintf("%s:%d", Login_info.Hostname, Login_info.Port)
-
-	client, err := ssh.Dial("tcp", hostname_with_port, config)
-	if err != nil {
-		fmt.Println("Failed in getting ssh client, Error:", err.Error())
-		os.Exit(1)
-	}
-
-	Client = client
 }

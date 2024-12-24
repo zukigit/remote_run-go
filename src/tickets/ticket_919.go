@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
@@ -14,11 +13,11 @@ type Ticket_919 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_919) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_919) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_919) Get_no() uint {
@@ -41,11 +40,11 @@ func (t *Ticket_919) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_919) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_919) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_919) Get_testcases() []dao.TestCase {
+func (t *Ticket_919) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -110,7 +109,7 @@ func (t *Ticket_919) Add_testcases() {
 	tc_1.Set_function(tc_func)
 	t.Add_testcase(*tc_1)
 }
-func (t *Ticket_919) lockTable(tc *dao.TestCase) error {
+func (t *Ticket_919) lockTable(tc *common.TestCase) error {
 	var err error
 
 	if common.Is_mysql {
@@ -157,7 +156,7 @@ func (t *Ticket_919) lockTable(tc *dao.TestCase) error {
 	return nil
 }
 
-func (t *Ticket_919) checkLog(tc_1 *dao.TestCase) common.Testcase_status {
+func (t *Ticket_919) checkLog(tc_1 *common.TestCase) common.Testcase_status {
 	const logFilePath = "/var/log/jobarranger/jobarg_agentd.log"
 	const logFileWarning = `retry count`
 	const maxRetries = 10
@@ -165,22 +164,22 @@ func (t *Ticket_919) checkLog(tc_1 *dao.TestCase) common.Testcase_status {
 
 	for i := 0; i < maxRetries; i++ {
 		cmd := fmt.Sprintf(`cat %s | grep "%s"`, logFilePath, logFileWarning)
-		tc_1.Info_log("Executing command: %s", cmd)
+		lib.Logi(common.LOG_LEVEL_INFO, "Executing command: %s", cmd)
 
 		warningLogOutput, err := lib.Ssh_exec_to_str(cmd)
 
-		tc_1.Info_log("checking for warning log: %s", err)
+		lib.Logi(common.LOG_LEVEL_INFO, "checking for warning log: %s", err)
 
 		if strings.Contains(warningLogOutput, logFileWarning) {
-			tc_1.Info_log("Warning log found, returning Passed.")
+			lib.Logi(common.LOG_LEVEL_INFO, "Warning log found, returning Passed.")
 			return PASSED
 		}
 
-		tc_1.Info_log("Warning log not found. Retrying in %v...", retryInterval)
+		lib.Logi(common.LOG_LEVEL_INFO, "Warning log not found. Retrying in %v...", retryInterval)
 		time.Sleep(retryInterval)
 	}
 
-	tc_1.Err_log("Warning log not found after retries, returning FAILED.")
+	lib.Logi(common.LOG_LEVEL_ERR, "Warning log not found after retries, returning FAILED.")
 	return FAILED
 }
 

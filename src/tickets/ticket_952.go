@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
@@ -13,11 +12,11 @@ type Ticket_952 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
-	Testcases                                   []dao.TestCase
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_952) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_952) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_952) Get_no() uint {
@@ -40,11 +39,11 @@ func (t *Ticket_952) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_952) Add_testcase(tc dao.TestCase) {
+func (t *Ticket_952) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_952) Get_testcases() []dao.TestCase {
+func (t *Ticket_952) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
@@ -105,15 +104,15 @@ func (t *Ticket_952) Add_testcases() {
 	t.Add_testcase(*tc_3)
 }
 
-func (t *Ticket_952) logError(tc *dao.TestCase, format string, args ...interface{}) common.Testcase_status {
-	fmt.Println(tc.Err_log(format, args...))
+func (t *Ticket_952) logError(tc *common.TestCase, format string, args ...interface{}) common.Testcase_status {
+	fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, format, args...))
 	return FAILED
 }
 
-func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_status {
+func (t *Ticket_952) runTestCase(tc *common.TestCase, job string) common.Testcase_status {
 	const defaultTestFolderPath = `C:\test_folder` //change default
 
-	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "C01-DAT0341", "JA_CMD", fmt.Sprintf("echo mkdir %s", defaultTestFolderPath))
+	envs, err := lib.Get_str_str_map("JA_HOSTNAME", "oss.windows", "JA_CMD", fmt.Sprintf("echo mkdir %s", defaultTestFolderPath))
 	if err != nil {
 		return t.logError(tc, "Error retrieving environment variables: %s", err)
 	}
@@ -125,7 +124,7 @@ func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_s
 
 	jobExecMessage := fmt.Sprintf("Executed job: %s with run_jobnet_id: %s", job, run_jobnet_id)
 	fmt.Println(jobExecMessage)
-	tc.Info_log(jobExecMessage)
+	lib.Logi(common.LOG_LEVEL_INFO, jobExecMessage)
 
 	jobnet_run_info, err := lib.Jobarg_get_jobnet_run_info(run_jobnet_id)
 	if err != nil {
@@ -133,7 +132,7 @@ func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_s
 	}
 
 	fmt.Printf("Jobnet Run Info: %+v\n", jobnet_run_info)
-	tc.Info_log(fmt.Sprintf("Jobnet Run Info: %+v", jobnet_run_info))
+	lib.Logi(common.LOG_LEVEL_INFO, fmt.Sprintf("Jobnet Run Info: %+v", jobnet_run_info))
 
 	if jobnet_run_info.Jobnet_status == "END" && jobnet_run_info.Job_status == "NORMAL" {
 
@@ -142,7 +141,7 @@ func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_s
 
 			logMessage := fmt.Sprintf("The folder %s already exists, deleting it now.", defaultTestFolderPath)
 			fmt.Println(logMessage)
-			tc.Info_log(logMessage)
+			lib.Logi(common.LOG_LEVEL_INFO, logMessage)
 
 			err = os.RemoveAll(defaultTestFolderPath)
 			if err != nil {
@@ -153,11 +152,11 @@ func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_s
 			}
 			successMessage := fmt.Sprintf("Successfully deleted the folder %s.", defaultTestFolderPath)
 			fmt.Println(successMessage)
-			tc.Info_log(successMessage)
+			lib.Logi(common.LOG_LEVEL_INFO, successMessage)
 		} else if os.IsNotExist(err) {
 			successMessage := fmt.Sprintf("Folder %s does not exist, which is as expected. Test Passed.", defaultTestFolderPath)
 			fmt.Println(successMessage)
-			tc.Info_log(successMessage)
+			lib.Logi(common.LOG_LEVEL_INFO, successMessage)
 		} else {
 			errorMessage := fmt.Sprintf("Error checking folder %s: %s", defaultTestFolderPath, err)
 			fmt.Println(errorMessage)
@@ -167,17 +166,17 @@ func (t *Ticket_952) runTestCase(tc *dao.TestCase, job string) common.Testcase_s
 
 		successMessage := fmt.Sprintf("%s completed successfully.", job)
 		fmt.Println(successMessage)
-		tc.Info_log(successMessage)
+		lib.Logi(common.LOG_LEVEL_INFO, successMessage)
 		return PASSED
 	} else {
 
 		failMessage := fmt.Sprintf("%s failed. Jobnet_status: %s, Job_status: %s, Exit_cd: %d", job, jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd)
 		fmt.Println(failMessage)
-		tc.Info_log(failMessage)
+		lib.Logi(common.LOG_LEVEL_INFO, failMessage)
 		return FAILED
 	}
 }
-func (t *Ticket_952) commonTask(tc *dao.TestCase, ticket string) common.Testcase_status {
+func (t *Ticket_952) commonTask(tc *common.TestCase, ticket string) common.Testcase_status {
 
 	if err := lib.Jobarg_cleanup_windows(); err != nil {
 		return t.logError(tc, "Error during cleanup: %s", err)
