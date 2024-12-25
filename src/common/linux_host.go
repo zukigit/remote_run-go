@@ -1,6 +1,8 @@
 package common
 
 import (
+	"fmt"
+
 	"golang.org/x/crypto/ssh"
 )
 
@@ -12,6 +14,29 @@ type Linux_host struct {
 	Host_use_ip                  *bool       `json:"-"` // Whether to use the IP address for connection (excluded from JSON).
 	Host_connect_port            *int        // The port to use for SSH connection.
 	Host_type                    *Host_type  // The type of host (custom type).
+}
+
+// Get_Linux_host creates and returns a new instance of Linux_host with default values.
+// Fields with pointer types are initialized to avoid nil pointer dereferences.
+func New_linux_host() Host {
+	default_Host_name := "" // Default empty string for Host_name and Host_run_username.
+	default_run_username := ""
+	default_Host_ip := ""
+	default_Host_dns := ""
+	default_Host_use_ip := false       // Default value for Host_use_ip.
+	default_Host_connect_port := 22    // Default SSH port.
+	default_Host_type := Host_type("") // Default Host_type value (customize if necessary).
+
+	return &Linux_host{
+		Host_name:         &default_Host_name,
+		Host_run_username: &default_run_username,
+		Host_ip:           &default_Host_ip,
+		Host_dns:          &default_Host_dns,
+		Host_ssh_client:   nil, // Default to nil; SSH client not initialized.
+		Host_use_ip:       &default_Host_use_ip,
+		Host_connect_port: &default_Host_connect_port,
+		Host_type:         &default_Host_type,
+	}
 }
 
 // Get_Host_name retrieves the host name.
@@ -130,25 +155,29 @@ func (host *Linux_host) Set_Host_type(hostType Host_type) {
 	*host.Host_type = hostType
 }
 
-// Get_Linux_host creates and returns a new instance of Linux_host with default values.
-// Fields with pointer types are initialized to avoid nil pointer dereferences.
-func New_linux_host() Host {
-	default_Host_name := "" // Default empty string for Host_name and Host_run_username.
-	default_run_username := ""
-	default_Host_ip := ""
-	default_Host_dns := ""
-	default_Host_use_ip := false       // Default value for Host_use_ip.
-	default_Host_connect_port := 22    // Default SSH port.
-	default_Host_type := Host_type("") // Default Host_type value (customize if necessary).
-
-	return &Linux_host{
-		Host_name:         &default_Host_name,
-		Host_run_username: &default_run_username,
-		Host_ip:           &default_Host_ip,
-		Host_dns:          &default_Host_dns,
-		Host_ssh_client:   nil, // Default to nil; SSH client not initialized.
-		Host_use_ip:       &default_Host_use_ip,
-		Host_connect_port: &default_Host_connect_port,
-		Host_type:         &default_Host_type,
+func (host *Linux_host) Run_cmd(cmd string) ([]byte, error) {
+	if host.Get_Host_ssh_client() == nil {
+		return nil, fmt.Errorf("err: ssh client is nil")
 	}
+
+	session, err := host.Get_Host_ssh_client().NewSession()
+	if err != nil {
+		return nil, err
+	}
+	defer session.Close()
+
+	return session.Output(cmd)
+}
+
+func (host *Linux_host) Run_cmd_str(cmd string) (string, error) {
+	output, err := host.Run_cmd(cmd)
+
+	return string(output), err
+}
+
+func (host *Linux_host) Register(public_key string) error {
+	cmd := fmt.Sprintf("echo '%s' >> ~/.ssh/authorized_keys", public_key)
+	_, err := host.Run_cmd(cmd)
+
+	return err
 }

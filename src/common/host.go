@@ -23,6 +23,11 @@ type Host interface {
 	Set_Host_use_ip(useIP bool)
 	Set_Host_connect_port(port int)
 	Set_Host_type(hostType Host_type)
+
+	// Host utility functions
+	Run_cmd(cmd string) ([]byte, error)     // Run cmd on host and get output as byte.
+	Run_cmd_str(cmd string) (string, error) // Run cmd on host and getoutput as string.
+	Register(public_key string) error       // Sets the public key for the specified host.
 }
 
 type Host_struct struct {
