@@ -47,14 +47,19 @@ const (
 
 var Log_filepath, DB_hostname, DB_user, DB_passwd, DB_name string
 var Specific_ticket_no, Specific_testcase_no, DB_port, Timeout, Current_tk_no, Current_tc_no uint
+
+// Deprecated: Use Server_host or Host_pool instead.
 var Client *ssh.Client // will be deleted.
+// Deprecated: Use Server_host instead.
 var Login_info Auth
 var Is_mysql, Is_psql bool
 var DB_type Database
 var DB *sql.DB
 var Sugar *zap.SugaredLogger
 var Host_pool []Host
-var Server_host Host // only supports single server.
+
+// Server_host should be used instead of Client and Login_info
+var Server_host Host
 
 func Set_linux_server_host() {
 	for _, host := range Host_pool {
