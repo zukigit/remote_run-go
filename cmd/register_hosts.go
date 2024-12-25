@@ -112,29 +112,9 @@ func get_host(hostname string) common.Host {
 	return nil
 }
 
-func ask_userinput_hostname() string {
-	if len(found_hosts) == 0 {
-		fmt.Println("No hosts to register, exiting...")
-		os.Exit(0)
-	}
-
-	fmt.Println("Found hosts:")
-	for index, host := range found_hosts {
-		if host.Get_Host_type() == common.LINUX_AGENT || host.Get_Host_type() == common.LINUX_SERVER {
-			fmt.Printf("%d) %s\n", index+1, host.Get_Host_name())
-		} else {
-			fmt.Printf("%d) %s (not avaliable yet)\n", index+1, host.Get_Host_name())
-		}
-	}
-	fmt.Println("--------------")
-
-	return lib.Ask_usrinput_string("Enter hostname to register")
-}
-
 func check_duplicated_hosts(temp_hosts *[]common.Host, temp_host common.Host) {
 	// Iterate through the slice to check for duplicates
 	for index, host := range *temp_hosts {
-		fmt.Println("host.Get_Host_name()", host.Get_Host_name())
 		if host.Get_Host_name() == temp_host.Get_Host_name() || (host.Get_Host_type() == common.LINUX_SERVER && temp_host.Get_Host_type() == common.LINUX_SERVER) {
 			// If a duplicate is found, update the existing host
 			(*temp_hosts)[index] = temp_host
@@ -144,13 +124,6 @@ func check_duplicated_hosts(temp_hosts *[]common.Host, temp_host common.Host) {
 
 	// If no duplicate is found, append the new host
 	*temp_hosts = append(*temp_hosts, temp_host)
-}
-
-func copy_sshid_linux(temp_sshcli *ssh.Client) error {
-	cmd := fmt.Sprintf("echo '%s' >> ~/.ssh/authorized_keys", rsa_pub_key)
-	_, err := lib.ExecuteSSHCommand(temp_sshcli, cmd)
-
-	return err
 }
 
 func register(ssh_key_filepath string) {
@@ -163,7 +136,24 @@ func register(ssh_key_filepath string) {
 
 	for {
 		fmt.Println()
-		temp_hostname := ask_userinput_hostname()
+
+		if len(found_hosts) == 0 {
+			fmt.Println("No hosts to register, exiting...")
+			os.Exit(0)
+		}
+
+		fmt.Println("Found hosts:")
+		for index, host := range found_hosts {
+			switch host.(type) {
+			case *common.Linux_host:
+				fmt.Printf("%d) %s\n", index+1, host.Get_Host_name())
+			default:
+				fmt.Printf("%d) %s (not avaliable yet)\n", index+1, host.Get_Host_name())
+			}
+		}
+		fmt.Println("--------------")
+
+		temp_hostname := lib.Ask_usrinput_string("Enter hostname to register")
 
 		parts := strings.Split(temp_hostname, ":")
 		if len(parts) == 2 {
@@ -192,9 +182,9 @@ func register(ssh_key_filepath string) {
 	temp_host.Set_Host_run_username(lib.Ask_usrinput_string("Enter ssh username to register"))
 	temp_passwd = lib.Ask_usrinput_passwd_string("Enter ssh password to register")
 
-	fmt.Print("Connecting to")
+	fmt.Print("Registering, ")
 	if temp_host.Get_Host_use_ip() {
-		fmt.Printf(" %s:%d ...\n", temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port())
+		fmt.Printf("host_ip: %s:%d...\n", temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port())
 
 		temp_sshcli, err = lib.GetSSHClientWithKey(temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), ssh_key_filepath)
 		if err != nil {
@@ -203,7 +193,7 @@ func register(ssh_key_filepath string) {
 			already_registered = true
 		}
 	} else {
-		fmt.Printf("%s:%d\n", temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port())
+		fmt.Printf("host_dns: %s:%d...\n", temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port())
 		temp_sshcli, err = lib.GetSSHClientWithKey(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), ssh_key_filepath)
 		if err != nil {
 			temp_sshcli = lib.GetSSHClient(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
@@ -212,8 +202,9 @@ func register(ssh_key_filepath string) {
 		}
 	}
 
-	if !already_registered && (temp_host.Get_Host_type() == common.LINUX_SERVER || temp_host.Get_Host_type() == common.LINUX_AGENT) {
-		if err = copy_sshid_linux(temp_sshcli); err != nil {
+	if !already_registered {
+		temp_host.Set_Host_ssh_client(temp_sshcli)
+		if err = temp_host.Register(rsa_pub_key); err != nil {
 			fmt.Printf("Failed to register host[%s], Error: %s\n", temp_host.Get_Host_name(), err.Error())
 			os.Exit(1)
 		}
