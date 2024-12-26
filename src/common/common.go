@@ -4,14 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-	"strings"
-	"syscall"
 	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/crypto/ssh"
-	"golang.org/x/term"
 )
 
 type Testcase_status string
@@ -45,20 +42,17 @@ const (
 	LOG_LEVEL_ERR  = 2
 )
 
-var Log_filepath, DB_hostname, DB_user, DB_passwd, DB_name string
+var Log_filepath, DB_hostname, Temp_mysqlDB_hostname, Temp_psqlDB_hostname, DB_user, DB_passwd, DB_name string
 var Specific_ticket_no, Specific_testcase_no, DB_port, Timeout, Current_tk_no, Current_tc_no uint
 
 // Deprecated: Use Server_host or Host_pool instead.
 var Client *ssh.Client // will be deleted.
 // Deprecated: Use Server_host instead.
 var Login_info Auth
-var Is_mysql, Is_psql bool
 var DB_type Database
 var DB *sql.DB
 var Sugar *zap.SugaredLogger
 var Host_pool []Host
-
-// Server_host should be used instead of Client and Login_info
 var Server_host Host
 
 func Set_linux_server_host() {
@@ -91,55 +85,21 @@ func Set_sugar(logfile_path string) {
 }
 
 func Set_db_hostname() {
-	if DB_hostname == "" {
-		DB_hostname = Login_info.Hostname
-	}
-}
-
-func Set_default_db_port() {
-	if Is_mysql && DB_port == 0 {
-		DB_port = 3306
-	} else if Is_psql && DB_port == 0 {
-		DB_port = 5432
-	}
-}
-
-func Set_db_type() error {
-	if !Is_mysql && !Is_psql {
-		return fmt.Errorf("choose db type using --with-mysql or --with-postgresql flag")
-	}
-
-	if Is_mysql {
+	if Temp_mysqlDB_hostname != "" {
+		DB_hostname = Temp_mysqlDB_hostname
 		DB_type = MYSQL
-	} else {
+
+		if DB_port == 0 {
+			DB_port = 3306
+		}
+	} else if Temp_psqlDB_hostname != "" {
+		DB_hostname = Temp_psqlDB_hostname
 		DB_type = PSQL
+
+		if DB_port == 0 {
+			DB_port = 5432
+		}
 	}
-
-	return nil
-}
-
-func Set_usr_hst(args []string) error {
-	parts := strings.Split(args[0], "@")
-	if len(parts) != 2 {
-		fmt.Println("Usage: remote_run user@host <port>")
-		os.Exit(1)
-	}
-
-	Login_info.Username = parts[0]
-	Login_info.Hostname = parts[1]
-
-	return nil
-}
-
-func Set_passwd() {
-	fmt.Printf("%s@%s's password:", Login_info.Username, Login_info.Hostname)
-	bytepw, err := term.ReadPassword(int(syscall.Stdin))
-	fmt.Println() //new line
-	if err != nil {
-		fmt.Println("Failed in getting password, Error:", err.Error())
-		os.Exit(1)
-	}
-	Login_info.Password = string(bytepw)
 }
 
 func Run_testcase(tc TestCase) {

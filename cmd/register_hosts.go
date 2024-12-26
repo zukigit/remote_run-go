@@ -225,19 +225,18 @@ var registerHostsCmd = &cobra.Command{
 	Short: "Register new hosts.",
 	Long:  "This command will scan hosts that starts with 'auto.' from zabbix database and register it in hosts.json file.",
 	Args: func(cmd *cobra.Command, args []string) error {
-		if common.DB_hostname == "" {
+		if common.Temp_mysqlDB_hostname == "" || common.Temp_psqlDB_hostname == "" {
 			return fmt.Errorf("specify database hostname using --db-hostname flag")
 		}
 
-		if err := common.Set_db_type(); err != nil {
-			return err
+		if common.Temp_mysqlDB_hostname != "" && common.Temp_psqlDB_hostname != "" {
+			return fmt.Errorf("you can't use both -m and -p flags, just choose one")
 		}
 
 		return check_id_rsa()
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		common.Set_db_hostname()
-		common.Set_default_db_port()
 
 		// Initialize DB Connection
 		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_name)
@@ -259,9 +258,6 @@ var registerHostsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(registerHostsCmd)
-	registerHostsCmd.Flags().BoolVar(&common.Is_mysql, "with-mysql", false, "Use MySQL database")
-	registerHostsCmd.Flags().BoolVar(&common.Is_psql, "with-postgresql", false, "Use PostgreSQL database")
-	registerHostsCmd.Flags().StringVar(&common.DB_hostname, "db-hostname", "", "Database specific hostname to connect.")
 	registerHostsCmd.Flags().StringVar(&common.DB_user, "db-user", "zabbix", "Database specific username to connect.")
 	registerHostsCmd.Flags().StringVar(&common.DB_passwd, "db-password", "zabbix", "Database specific password to connect.")
 	registerHostsCmd.Flags().StringVar(&common.DB_name, "db-name", "zabbix", "Database specific name to connect.")

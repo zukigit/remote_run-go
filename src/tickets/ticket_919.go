@@ -112,7 +112,7 @@ func (t *Ticket_919) Add_testcases() {
 func (t *Ticket_919) lockTable(tc *common.TestCase) error {
 	var err error
 
-	if common.Is_mysql {
+	if common.DB_type == common.MYSQL {
 		fmt.Println("Using MySQL - Locking table...")
 		_, err = common.DB.Exec("BEGIN;")
 		if err != nil {
@@ -124,7 +124,7 @@ func (t *Ticket_919) lockTable(tc *common.TestCase) error {
 			return fmt.Errorf("error locking table: %s", err.Error())
 		}
 
-	} else if common.Is_psql {
+	} else if common.DB_type == common.PSQL {
 		fmt.Println("Using PostgreSQL - Locking table...")
 		_, err = common.DB.Exec("BEGIN;")
 		if err != nil {
@@ -186,13 +186,13 @@ func (t *Ticket_919) checkLog(tc_1 *common.TestCase) common.Testcase_status {
 func (t *Ticket_919) unlockTable() error {
 	var err error
 
-	if common.Is_psql {
+	if common.DB_type == common.PSQL {
 		fmt.Println("Using PostgreSQL - Unlocking table...")
 		_, err = common.DB.Exec("COMMIT;")
 		if err != nil {
 			return fmt.Errorf("error unlocking table: %s", err.Error())
 		}
-	} else if common.Is_mysql {
+	} else if common.DB_type == common.MYSQL {
 		_, err = common.DB.Exec("UNLOCK TABLES;")
 		if err != nil {
 			return fmt.Errorf("error unlocking table: %s", err.Error())

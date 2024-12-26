@@ -50,6 +50,9 @@ func (host *Linux_host) Get_Host_name() string {
 
 // Set_Host_name sets the host name directly.
 func (host *Linux_host) Set_Host_name(name string) {
+	if host.Host_name == nil {
+		host.Host_name = new(string)
+	}
 	*host.Host_name = name
 }
 
@@ -64,6 +67,9 @@ func (host *Linux_host) Get_Host_run_username() string {
 
 // Set_Host_run_username sets the username for running commands directly.
 func (host *Linux_host) Set_Host_run_username(username string) {
+	if host.Host_run_username == nil {
+		host.Host_run_username = new(string)
+	}
 	*host.Host_run_username = username
 }
 
@@ -124,7 +130,6 @@ func (host *Linux_host) Get_Host_use_ip() bool {
 // Set_Host_use_ip sets whether the IP address is used for connections directly.
 func (host *Linux_host) Set_Host_use_ip(useIP bool) {
 	if host.Host_use_ip == nil {
-		// Initialize the pointer if it's nil
 		host.Host_use_ip = new(bool)
 	}
 	*host.Host_use_ip = useIP
@@ -141,17 +146,26 @@ func (host *Linux_host) Get_Host_connect_port() int {
 
 // Set_Host_connect_port sets the SSH connection port directly.
 func (host *Linux_host) Set_Host_connect_port(port int) {
+	if host.Host_connect_port == nil {
+		host.Host_connect_port = new(int)
+	}
 	*host.Host_connect_port = port
 }
 
 // Get_Host_type retrieves the host type.
-// Returns nil if the Host_type field is not set.
+// Returns an empty Host_type if the field is nil to ensure safe dereferencing.
 func (host *Linux_host) Get_Host_type() Host_type {
+	if host.Host_type == nil {
+		return Host_type("") // Return default empty value
+	}
 	return *host.Host_type
 }
 
 // Set_Host_type sets the host type directly.
 func (host *Linux_host) Set_Host_type(hostType Host_type) {
+	if host.Host_type == nil {
+		host.Host_type = new(Host_type)
+	}
 	*host.Host_type = hostType
 }
 

@@ -590,7 +590,7 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *common.TestCase, 
 	timeout := 2 * time.Minute
 	interval := 1 * time.Second
 
-	if common.Is_psql {
+	if common.DB_type == common.PSQL {
 		lib.CheckAndStopDBService(common.DB, common.Client, "postgresql", defaulQuery, timeout, interval)
 	} else {
 		lib.CheckAndStopDBService(common.DB, common.Client, "mysql", defaulQuery, timeout, interval)
@@ -628,7 +628,7 @@ func AbnormalcaseDBdownretrycount20(jobnetId string, testcase *common.TestCase, 
 
 	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "start the database service and check the no index file remain from server side ..."))
 
-	if common.Is_psql {
+	if common.DB_type == common.PSQL {
 		lib.StartDatabaseService(common.Client, "postgresql")
 	} else {
 		lib.StartDatabaseService(common.Client, "mysqld")

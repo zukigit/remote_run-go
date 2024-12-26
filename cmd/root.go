@@ -111,35 +111,30 @@ var rootCmd = &cobra.Command{
 	Short: "Automated testing",
 	Long:  "Automated testing",
 	Args: func(cmd *cobra.Command, args []string) error {
-		if err := cobra.MinimumNArgs(1)(cmd, args); err != nil {
-			return err
-		}
-
-		if err := common.Set_db_type(); err != nil {
-			return err
+		if common.Temp_mysqlDB_hostname == "" && common.Temp_psqlDB_hostname == "" {
+			return fmt.Errorf("specify database hostname using -m(for mysql) or -p(for psql) flags")
 		}
 
 		if common.Specific_testcase_no > 0 && common.Specific_ticket_no == 0 {
 			return fmt.Errorf("specify the ticket number too by using --ticket")
 		}
 
-		return common.Set_usr_hst(args)
+		return nil
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		common.Set_passwd()
-		lib.Set_common_client(common.Login_info.Username, common.Login_info.Password, common.Login_info.Hostname, common.Login_info.Port)
-		defer common.Client.Close()
-
 		common.Log_filepath = lib.Get_filepath()
 		common.Set_sugar(common.Log_filepath + ".log")
 		defer common.Sugar.Sync()
 
 		// Initialize DB Connection
 		common.Set_db_hostname()
-		common.Set_default_db_port()
+
+		fmt.Printf("Connecting to %s:%d ...", common.DB_hostname, common.DB_port)
 		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_name)
 		defer common.DB.Close()
+
+		fmt.Println("connected")
 
 		lib.Set_host_pool()
 
@@ -165,12 +160,10 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().IntVarP(&common.Login_info.Port, "port", "p", 22, "Port")
-	rootCmd.Flags().BoolVar(&common.Is_mysql, "with-mysql", false, "Use MySQL database")
-	rootCmd.Flags().BoolVar(&common.Is_psql, "with-postgresql", false, "Use PostgreSQL database")
 	rootCmd.Flags().UintVar(&common.Specific_ticket_no, "ticket", 0, "Ticket number to run specific ticket")
 	rootCmd.Flags().UintVar(&common.Specific_testcase_no, "testcase", 0, "Testcase number to run specific testcase")
-	rootCmd.Flags().StringVar(&common.DB_hostname, "db-hostname", "", "Database specific hostname to connect.")
+	rootCmd.Flags().StringVarP(&common.Temp_mysqlDB_hostname, "mysql-hostname", "m", "", "Database specific hostname to connect.")
+	rootCmd.Flags().StringVarP(&common.Temp_psqlDB_hostname, "psql-hostname", "p", "", "Database specific hostname to connect.")
 	rootCmd.Flags().StringVar(&common.DB_user, "db-user", "zabbix", "Database specific username to connect.")
 	rootCmd.Flags().StringVar(&common.DB_passwd, "db-password", "zabbix", "Database specific password to connect.")
 	rootCmd.Flags().StringVar(&common.DB_name, "db-name", "zabbix", "Database specific name to connect.")

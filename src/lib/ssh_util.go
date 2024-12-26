@@ -193,10 +193,6 @@ func GetOutputStrFromSSHCommand(client *ssh.Client, command string) (string, err
 	return string(output), err
 }
 
-func Set_common_client(username, passwd, hostname string, port int) {
-	common.Client = GetSSHClient(hostname, port, username, passwd)
-}
-
 func update_hosts_ips() {
 	var host_dns, host_ip string
 	var host_use_ip bool
@@ -230,6 +226,12 @@ func update_hosts_ips() {
 
 func Set_host_pool() {
 	Get_hosts_from_jsonfile("hosts.json")
+
+	if len(common.Host_pool) <= 0 {
+		fmt.Println("error: no host to run, use 'register_hosts' command to register.")
+		os.Exit(1)
+	}
+
 	update_hosts_ips()
 
 	current_user, err := user.Current()
@@ -257,14 +259,21 @@ func Set_host_pool() {
 				os.Exit(1)
 			}
 
+			host.Set_Host_ip(host.Get_Host_dns())
 			host.Set_Host_ssh_client(client)
 		}
 	}
 
 	common.Set_linux_server_host()
 
-	// if common.Server_host == nil {
-	// 	fmt.Println("Error: no server host to run, use 'register_hosts' command to register.")
-	// 	os.Exit(1)
-	// }
+	// to delete later
+	if common.Server_host == nil {
+		fmt.Println("error: no server host to run, use 'register_hosts' command to register.")
+		os.Exit(1)
+	} else {
+		common.Client = common.Server_host.Get_Host_ssh_client()
+		common.Login_info.Hostname = common.Server_host.Get_Host_ip()
+		common.Login_info.Username = common.Server_host.Get_Host_run_username()
+		common.Login_info.Port = common.Server_host.Get_Host_connect_port()
+	}
 }
