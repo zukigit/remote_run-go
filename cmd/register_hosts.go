@@ -239,7 +239,7 @@ var registerHostsCmd = &cobra.Command{
 		common.Set_db_hostname()
 
 		// Initialize DB Connection
-		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_name)
+		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_hostname)
 		defer common.DB.Close()
 
 		current_user, err := user.Current()
@@ -261,5 +261,7 @@ func init() {
 	registerHostsCmd.Flags().StringVar(&common.DB_user, "db-user", "zabbix", "Database specific username to connect.")
 	registerHostsCmd.Flags().StringVar(&common.DB_passwd, "db-password", "zabbix", "Database specific password to connect.")
 	registerHostsCmd.Flags().StringVar(&common.DB_name, "db-name", "zabbix", "Database specific name to connect.")
+	registerHostsCmd.Flags().StringVarP(&common.Temp_mysqlDB_hostname, "mysql-hostname", "m", "", "Database specific hostname to connect.")
+	registerHostsCmd.Flags().StringVarP(&common.Temp_psqlDB_hostname, "psql-hostname", "p", "", "Database specific hostname to connect.")
 	registerHostsCmd.Flags().UintVar(&common.DB_port, "db-port", 0, "Database specific port to connect.")
 }

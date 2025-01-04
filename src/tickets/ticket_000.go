@@ -1,8 +1,6 @@
 package tickets
 
 import (
-	"fmt"
-
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/lib"
 )
@@ -63,7 +61,7 @@ func (t *Ticket_000) Add_testcases() {
 		lib.Logi(common.LOG_LEVEL_INFO, "testing new log function")
 		lib.Logi(common.LOG_LEVEL_ERR, "testing new log function")
 
-		fmt.Println("len(common.Host_pool)", len(common.Host_pool))
+		lib.Logi(common.LOG_LEVEL_INFO, "len(common.Host_pool): %d", len(common.Host_pool))
 
 		return PASSED
 	}
