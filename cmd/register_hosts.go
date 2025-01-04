@@ -57,8 +57,6 @@ func get_hosts() {
 	var host_name, host_dns, host_ip string
 	var host_use_ip bool
 
-	// rows, err := common.DB.Query(`select h.host, i.useip, i.dns, i.ip from hosts h, interface i
-	// 	where h.hostid = i.hostid and i.main = 1 and i.type = 1 and h.host LIKE 'auto.linux.agent.%'`)
 	rows, err := common.DB.Query(`select h.host, i.useip, i.dns, i.ip from hosts h, interface i
 		where h.hostid = i.hostid and i.main = 1 and i.type = 1 and h.host LIKE 'auto.%'`)
 	if err != nil {

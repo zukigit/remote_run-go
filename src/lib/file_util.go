@@ -9,8 +9,8 @@ import (
 	"github.com/zukigit/remote_run-go/src/common"
 )
 
-func Get_file_trunc(filepath string, flag int) *os.File {
-	file, err := os.OpenFile("hosts.json", flag, 0644)
+func Get_file_trunc(filepath string, flag int, permission os.FileMode) *os.File {
+	file, err := os.OpenFile("hosts.json", flag, permission)
 	if err != nil {
 		fmt.Printf("Failed to open  hosts.json file, Error: %s\n", err.Error())
 		os.Exit(1)
@@ -24,7 +24,7 @@ func Get_hosts_from_jsonfile(jsonfilepath string) {
 	common.Host_pool = common.Host_pool[:0] // clean readed hosts
 
 	// Open the JSON file
-	host_jsonfile := Get_file_trunc(jsonfilepath, os.O_CREATE|os.O_RDONLY)
+	host_jsonfile := Get_file_trunc(jsonfilepath, os.O_CREATE|os.O_RDONLY, 0644)
 	defer host_jsonfile.Close()
 
 	// Decode the JSON file into the temp_hosts slice
@@ -79,7 +79,7 @@ func Get_hosts_from_jsonfile(jsonfilepath string) {
 }
 
 func Set_hosts_to_jsonfile(hosts *[]common.Host, json_filepath string) {
-	host_jsonfile := Get_file_trunc(json_filepath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC)
+	host_jsonfile := Get_file_trunc(json_filepath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	defer host_jsonfile.Close()
 
 	encoder := json.NewEncoder(host_jsonfile)

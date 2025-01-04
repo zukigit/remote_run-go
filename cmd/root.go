@@ -139,7 +139,7 @@ var rootCmd = &cobra.Command{
 		defer common.DB.Close()
 		fmt.Println(" connected")
 
-		lib.Set_host_pool()
+		lib.Set_host_pool("hosts.json")
 
 		lib.Enable_common_jobnets()
 

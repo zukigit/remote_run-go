@@ -55,14 +55,6 @@ var Sugar *zap.SugaredLogger
 var Host_pool []Host
 var Server_host Host
 
-func Set_linux_server_host() {
-	for _, host := range Host_pool {
-		if host.Get_Host_type() == LINUX_SERVER {
-			Server_host = host
-		}
-	}
-}
-
 func Set_sugar(logfile_path string) {
 	logger_conf := zap.NewProductionConfig()
 	logger_conf.Encoding = "console"
