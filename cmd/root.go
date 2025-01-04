@@ -107,12 +107,16 @@ func run_tc() {
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "remote_run.exe user@host --with-mysql (or) --with-postgresql",
-	Short: "Automated testing",
-	Long:  "Automated testing",
+	Use:   "remote_run.exe [-m YOUR_DB_HOSTNAME | -p YOUR_DB_HOSTNAME]",
+	Short: "Run registered tickets on pre-defined hosts.",
+	Long:  "Run registered tickets on pre-defined hosts.",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if common.Temp_mysqlDB_hostname == "" && common.Temp_psqlDB_hostname == "" {
 			return fmt.Errorf("specify database hostname using -m(for mysql) or -p(for psql) flags")
+		}
+
+		if common.Temp_mysqlDB_hostname != "" && common.Temp_psqlDB_hostname != "" {
+			return fmt.Errorf("err: doesn't support for multiple databases yet")
 		}
 
 		if common.Specific_testcase_no > 0 && common.Specific_ticket_no == 0 {

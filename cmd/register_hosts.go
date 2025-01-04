@@ -221,16 +221,16 @@ func register(ssh_key_filepath string) {
 
 // registerHostsCmd represents the registerHosts command
 var registerHostsCmd = &cobra.Command{
-	Use:   "register_hosts --db-hostname YOUR_DB_HOSTNAME [--with-postgresql | --with-mysql]",
+	Use:   "register_hosts [-m YOUR_DB_HOSTNAME | -p YOUR_DB_HOSTNAME]",
 	Short: "Register new hosts.",
 	Long:  "This command will scan hosts that starts with 'auto.' from zabbix database and register it in hosts.json file.",
 	Args: func(cmd *cobra.Command, args []string) error {
-		if common.Temp_mysqlDB_hostname == "" || common.Temp_psqlDB_hostname == "" {
-			return fmt.Errorf("specify database hostname using --db-hostname flag")
+		if common.Temp_mysqlDB_hostname == "" && common.Temp_psqlDB_hostname == "" {
+			return fmt.Errorf("err: specify database hostname using -m(for mysql) or -p(for psql) flags")
 		}
 
 		if common.Temp_mysqlDB_hostname != "" && common.Temp_psqlDB_hostname != "" {
-			return fmt.Errorf("you can't use both -m and -p flags, just choose one")
+			return fmt.Errorf("err: doesn't support for multiple databases yet")
 		}
 
 		return check_id_rsa()
@@ -239,7 +239,8 @@ var registerHostsCmd = &cobra.Command{
 		common.Set_db_hostname()
 
 		// Initialize DB Connection
-		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_hostname)
+		fmt.Printf("Connecting to %s:%d ...", common.DB_hostname, common.DB_port)
+		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_name)
 		defer common.DB.Close()
 
 		current_user, err := user.Current()
