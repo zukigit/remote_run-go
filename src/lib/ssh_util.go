@@ -228,7 +228,7 @@ func Set_host_pool() {
 	Get_hosts_from_jsonfile("hosts.json")
 
 	if len(common.Host_pool) <= 0 {
-		fmt.Println("error: no host to run, use 'register_hosts' command to register.")
+		fmt.Println("error: no hosts to run, use 'register_hosts' command to register.")
 		os.Exit(1)
 	}
 

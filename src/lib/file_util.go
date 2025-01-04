@@ -37,6 +37,11 @@ func Get_hosts_from_jsonfile(jsonfilepath string) {
 		os.Exit(1)
 	}
 
+	if len(temp_hosts) <= 0 {
+		fmt.Println("error: no hosts to run, use 'register_hosts' command to register.")
+		os.Exit(1)
+	}
+
 	// Iterate through temp_hosts and create appropriate host type (Linux_host or Windows_host)
 	for _, temp_host := range temp_hosts {
 		var host common.Host
