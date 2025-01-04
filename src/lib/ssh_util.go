@@ -244,8 +244,9 @@ func Set_host_pool() {
 	for i := range common.Host_pool {
 		host := common.Host_pool[i]
 
-		fmt.Printf("Getting client from %s:%d ...", host.Get_Host_ip(), host.Get_Host_connect_port())
 		if host.Get_Host_use_ip() {
+			fmt.Printf("Getting client from %s:%d ...", host.Get_Host_ip(), host.Get_Host_connect_port())
+
 			client, err := GetSSHClientWithKey(host.Get_Host_ip(), host.Get_Host_connect_port(), host.Get_Host_run_username(), ssh_key_filepath)
 			if err != nil {
 				fmt.Printf("GetSSHClientWithKey failed, Error: %s\n", err.Error())
@@ -254,6 +255,8 @@ func Set_host_pool() {
 
 			host.Set_Host_ssh_client(client)
 		} else {
+			fmt.Printf("Getting client from %s:%d ...", host.Get_Host_dns(), host.Get_Host_connect_port())
+
 			client, err := GetSSHClientWithKey(host.Get_Host_dns(), host.Get_Host_connect_port(), host.Get_Host_run_username(), ssh_key_filepath)
 			if err != nil {
 				fmt.Printf("GetSSHClientWithKey failed, Error: %s\n", err.Error())
