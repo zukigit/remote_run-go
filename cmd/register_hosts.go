@@ -168,11 +168,6 @@ func register(ssh_key_filepath string) {
 			continue
 		}
 
-		if temp_host.Get_Host_type() == common.WINDOWS_AGENT {
-			fmt.Println("Err: WINDOWS_AGENT is not supported yet, skipping... ")
-			continue
-		}
-
 		temp_host.Set_Host_connect_port(temp_port)
 		break
 	}

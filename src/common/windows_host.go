@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"strings"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -189,5 +190,15 @@ func (host *Windows_host) Run_cmd_str(cmd string) (string, error) {
 	return string(output), err
 }
 func (host *Windows_host) Register(public_key string) error {
-	return fmt.Errorf("error: windows hosts are not supported yet")
+	key_filepath := `%programdata%/ssh/administrators_authorized_keys`
+	public_key = strings.ReplaceAll(public_key, "\n", "")
+
+	// Use PowerShell to append the public key to the file
+	cmd := fmt.Sprintf(`powershell -Command "[IO.File]::AppendAllText('%s', '%s' + [Environment]::NewLine)"`,
+		key_filepath, public_key)
+
+	// Execute the command on the remote host via SSH
+	_, err := host.Run_cmd(cmd)
+
+	return err
 }
