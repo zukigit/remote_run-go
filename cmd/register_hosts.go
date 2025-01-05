@@ -142,12 +142,7 @@ func register(ssh_key_filepath string) {
 
 		fmt.Println("Found hosts:")
 		for index, host := range found_hosts {
-			switch host.(type) {
-			case *common.Linux_host:
-				fmt.Printf("%d) %s\n", index+1, host.Get_Host_name())
-			default:
-				fmt.Printf("%d) %s (not avaliable yet)\n", index+1, host.Get_Host_name())
-			}
+			fmt.Printf("%d) %s\n", index+1, host.Get_Host_name())
 		}
 		fmt.Println("--------------")
 
