@@ -190,8 +190,14 @@ func (host *Linux_host) Run_cmd_str(cmd string) (string, error) {
 }
 
 func (host *Linux_host) Register(public_key string) error {
+	// Check if os type is windows
+	output, err := host.Run_cmd_str("uname")
+	if err != nil || output != "Linux\n" {
+		return fmt.Errorf("os type missmatch, err: %s", err.Error())
+	}
+
 	cmd := fmt.Sprintf("echo '%s' >> ~/.ssh/authorized_keys", public_key)
-	_, err := host.Run_cmd(cmd)
+	_, err = host.Run_cmd(cmd)
 
 	return err
 }

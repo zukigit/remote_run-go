@@ -190,6 +190,12 @@ func (host *Windows_host) Run_cmd_str(cmd string) (string, error) {
 	return string(output), err
 }
 func (host *Windows_host) Register(public_key string) error {
+	// Check if os type is windows
+	_, err := host.Run_cmd("ver")
+	if err != nil {
+		return fmt.Errorf("os type missmatch, err: %s", err.Error())
+	}
+
 	key_filepath := `%programdata%/ssh/administrators_authorized_keys`
 	public_key = strings.ReplaceAll(public_key, "\n", "")
 
@@ -197,7 +203,7 @@ func (host *Windows_host) Register(public_key string) error {
 	cmd := fmt.Sprintf(`powershell -Command "[IO.File]::AppendAllText('%s', '%s' + [Environment]::NewLine)"`,
 		key_filepath, public_key)
 
-	_, err := host.Run_cmd(cmd)
+	_, err = host.Run_cmd(cmd)
 	if err != nil {
 		return err
 	}
