@@ -197,8 +197,13 @@ func (host *Windows_host) Register(public_key string) error {
 	cmd := fmt.Sprintf(`powershell -Command "[IO.File]::AppendAllText('%s', '%s' + [Environment]::NewLine)"`,
 		key_filepath, public_key)
 
-	// Execute the command on the remote host via SSH
 	_, err := host.Run_cmd(cmd)
+	if err != nil {
+		return err
+	}
+
+	cmd = fmt.Sprintf(`icacls %s /inheritance:r /grant "Administrators:F" /grant "SYSTEM:F"`, key_filepath)
+	_, err = host.Run_cmd(cmd)
 
 	return err
 }
