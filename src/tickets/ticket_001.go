@@ -55,33 +55,27 @@ func (t *Ticket_000) Add_testcases() {
 	// TESTCASE 001
 	tc_1 := t.New_testcase(1, "Enter your test case description here.")
 	tc_func := func() common.Testcase_status {
-		tc_1.Add_doc(common.PRE_OPT, "tested preopt")
-		tc_1.Add_doc(common.OPT, "tested opt")
-		tc_1.Add_doc(common.EXPT_RES, "tested expt_result")
-		lib.Logi(common.LOG_LEVEL_INFO, "testing new log function")
-		lib.Logi(common.LOG_LEVEL_ERR, "testing new log function")
 
-		lib.Logi(common.LOG_LEVEL_INFO, "len(common.Host_pool): %d", len(common.Host_pool))
+		// How to get host by type
+		host, err := lib.Get_host(common.Host_pool, common.LINUX_SERVER)
+		if err != nil {
+			lib.Logi(common.LOG_LEVEL_ERR, "could not get host, err: %s", err.Error())
+			return FAILED
+		} else {
+			lib.Logi(common.LOG_LEVEL_INFO, "host_name: %s", host.Get_Host_name())
+		}
+
+		// How to get hosts by types
+		hosts, err := lib.Get_hosts(common.Host_pool, common.LINUX_SERVER, common.LINUX_AGENT)
+		if err != nil {
+			lib.Logi(common.LOG_LEVEL_ERR, "could not get hosts, err: %s", err.Error())
+			return FAILED
+		} else {
+			lib.Logi(common.LOG_LEVEL_INFO, "total hosts: %d", len(hosts))
+		}
 
 		return PASSED
 	}
 	tc_1.Set_function(tc_func)
 	t.Add_testcase(*tc_1)
-
-	// TESTCASE 002
-	tc_2 := t.New_testcase(2, "Enter your test case description here.")
-	tc_func = func() common.Testcase_status {
-		lib.Logi(common.LOG_LEVEL_INFO, "tested info log")
-		return MUST_CHECK
-	}
-	tc_2.Set_function(tc_func)
-	t.Add_testcase(*tc_2)
-
-	// TESTCASE 003
-	tc_3 := t.New_testcase(3, "Enter your test case description here.")
-	tc_func = func() common.Testcase_status {
-		return MUST_CHECK
-	}
-	tc_3.Set_function(tc_func)
-	t.Add_testcase(*tc_3)
 }

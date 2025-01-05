@@ -14,7 +14,7 @@ import (
 type Testcase_status string
 type Database string
 type Doc_data_type string
-type Host_type string
+type Host_type string // LINUX_SERVER, LINUX_AGENT and WINDOWS_AGENT
 
 const (
 	MYSQL    Database      = "mysql"
