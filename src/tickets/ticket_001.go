@@ -57,7 +57,7 @@ func (t *Ticket_000) Add_testcases() {
 	tc_func := func() common.Testcase_status {
 
 		// How to get host by type
-		host, err := lib.Get_host(common.Host_pool, common.LS_HOST_TYPE)
+		host, err := lib.Get_host(common.Host_pool, common.WA_HOST_TYPE)
 		if err != nil {
 			lib.Logi(common.LOG_LEVEL_ERR, "could not get host, err: %s", err.Error())
 			return FAILED
@@ -66,7 +66,7 @@ func (t *Ticket_000) Add_testcases() {
 		}
 
 		// How to run commands on host
-		output, err := host.Run_cmd_str("hostname && echo $?")
+		output, err := host.Run_cmd_str("hostname")
 		if err != nil {
 			lib.Logi(common.LOG_LEVEL_ERR, "could not run command on host, err: %s", err.Error())
 			return FAILED
@@ -74,12 +74,17 @@ func (t *Ticket_000) Add_testcases() {
 		lib.Logi(common.LOG_LEVEL_INFO, "output: %s", output)
 
 		// How to get hosts by types
-		hosts, err := lib.Get_hosts(common.Host_pool, common.LS_HOST_TYPE, common.LA_HOST_TYPE)
+		hosts, err := lib.Get_hosts(common.Host_pool, common.LS_HOST_TYPE, common.WA_HOST_TYPE, common.LA_HOST_TYPE)
 		if err != nil {
 			lib.Logi(common.LOG_LEVEL_ERR, "could not get hosts, err: %s", err.Error())
 			return FAILED
 		} else {
 			lib.Logi(common.LOG_LEVEL_INFO, "total hosts: %d", len(hosts))
+		}
+
+		for _, host = range hosts {
+			lib.Logi(common.LOG_LEVEL_INFO, "hostname: %s", host.Get_Host_name())
+			lib.Logi(common.LOG_LEVEL_INFO, "host_type: %s", host.Get_Host_type())
 		}
 
 		return PASSED

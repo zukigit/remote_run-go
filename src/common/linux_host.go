@@ -2,7 +2,6 @@ package common
 
 import (
 	"fmt"
-	"strings"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -186,12 +185,6 @@ func (host *Linux_host) Run_cmd(cmd string) ([]byte, error) {
 
 func (host *Linux_host) Run_cmd_str(cmd string) (string, error) {
 	output, err := host.Run_cmd(cmd)
-	if err != nil {
-		return "", err
-	}
-
-	// remove the last '\n'
-	output = []byte(strings.TrimSuffix(string(output), "\n"))
 
 	return string(output), err
 }
