@@ -65,12 +65,12 @@ func (t *Ticket_000) Add_testcases() {
 			lib.Logi(common.LOG_LEVEL_INFO, "host_name: %s", host.Get_Host_name())
 		}
 
+		// How to run commands on host
 		output, err := host.Run_cmd_str("hostname && echo $?")
 		if err != nil {
-			lib.Logi(common.LOG_LEVEL_ERR, "could not get host, err: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "could not run command on host, err: %s", err.Error())
 			return FAILED
 		}
-
 		lib.Logi(common.LOG_LEVEL_INFO, "output: %s", output)
 
 		// How to get hosts by types
