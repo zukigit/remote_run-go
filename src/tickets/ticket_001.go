@@ -65,6 +65,14 @@ func (t *Ticket_000) Add_testcases() {
 			lib.Logi(common.LOG_LEVEL_INFO, "host_name: %s", host.Get_Host_name())
 		}
 
+		output, err := host.Run_cmd_str("hostname && echo $?")
+		if err != nil {
+			lib.Logi(common.LOG_LEVEL_ERR, "could not get host, err: %s", err.Error())
+			return FAILED
+		}
+
+		lib.Logi(common.LOG_LEVEL_INFO, "output: %s", output)
+
 		// How to get hosts by types
 		hosts, err := lib.Get_hosts(common.Host_pool, common.LINUX_SERVER, common.LINUX_AGENT)
 		if err != nil {
