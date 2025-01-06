@@ -257,7 +257,7 @@ func Set_host_pool(jsonfilepath string) {
 		}
 
 		switch *temp_host.Host_type {
-		case common.LINUX_SERVER:
+		case common.LS_HOST_TYPE:
 			host = &common.Linux_host{
 				Host_name:         temp_host.Host_name,
 				Host_run_username: temp_host.Host_run_username,
@@ -269,7 +269,7 @@ func Set_host_pool(jsonfilepath string) {
 			}
 
 			common.Server_host = host
-		case common.LINUX_AGENT:
+		case common.LA_HOST_TYPE:
 			host = &common.Linux_host{
 				Host_name:         temp_host.Host_name,
 				Host_run_username: temp_host.Host_run_username,
@@ -279,7 +279,7 @@ func Set_host_pool(jsonfilepath string) {
 				Host_use_ip:       temp_host.Host_use_ip,
 				Host_type:         temp_host.Host_type,
 			}
-		case common.WINDOWS_AGENT:
+		case common.WA_HOST_TYPE:
 			host = &common.Windows_host{
 				Host_name:         temp_host.Host_name,
 				Host_run_username: temp_host.Host_run_username,

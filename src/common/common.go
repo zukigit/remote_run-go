@@ -14,7 +14,7 @@ import (
 type Testcase_status string
 type Database string
 type Doc_data_type string
-type Host_type string // LINUX_SERVER, LINUX_AGENT and WINDOWS_AGENT
+type Host_type string // LS_HOST_TYPE, LA_HOST_TYPE and WA_HOST_TYPE
 
 const (
 	MYSQL    Database      = "mysql"
@@ -34,9 +34,9 @@ const (
 	FAILED     Testcase_status = "FAILED"
 	MUST_CHECK Testcase_status = "MUST_CHECK"
 
-	LINUX_SERVER  Host_type = "auto.linux.server."
-	LINUX_AGENT   Host_type = "auto.linux.agent."
-	WINDOWS_AGENT Host_type = "auto.windows.agent."
+	LS_HOST_TYPE Host_type = "auto.linux.server."  // Host_type: linux server
+	LA_HOST_TYPE Host_type = "auto.linux.agent."   // Host_type: linux agent
+	WA_HOST_TYPE Host_type = "auto.windows.agent." // Host_type: windows agent
 
 	LOG_LEVEL_INFO = 1
 	LOG_LEVEL_ERR  = 2

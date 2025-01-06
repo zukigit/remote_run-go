@@ -74,17 +74,17 @@ func get_hosts() {
 		}
 
 		switch {
-		case strings.HasPrefix(host_name, string(common.LINUX_SERVER)):
+		case strings.HasPrefix(host_name, string(common.LS_HOST_TYPE)):
 			host = common.New_linux_host()
-			host.Set_Host_type(common.LINUX_SERVER)
-		case strings.HasPrefix(host_name, string(common.LINUX_AGENT)):
+			host.Set_Host_type(common.LS_HOST_TYPE)
+		case strings.HasPrefix(host_name, string(common.LA_HOST_TYPE)):
 			host = common.New_linux_host()
-			host.Set_Host_type(common.LINUX_AGENT)
-		case strings.HasPrefix(host_name, string(common.WINDOWS_AGENT)):
+			host.Set_Host_type(common.LA_HOST_TYPE)
+		case strings.HasPrefix(host_name, string(common.WA_HOST_TYPE)):
 			host = common.New_windows_host()
-			host.Set_Host_type(common.WINDOWS_AGENT)
+			host.Set_Host_type(common.WA_HOST_TYPE)
 		default:
-			fmt.Printf("Host_name: %s does not match formats('%s' or '%s' or '%s') and will not be registered.", host_name, common.LINUX_SERVER, common.LINUX_AGENT, common.WINDOWS_AGENT)
+			fmt.Printf("Host_name: %s does not match formats('%s' or '%s' or '%s') and will not be registered.", host_name, common.LS_HOST_TYPE, common.LA_HOST_TYPE, common.WA_HOST_TYPE)
 			continue
 		}
 
@@ -113,7 +113,7 @@ func get_host(hostname string) common.Host {
 func check_duplicated_hosts(temp_hosts *[]common.Host, temp_host common.Host) {
 	// Iterate through the slice to check for duplicates
 	for index, host := range *temp_hosts {
-		if host.Get_Host_name() == temp_host.Get_Host_name() || (host.Get_Host_type() == common.LINUX_SERVER && temp_host.Get_Host_type() == common.LINUX_SERVER) {
+		if host.Get_Host_name() == temp_host.Get_Host_name() || (host.Get_Host_type() == common.LS_HOST_TYPE && temp_host.Get_Host_type() == common.LS_HOST_TYPE) {
 			// If a duplicate is found, update the existing host
 			(*temp_hosts)[index] = temp_host
 			return

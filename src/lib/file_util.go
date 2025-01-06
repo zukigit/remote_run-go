@@ -47,7 +47,7 @@ func Get_hosts_from_jsonfile(jsonfilepath string) {
 		var host common.Host
 
 		// If Host_type is Linux, create a Linux_host
-		if *temp_host.Host_type == common.LINUX_AGENT || *temp_host.Host_type == common.LINUX_SERVER {
+		if *temp_host.Host_type == common.LA_HOST_TYPE || *temp_host.Host_type == common.LS_HOST_TYPE {
 			host = &common.Linux_host{
 				Host_name:         temp_host.Host_name,
 				Host_run_username: temp_host.Host_run_username,
@@ -60,7 +60,7 @@ func Get_hosts_from_jsonfile(jsonfilepath string) {
 
 			// Append the created host to the hosts slice
 			common.Host_pool = append(common.Host_pool, host)
-		} else if *temp_host.Host_type == common.WINDOWS_AGENT {
+		} else if *temp_host.Host_type == common.WA_HOST_TYPE {
 			// If Host_type is Windows, create a Windows_host (assuming you have such a struct)
 			host = &common.Windows_host{
 				Host_name:         temp_host.Host_name,
