@@ -121,6 +121,26 @@ func GetSSHClientWithKey(hostIP string, port int, username string, keyfilepath s
 	return client, err
 }
 
+// This is new function of GetSSHClient that does not exit on error.
+func GetSSHClient_(hostIP string, port int, username string, password string) (*ssh.Client, error) {
+	clientConfig := &ssh.ClientConfig{
+		User: username,
+		Auth: []ssh.AuthMethod{
+			ssh.Password(password),
+		},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+	}
+
+	address := fmt.Sprintf("%s:%d", hostIP, port)
+
+	client, err := ssh.Dial("tcp", address, clientConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed in getting ssh client, Error: %s", err.Error())
+	}
+
+	return client, err
+}
+
 func GetSSHClient(hostIP string, port int, username string, password string) *ssh.Client {
 	clientConfig := &ssh.ClientConfig{
 		User: username,

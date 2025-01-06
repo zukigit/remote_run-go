@@ -60,7 +60,7 @@ func get_hosts() {
 	rows, err := common.DB.Query(`select h.host, i.useip, i.dns, i.ip from hosts h, interface i
 		where h.hostid = i.hostid and i.main = 1 and i.type = 1 and h.host LIKE 'auto.%'`)
 	if err != nil {
-		fmt.Println("Failed in quering hosts, Error:", err.Error())
+		fmt.Println("Error: failed in quering hosts, Error:", err.Error())
 		os.Exit(1)
 	}
 	defer rows.Close()
@@ -69,7 +69,7 @@ func get_hosts() {
 		var host common.Host
 
 		if err := rows.Scan(&host_name, &host_use_ip, &host_dns, &host_ip); err != nil {
-			fmt.Println("Failed in scanning hosts, Error:", err.Error())
+			fmt.Println("Error: failed in scanning hosts, Error:", err.Error())
 			os.Exit(1)
 		}
 
@@ -176,7 +176,11 @@ func register(ssh_key_filepath string) {
 
 		temp_sshcli, err = lib.GetSSHClientWithKey(temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), ssh_key_filepath)
 		if err != nil {
-			temp_sshcli = lib.GetSSHClient(temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
+			temp_sshcli, err = lib.GetSSHClient_(temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
+			if err != nil {
+				fmt.Printf("Error: failed to register host[%s], Error: %s\n", temp_host.Get_Host_name(), err.Error())
+				return
+			}
 		} else {
 			already_registered = true
 		}
@@ -184,7 +188,11 @@ func register(ssh_key_filepath string) {
 		fmt.Printf("host_dns: %s:%d...\n", temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port())
 		temp_sshcli, err = lib.GetSSHClientWithKey(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), ssh_key_filepath)
 		if err != nil {
-			temp_sshcli = lib.GetSSHClient(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
+			temp_sshcli, err = lib.GetSSHClient_(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
+			if err != nil {
+				fmt.Printf("Error: failed to register host[%s], Error: %s\n", temp_host.Get_Host_name(), err.Error())
+				return
+			}
 		} else {
 			already_registered = true
 		}
@@ -193,10 +201,31 @@ func register(ssh_key_filepath string) {
 	if !already_registered {
 		temp_host.Set_Host_ssh_client(temp_sshcli)
 		if err = temp_host.Register(rsa_pub_key); err != nil {
-			fmt.Printf("Failed to register host[%s], Error: %s\n", temp_host.Get_Host_name(), err.Error())
-			os.Exit(1)
+			fmt.Printf("Error: failed to register host[%s], Error: %s\n", temp_host.Get_Host_name(), err.Error())
+			return
 		}
 	}
+
+	// try to connect with ssh-keys after registration
+	fmt.Print("Connecting to ")
+	if temp_host.Get_Host_use_ip() {
+		fmt.Printf("host_ip: %s:%d...", temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port())
+
+		_, err = lib.GetSSHClientWithKey(temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), ssh_key_filepath)
+		if err != nil {
+			fmt.Printf("Error: failed to register host[%s], Error: %s\n", temp_host.Get_Host_name(), err.Error())
+			return
+		}
+	} else {
+		fmt.Printf("host_dns: %s:%d...\n", temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port())
+
+		_, err = lib.GetSSHClientWithKey(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), ssh_key_filepath)
+		if err != nil {
+			fmt.Printf("Error: failed to register host[%s], Error: %s\n", temp_host.Get_Host_name(), err.Error())
+			return
+		}
+	}
+	fmt.Println("connected!")
 
 	lib.Get_hosts_from_jsonfile("hosts.json")
 	check_duplicated_hosts(&common.Host_pool, temp_host)
@@ -214,11 +243,11 @@ var registerHostsCmd = &cobra.Command{
 	Long:  "This command will scan hosts that starts with 'auto.' from zabbix database and register it in hosts.json file.",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if common.Temp_mysqlDB_hostname == "" && common.Temp_psqlDB_hostname == "" {
-			return fmt.Errorf("err: specify database hostname using -m(for mysql) or -p(for psql) flags")
+			return fmt.Errorf("specify database hostname using -m(for mysql) or -p(for psql) flags")
 		}
 
 		if common.Temp_mysqlDB_hostname != "" && common.Temp_psqlDB_hostname != "" {
-			return fmt.Errorf("err: doesn't support for multiple databases yet")
+			return fmt.Errorf("doesn't support for multiple databases yet")
 		}
 
 		return check_id_rsa()
