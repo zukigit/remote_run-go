@@ -20,11 +20,12 @@ The command uses specific naming conventions to determine the type and category 
 2. **Execution**:
    - Run the command in your terminal or command prompt:
      ```bash
-     .\remote_run.exe register_hosts --db-hostname YOUR_DB_HOSTNAME [--with-postgresql | --with-mysql]
+     .\remote_run.exe register_hosts [-p YOUR_DB_HOSTNAME | -m YOUR_DB_HOSTNAME]
      ```
-   - `--db-hostname`: Specify the hostname of your database. This is mandatory.
-   - `--with-postgresql`: Use this flag if you're working with a PostgreSQL database.
-   - `--with-mysql`: Use this flag if you're working with a MySQL database.
+   - `-p`: Specify the hostname of your postgresql database.
+   - `-m`: Specify the hostname of your mysql database..
+   
+   note: Since remote_run doesn't not support multiple database yet, you can choose only one flag.
 
 3. **Verification**:
    - Check the `hosts.json` file in the parent folder. If the registration is successful, the registered hosts will be listed there.
