@@ -219,7 +219,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="6So394KROS4OtmH6vHug-9" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;How host registration works&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="605" y="2950" width="320" height="90" as="geometry" />
+          <mxGeometry x="305" y="2970" width="320" height="90" as="geometry" />
         </mxCell>
         <mxCell id="6So394KROS4OtmH6vHug-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="6So394KROS4OtmH6vHug-10" target="6So394KROS4OtmH6vHug-32">
           <mxGeometry relative="1" as="geometry" />
