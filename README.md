@@ -23,10 +23,14 @@ The command uses specific naming conventions to determine the type and category 
      .\remote_run.exe register_hosts [-p YOUR_DB_HOSTNAME | -m YOUR_DB_HOSTNAME]
      ```
    - `-p`: Specify the hostname of your postgresql database.
-   - `-m`: Specify the hostname of your mysql database..
+   - `-m`: Specify the hostname of your mysql database.
+   - `--db-user`: Specify the database username to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-password`: Specify the database password to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-name`: Specify the database name to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-port`: Specify the database port to connect. Default: **5432(psql) | 3306(mysql)**. (OPTIONAL)
    
-   note: Since remote_run doesn't not support multiple database yet, you can choose only one flag.
+   note: Since **remote_run** doesn't not support multiple database yet, you can choose only one flags between **-p** and **-m**.
 
 3. **Verification**:
-   - Check the `hosts.json` file in the parent folder. If the registration is successful, the registered hosts will be listed there.
-   - If the hosts are registered properly, you will be able to use them from common.Host_pool slice.
+   - Check the `hosts.json` file in the parent folderpath. If the registration is successful, the registered hosts will be listed there.
+   - If the hosts are registered properly, you will be able to use them from **common.Host_pool** slice.
