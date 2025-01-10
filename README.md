@@ -51,7 +51,7 @@ The `remote_run` command will run specific ticket.
      ```
    - `-p`: Specify the hostname of your postgresql database.
    - `-m`: Specify the hostname of your mysql database.
-   - `-a`: Use this flag to run all avaliable tickets.
+   - `-a`: Use this flag to run all avaliable tickets. Default: **false**. (OPTIONAL)
    - `--testcase`: Specify testcase number to run specific testcase. Default: **0**. (OPTIONAL)
    - `--db-user`: Specify the database username to connect. Default: **zabbix**. (OPTIONAL)
    - `--db-password`: Specify the database password to connect. Default: **zabbix**. (OPTIONAL)
