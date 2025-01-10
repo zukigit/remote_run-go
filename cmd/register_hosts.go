@@ -228,9 +228,9 @@ func register(ssh_key_filepath string) {
 	fmt.Println("connected!")
 
 	lib.Get_hosts_from_jsonfile("hosts.json")
-	check_duplicated_hosts(&common.Host_pool, temp_host)
+	check_duplicated_hosts(&common.Hosts, temp_host)
 
-	lib.Set_hosts_to_jsonfile(&common.Host_pool, "hosts.json")
+	lib.Set_hosts_to_jsonfile(&common.Hosts, "hosts.json")
 
 	fmt.Printf("Registered host[%s]\n", temp_host.Get_Host_name())
 	found_hosts = append(found_hosts[:chosen_hosts_index], found_hosts[chosen_hosts_index+1:]...)

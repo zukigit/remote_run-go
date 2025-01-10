@@ -153,10 +153,10 @@ var rootCmd = &cobra.Command{
 		// Initialize DB Connection
 		common.Set_db_hostname()
 
-		fmt.Printf("Connecting to %s:%d ...", common.DB_hostname, common.DB_port)
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Connecting to %s:%d ...", common.DB_hostname, common.DB_port))
 		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_name)
 		defer common.DB.Close()
-		fmt.Println(" connected")
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "connected"))
 
 		lib.Set_host_pool("hosts.json")
 
@@ -165,8 +165,6 @@ var rootCmd = &cobra.Command{
 		add_tickets(&tkts)
 		set_ticket_values(tkts)
 		check_duplicated_ticket()
-
-		fmt.Println("common.Specific_ticket_no", common.Specific_ticket_no)
 
 		add_run_tickets(common.Specific_ticket_no)
 		add_run_testcases(common.Specific_testcase_no)

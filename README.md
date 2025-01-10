@@ -33,7 +33,7 @@ The command uses specific naming conventions to determine the type and category 
 
 3. **Verification**:
    - Check the `hosts.json` file in the parent folderpath. If the registration is successful, the registered hosts will be listed there.
-   - If the hosts are registered properly, you will be able to use them from **common.Host_pool** slice.
+   - If the hosts are registered properly, you will be able to use them from **common.Hosts** slice.
 
 ## remote_run Command
 

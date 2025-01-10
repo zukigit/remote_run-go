@@ -224,7 +224,7 @@ func Set_host_pool(jsonfilepath string) {
 	// Get ssh key filepath
 	current_user, err := user.Current()
 	if err != nil {
-		fmt.Printf("failed in getting run user, Error: %s\n", err.Error())
+		fmt.Println(Logi(common.LOG_LEVEL_ERR, "failed in getting run user, Error: %s", err.Error()))
 		os.Exit(1)
 	}
 	ssh_key_filepath := filepath.Join(current_user.HomeDir, ".ssh")
@@ -237,7 +237,7 @@ func Set_host_pool(jsonfilepath string) {
 	decoder := json.NewDecoder(host_jsonfile)
 	if err := decoder.Decode(&temp_hosts); err != nil {
 		if err == io.EOF {
-			fmt.Println("error: no hosts to run, use 'register_hosts' command to register.")
+			fmt.Println(Logi(common.LOG_LEVEL_ERR, "no hosts to run, use 'register_hosts' command to register."))
 			os.Exit(1)
 		}
 		fmt.Printf("Failed to decode hosts.json file, Error: %s\n", err.Error())
@@ -245,14 +245,14 @@ func Set_host_pool(jsonfilepath string) {
 	}
 
 	if len(temp_hosts) <= 0 {
-		fmt.Println("error: no hosts to run, use 'register_hosts' command to register.")
+		fmt.Println(Logi(common.LOG_LEVEL_ERR, "no hosts to run, use 'register_hosts' command to register."))
 		os.Exit(1)
 	}
 
 	// Iterate through temp_hosts and create appropriate host type (Linux_host or Windows_host)
 	for _, temp_host := range temp_hosts {
 		if temp_host.Host_type == nil {
-			fmt.Println("error: Host_type is nil and skipping hostname:", temp_host.Host_name)
+			fmt.Println(Logi(common.LOG_LEVEL_ERR, "Host_type is nil and skipping hostname: %s", *temp_host.Host_name))
 			continue
 		}
 
@@ -290,7 +290,7 @@ func Set_host_pool(jsonfilepath string) {
 				Host_type:         temp_host.Host_type,
 			}
 		default:
-			fmt.Println("error: Host_type is unknown and skipping hostname:", temp_host.Host_name)
+			fmt.Println(Logi(common.LOG_LEVEL_ERR, "error: Host_type is unknown and skipping hostname: %s", *temp_host.Host_name))
 			continue
 		}
 
@@ -298,8 +298,8 @@ func Set_host_pool(jsonfilepath string) {
 		rows, err := GetData(`select i.useip, i.dns, i.ip from hosts h, interface i
 							where h.hostid = i.hostid and i.main = 1 and i.type = 1 and h.host = $1`, host.Get_Host_name())
 		if err != nil {
-			fmt.Print("Failed in quering hosts, Error:", err.Error())
-			fmt.Println(" and skipping hostname:", temp_host.Host_name)
+			fmt.Print(Logi(common.LOG_LEVEL_ERR, "Failed in quering hosts, Error: %s", err.Error()))
+			fmt.Println(Logi(common.LOG_LEVEL_ERR, "skipping hostname: %s", *temp_host.Host_name))
 			continue
 		}
 		defer rows.Close()
@@ -307,7 +307,7 @@ func Set_host_pool(jsonfilepath string) {
 		err_in_scan := false
 		for rows.Next() {
 			if err := rows.Scan(&host_use_ip, &host_dns, &host_ip); err != nil {
-				fmt.Println("Failed in scanning hosts, Error:", err.Error())
+				fmt.Println(Logi(common.LOG_LEVEL_ERR, "Failed in scanning hosts, Error: %s", err.Error()))
 				err_in_scan = true
 			}
 
@@ -317,43 +317,43 @@ func Set_host_pool(jsonfilepath string) {
 		}
 
 		if err_in_scan {
-			fmt.Println("error: can not get ips data from database and skipping hostname:", temp_host.Host_name)
+			fmt.Println(Logi(common.LOG_LEVEL_ERR, "can not get ips data from database and skipping hostname: %s", *temp_host.Host_name))
 			continue
 		}
 
 		if host.Get_Host_use_ip() {
-			fmt.Printf("Getting client from %s:%d ...", host.Get_Host_ip(), host.Get_Host_connect_port())
+			fmt.Println(Logi(common.LOG_LEVEL_INFO, "Getting client from %s:%d ...", host.Get_Host_ip(), host.Get_Host_connect_port()))
 
 			client, err := GetSSHClientWithKey(host.Get_Host_ip(), host.Get_Host_connect_port(), host.Get_Host_run_username(), ssh_key_filepath)
 			if err != nil {
-				fmt.Printf("GetSSHClientWithKey failed, Error: %s", err.Error())
-				fmt.Println(" and skipping hostname:", temp_host.Host_name)
+				fmt.Println(Logi(common.LOG_LEVEL_ERR, "GetSSHClientWithKey failed, Error: %s", err.Error()))
+				fmt.Println(Logi(common.LOG_LEVEL_ERR, " and skipping hostname: %s", *temp_host.Host_name))
 				continue
 			}
 
 			host.Set_Host_ssh_client(client)
 		} else {
-			fmt.Printf("Getting client from %s:%d ...", host.Get_Host_dns(), host.Get_Host_connect_port())
+			fmt.Println(Logi(common.LOG_LEVEL_ERR, "Getting client from %s:%d ...", host.Get_Host_dns(), host.Get_Host_connect_port()))
 
 			client, err := GetSSHClientWithKey(host.Get_Host_dns(), host.Get_Host_connect_port(), host.Get_Host_run_username(), ssh_key_filepath)
 			if err != nil {
-				fmt.Printf("GetSSHClientWithKey failed, Error: %s", err.Error())
-				fmt.Println(" and skipping hostname:", temp_host.Host_name)
+				fmt.Println(Logi(common.LOG_LEVEL_ERR, "GetSSHClientWithKey failed, Error: %s", err.Error()))
+				fmt.Println(Logi(common.LOG_LEVEL_ERR, "skipping hostname: %s", *temp_host.Host_name))
 				continue
 			}
 
 			host.Set_Host_ip(host.Get_Host_dns())
 			host.Set_Host_ssh_client(client)
 		}
-		fmt.Println(" done.")
+		fmt.Println(Logi(common.LOG_LEVEL_INFO, "done."))
 
-		// Append the created host to the Host_pool
-		common.Host_pool = append(common.Host_pool, host)
+		// Append the created host to the Hosts
+		common.Hosts = append(common.Hosts, host)
 	}
 
 	// to delete later
 	if common.Server_host == nil {
-		fmt.Println("error: no server host to run, use 'register_hosts' command to register.")
+		fmt.Println(Logi(common.LOG_LEVEL_ERR, "error: no server host to run, use 'register_hosts' command to register."))
 		os.Exit(1)
 	} else {
 		common.Client = common.Server_host.Get_Host_ssh_client()
