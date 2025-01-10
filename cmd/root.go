@@ -60,7 +60,7 @@ func add_run_testcases(testcase_number uint) {
 				run_testcases = append(run_testcases, testcase)
 
 				if testcase_number != 0 {
-					return
+					break
 				}
 			}
 		}
@@ -93,6 +93,9 @@ func run_tc() {
 		} else {
 			common.Run_testcase(testcase)
 		}
+
+		common.Current_tk_no = 0
+		common.Current_tc_no = 0
 	}
 
 	if len(run_testcases) > 0 {
@@ -162,6 +165,8 @@ var rootCmd = &cobra.Command{
 		add_tickets(&tkts)
 		set_ticket_values(tkts)
 		check_duplicated_ticket()
+
+		fmt.Println("common.Specific_ticket_no", common.Specific_ticket_no)
 
 		add_run_tickets(common.Specific_ticket_no)
 		add_run_testcases(common.Specific_testcase_no)

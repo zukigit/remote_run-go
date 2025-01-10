@@ -37,4 +37,26 @@ The command uses specific naming conventions to determine the type and category 
 
 ## remote_run Command
 
-The `re` command will get hosts from Zabbix database and categorizing them based on predefined naming Conventions.
+The `remote_run` command will run specific ticket.
+
+### Usage
+
+1. **Prerequisites**:
+   - Ensure target hosts are registered in **hosts.json** file.
+
+2. **Execution**:
+   - Run the command in your terminal or command prompt:
+     ```bash
+     .\remote_run.exe TICKET_NUMBER [-p YOUR_DB_HOSTNAME | -m YOUR_DB_HOSTNAME]
+     ```
+   - `-p`: Specify the hostname of your postgresql database.
+   - `-m`: Specify the hostname of your mysql database.
+   - `-a`: Use this flag to run all avaliable tickets.
+   - `--testcase`: Specify testcase number to run specific testcase. Default: **0**. (OPTIONAL)
+   - `--db-user`: Specify the database username to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-password`: Specify the database password to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-name`: Specify the database name to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-port`: Specify the database port to connect. Default: **5432(psql) | 3306(mysql)**. (OPTIONAL)
+   - `--timeout`: Specify common timout in seconds. Default: **300**. (OPTIONAL)
+
+   note:
