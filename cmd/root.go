@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/lib"
@@ -107,10 +108,25 @@ func run_tc() {
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "remote_run.exe [-m YOUR_DB_HOSTNAME | -p YOUR_DB_HOSTNAME]",
+	Use:   "remote_run.exe TICKET_NUMBER [-m YOUR_DB_HOSTNAME | -p YOUR_DB_HOSTNAME]",
 	Short: "Run registered tickets on pre-defined hosts.",
 	Long:  "Run registered tickets on pre-defined hosts.",
 	Args: func(cmd *cobra.Command, args []string) error {
+
+		if !common.Run_alltc_flag && len(args) == 1 {
+			ticket_number, err := strconv.ParseUint(args[0], 10, 32)
+
+			if err != nil {
+				return fmt.Errorf("only accept number for TICKET_NUMBER, err: %s", err.Error())
+			} else {
+				common.Specific_ticket_no = uint(ticket_number)
+			}
+		} else if common.Run_alltc_flag {
+			common.Specific_ticket_no = 0
+		} else {
+			return fmt.Errorf("this commmand needs TICKET_NUMBER to run")
+		}
+
 		if common.Temp_mysqlDB_hostname == "" && common.Temp_psqlDB_hostname == "" {
 			return fmt.Errorf("specify database hostname using -m(for mysql) or -p(for psql) flags")
 		}
@@ -119,9 +135,9 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("err: doesn't support for multiple databases yet")
 		}
 
-		if common.Specific_testcase_no > 0 && common.Specific_ticket_no == 0 {
-			return fmt.Errorf("specify the ticket number too by using --ticket")
-		}
+		// if common.Specific_testcase_no > 0 && common.Specific_ticket_no == 0 {
+		// 	return fmt.Errorf("specify the ticket number too by using --ticket")
+		// }
 
 		return nil
 	},
@@ -163,7 +179,7 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().UintVar(&common.Specific_ticket_no, "ticket", 0, "Ticket number to run specific ticket")
+	rootCmd.Flags().BoolVarP(&common.Run_alltc_flag, "all", "a", false, "Use this flag to run all avaliable tickets")
 	rootCmd.Flags().UintVar(&common.Specific_testcase_no, "testcase", 0, "Testcase number to run specific testcase")
 	rootCmd.Flags().StringVarP(&common.Temp_mysqlDB_hostname, "mysql-hostname", "m", "", "Database specific hostname to connect.")
 	rootCmd.Flags().StringVarP(&common.Temp_psqlDB_hostname, "psql-hostname", "p", "", "Database specific hostname to connect.")
@@ -176,26 +192,30 @@ func init() {
 
 // Add your tickets here
 func add_tickets(t *[]common.Ticket) {
-	*t = append(*t, new(tickets.Ticket_000))
-	*t = append(*t, new(tickets.Ticket_010))
-	*t = append(*t, new(tickets.Ticket_698))
-	*t = append(*t, new(tickets.Ticket_775))
-	*t = append(*t, new(tickets.Ticket_794))
-	*t = append(*t, new(tickets.Ticket_800))
-	*t = append(*t, new(tickets.Ticket_811))
-	*t = append(*t, new(tickets.Ticket_840))
-	*t = append(*t, new(tickets.Ticket_844))
-	*t = append(*t, new(tickets.Ticket_919))
-	*t = append(*t, new(tickets.Ticket_923))
-	*t = append(*t, new(tickets.Ticket_943))
-	*t = append(*t, new(tickets.Ticket_952))
-	*t = append(*t, new(tickets.Ticket_962))
-	*t = append(*t, new(tickets.Ticket_1021))
-	*t = append(*t, new(tickets.Ticket_1089))
-	*t = append(*t, new(tickets.Ticket_1225))
-	*t = append(*t, new(tickets.Ticket_1234))
-	*t = append(*t, new(tickets.Ticket_1292))
-	*t = append(*t, new(tickets.Ticket_1341))
+	*t = append(*t, new(tickets.Ticket_001))
+	*t = append(*t, new(tickets.Ticket_002))
+
+	// temp commented
+	// *t = append(*t, new(tickets.Ticket_010))
+	// *t = append(*t, new(tickets.Ticket_698))
+	// *t = append(*t, new(tickets.Ticket_775))
+	// *t = append(*t, new(tickets.Ticket_794))
+	// *t = append(*t, new(tickets.Ticket_800))
+	// *t = append(*t, new(tickets.Ticket_811))
+	// *t = append(*t, new(tickets.Ticket_840))
+	// *t = append(*t, new(tickets.Ticket_844))
+	// *t = append(*t, new(tickets.Ticket_919))
+	// *t = append(*t, new(tickets.Ticket_923))
+	// *t = append(*t, new(tickets.Ticket_943))
+	// *t = append(*t, new(tickets.Ticket_952))
+	// *t = append(*t, new(tickets.Ticket_962))
+	// *t = append(*t, new(tickets.Ticket_1021))
+	// *t = append(*t, new(tickets.Ticket_1089))
+	// *t = append(*t, new(tickets.Ticket_1225))
+	// *t = append(*t, new(tickets.Ticket_1234))
+	// *t = append(*t, new(tickets.Ticket_1292))
+	// *t = append(*t, new(tickets.Ticket_1341))
+
 	// *t = append(*t, new(tickets.Ticket_821))
 	//*t = append(*t, new(tickets.Ticket_825))
 	//*t = append(*t, new(tickets.Ticket_940))

@@ -44,6 +44,7 @@ const (
 
 var Log_filepath, DB_hostname, Temp_mysqlDB_hostname, Temp_psqlDB_hostname, DB_user, DB_passwd, DB_name string
 var Specific_ticket_no, Specific_testcase_no, DB_port, Timeout, Current_tk_no, Current_tc_no uint
+var Run_alltc_flag bool
 
 // Deprecated: Use Server_host or Host_pool instead.
 var Client *ssh.Client // will be deleted.

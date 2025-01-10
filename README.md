@@ -1,6 +1,6 @@
 # Jobarranger unit testing tool using golang
 
-## Register Hosts Command
+## register_hosts Command
 
 The `register_hosts` command will get hosts from Zabbix database and categorizing them based on predefined naming Conventions.
 
@@ -28,9 +28,13 @@ The command uses specific naming conventions to determine the type and category 
    - `--db-password`: Specify the database password to connect. Default: **zabbix**. (OPTIONAL)
    - `--db-name`: Specify the database name to connect. Default: **zabbix**. (OPTIONAL)
    - `--db-port`: Specify the database port to connect. Default: **5432(psql) | 3306(mysql)**. (OPTIONAL)
-   
+
    note: Since **remote_run** doesn't not support multiple database yet, you can choose only one flags between **-p** and **-m**.
 
 3. **Verification**:
    - Check the `hosts.json` file in the parent folderpath. If the registration is successful, the registered hosts will be listed there.
    - If the hosts are registered properly, you will be able to use them from **common.Host_pool** slice.
+
+## remote_run Command
+
+The `re` command will get hosts from Zabbix database and categorizing them based on predefined naming Conventions.
