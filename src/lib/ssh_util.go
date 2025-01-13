@@ -353,8 +353,7 @@ func Set_host_pool(jsonfilepath string) {
 
 	// to delete later
 	if common.Server_host == nil {
-		fmt.Println(Logi(common.LOG_LEVEL_ERR, "error: no server host to run, use 'register_hosts' command to register."))
-		os.Exit(1)
+		fmt.Println(Logi(common.LOG_LEVEL_ERR, "error: no server host to run, you can not use common.Client and common.Login_info."))
 	} else {
 		common.Client = common.Server_host.Get_Host_ssh_client()
 		common.Login_info.Hostname = common.Server_host.Get_Host_ip()
