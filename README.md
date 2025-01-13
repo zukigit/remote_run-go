@@ -16,6 +16,7 @@ The command uses specific naming conventions to determine the type and category 
 
 1. **Prerequisites**:
    - Ensure that the Zabbix database is already setup and accessible.
+   - If the host is windows, check **PubkeyAuthentication** in `C:\ProgramData\ssh\sshd_config`. If it is no, set it to yes and restart **ssh-server**.
 
 2. **Execution**:
    - Run the command in your terminal or command prompt:
