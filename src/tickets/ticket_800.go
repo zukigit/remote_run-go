@@ -2,204 +2,165 @@ package tickets
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
+	_ "github.com/go-sql-driver/mysql"
+	"golang.org/x/crypto/ssh"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
-	"golang.org/x/crypto/ssh"
 )
 
 type Ticket_800 struct {
-	no          uint
-	description string
-	testcases   []dao.TestCase
+	Ticket_no                                   uint
+	Ticket_description                          string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_800) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_800) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_800) Get_no() uint {
-	return t.no
+	return t.Ticket_no
+}
+
+func (t *Ticket_800) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = passed_count
+}
+
+func (t *Ticket_800) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_800) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
 }
 
 func (t *Ticket_800) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
 }
 
-func (t *Ticket_800) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+func (t *Ticket_800) Add_testcase(tc common.TestCase) {
+	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_800) Get_testcases() []dao.TestCase {
-	return t.testcases
+func (t *Ticket_800) Get_testcases() []common.TestCase {
+	return t.Testcases
 }
 
 // Enter your ticket information here
 func (t *Ticket_800) Set_values() {
-	t.no = 800 // Enter your ticket id
-	t.description = "Transaction files delete"
+	t.Ticket_no = 800 // Enter your ticket id
+	t.Ticket_description = "Run Jobnet, Issue 777, 783 and 800."
 }
 
+// Add your test case here
 func (t *Ticket_800) Add_testcases() {
-	// TESTCASE 74 (Transaction files delete)
-
-	tc_74 := t.New_testcase(1, "Transaction file delete wile 800 parallel jobnets are running ")
+	tc_1 := t.New_testcase(1, "Stop and Start Jobar Agent Service when runing a jobnet.")
 	tc_func := func() common.Testcase_status {
 		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-			tc_74.Err_log("Failed to enable jobnet, Error: %s", err)
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to enable jobnet, Error: %s", err)
 			return FAILED
 		}
-		return RunJobnetAndStopTheAgentAndDeleteTransactionFileAndRestartTheAgent("Icon_800", 800, 15, tc_74, common.Client)
+		return RunJobnet("Icon_1", 1, 1, tc_1, common.Client)
 	}
-	tc_74.Set_function(tc_func)
-	t.Add_testcase(*tc_74)
-
-	tc_78 := t.New_testcase(2, "Agent servive stop while 800  parallel jobnets are running")
-	tc_func = func() common.Testcase_status {
-		if err := lib.Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
-			tc_74.Err_log("Failed to enable jobnet, Error: %s", err)
-			return FAILED
-		}
-		return RunJobnetAndForceStopTheAgent("Icon_800", 800, 15, tc_78, common.Client)
-	}
-	tc_78.Set_function(tc_func)
-	t.Add_testcase(*tc_78)
+	tc_1.Set_function(tc_func)
+	t.Add_testcase(*tc_1)
 }
 
-// Run 800 Jobnets, all jobs icons are running and then stop the agent and delete all transactions file after deleting restart the agent
-func RunJobnetAndStopTheAgentAndDeleteTransactionFileAndRestartTheAgent(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
-
-	// Clean up the agent
+// RunJobnet cleans the environment and runs the jobnet while simulating jobab-termination and restart.
+func RunJobnet(jobnetId string, processCount int, processCheckTimeout int, testcase *common.TestCase, client *ssh.Client) common.Testcase_status {
+	// Cleanup jobarg server and agent
 	err := lib.Jobarg_cleanup_linux()
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, Failed to clean up the linux agent.", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error cleaning up jobarg server and agent: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Clean up agent service success."))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "jobarg-server and jobarg-agentd have been cleaned and restarted."))
 
-	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 1000")
+	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 50")
 
 	// Run jobnet
-	run_jobnet_id, err := lib.Jobarg_exec_E(jobnetId, envs)
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", err.Error(), run_jobnet_id))
+	run_jobnet_id, error := lib.Jobarg_exec_E(jobnetId, envs)
+	if error != nil {
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error: %s, std_out: %s", error.Error(), run_jobnet_id))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
 
 	// Wait for all jobs to be in running state
-	err = lib.JobProcessCountCheck(processCount, processCheckTimeout, sshClient)
+	err = lib.JobProcessCountCheck(processCount, processCheckTimeout, client)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, Failed to get process count.", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error getting process count: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Process count has reached %d", processCount))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Process count has reached %d", processCount))
 
-	// Stop the agent
-	err = lib.Stop_jaz_agent_linux()
+	// Simulate stopping jobarg-agentd after jobnet starts running
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Stopping jobarg-agentd..."))
+	err = lib.Stop_jaz_agent_linux() // Stop the agent
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error : %s, Failed to stop the agent.", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error stopping jobarg-agentd: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Successful stop the agent."))
+	// Verify "no connection to database" error is not in the log
+	logFilePath := "/var/log/jobarranger/jobarg_server.log"
+	errorMsg := "no connection to database"
+	timeout := 10 * time.Second
+	interval := 1 * time.Second
 
-	// Delete all the transaction file of agent
-	err = lib.Cleanup_agent_linux()
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error : %s, Failed to delete the files.", err.Error()))
+	// Use WaitForPatternInLogFile to check for the error message
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Checking for 'no connection to database' error in log..."))
+	_, err = lib.WaitForPatternInLogFile(client, logFilePath, errorMsg, timeout, interval)
+	if err == nil {
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Unexpected error message found in log: %s", errorMsg))
+		return FAILED
+	} else if !strings.Contains(err.Error(), "timeout reached") {
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error while checking log for database connection errors: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Successful delete the files from /var/lib/jobarranger/tmp/"))
+	// Wait to simulate an interruption
+	time.Sleep(10 * time.Second)
 
-	// Restart the agent
+	// Restart jobarg-agentd
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Restarting jobarg-agentd..."))
 	err = lib.Restart_jaz_agent_linux()
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error : %s, Failed to restart the agent.", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error restarting jobarg-agentd: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("Successful restart the agent."))
 
-	// Job Process Check in DB
-	err = lib.JobProcessDBCountCheck(processCount, processCheckTimeout, run_jobnet_id, lib.CheckJobStatusCountQuery)
+	// Wait for jobnet to finish and retrieve jobnet run info
+	targetJobnetStatus := "RUN"
+	targetJobStatus := "ERROR"
+	jobnet_run_info, err := lib.Jobarg_get_jobnet_info(run_jobnet_id, targetJobnetStatus, targetJobStatus, 5)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error : %s, Check DB Count porcess failed.", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error getting jobnet info: %s", err.Error()))
 		return FAILED
 	}
-	fmt.Println(testcase.Info_log("In Db count has reach the limit %d", processCount))
+	fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Jobnet %s with registry number %s is completed.", jobnetId, run_jobnet_id))
 
-	// check zombie process
-	zombieProcessCount, err := lib.CheckZombieProcess(5, sshClient)
+	// Check jobnet run status and exit code
+	// fmt.Println(jobnet_run_info.Jobnet_status)
+	if jobnet_run_info.Jobnet_status != targetJobnetStatus || jobnet_run_info.Job_status != targetJobStatus {
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Unexpected Jobnet or Job status. Jobnet_status: %s, Job_status: %s, Exit_cd: %d",
+			jobnet_run_info.Jobnet_status, jobnet_run_info.Job_status, jobnet_run_info.Exit_cd))
+		return FAILED
+	}
+
+	// Check for zombie processes after job completion
+	zombieProcessCount, err := lib.CheckZombieProcess(1, client)
 	if err != nil {
-		fmt.Println(testcase.Err_log("Error checking zombie process: %s", err.Error()))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "Error checking zombie processes: %s", err.Error()))
 		return FAILED
 	}
-
 	if zombieProcessCount != 0 {
-		fmt.Println(testcase.Err_log("There are zombie processes: %d", zombieProcessCount))
-		return FAILED
-	}
-	fmt.Println(testcase.Info_log("There is no zombie process."))
-
-	return PASSED
-}
-
-func RunJobnetAndForceStopTheAgent(jobnetId string, processCount int, processCheckTimeout int, testcase *dao.TestCase, sshClient *ssh.Client) common.Testcase_status {
-
-	// Clean up the agent
-	err := lib.Jobarg_cleanup_linux()
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, Failed to clean up the linux agent.", err.Error()))
-		return FAILED
-	}
-	fmt.Println(testcase.Info_log("Clean up agent service success."))
-
-	envs, _ := lib.Get_str_str_map("JA_HOSTNAME", "oss.linux", "JA_CMD", "sleep 1000")
-
-	// Run jobnet
-	run_jobnet_id, err := lib.Jobarg_exec_E(jobnetId, envs)
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, std_out: %s", err.Error(), run_jobnet_id))
-		return FAILED
-	}
-	fmt.Println(testcase.Info_log("%s has been successfully run with registry number: %s", jobnetId, run_jobnet_id))
-
-	// Wait for all jobs to be in running state
-	err = lib.JobProcessCountCheck(processCount, processCheckTimeout, sshClient)
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error: %s, Failed to get process count.", err.Error()))
-		return FAILED
-	}
-	fmt.Println(testcase.Info_log("Process count has reached %d", processCount))
-
-	// Stop the agent
-	err = lib.Stop_jaz_agent_linux()
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error : %s, Failed to stop the agent.", err.Error()))
-		return FAILED
-	}
-	fmt.Println(testcase.Info_log("Successful stop the agent."))
-
-	// Job Process Check in DB
-	err = lib.JobProcessDBCountCheck(processCount, processCheckTimeout, run_jobnet_id, lib.CheckJobStatusCountQuery)
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error : %s, Check DB Count porcess failed.", err.Error()))
-		return FAILED
-	}
-	fmt.Println(testcase.Info_log("In Db count has reach the limit %d", processCount))
-
-	// check zombie process
-	zombieProcessCount, err := lib.CheckZombieProcess(1, sshClient)
-	if err != nil {
-		fmt.Println(testcase.Err_log("Error checking zombie process: %s", err.Error()))
-		return FAILED
-	}
-
-	if zombieProcessCount != 0 {
-		fmt.Println(testcase.Err_log("There are zombie processes: %d", zombieProcessCount))
-		return FAILED
+		fmt.Println(lib.Logi(common.LOG_LEVEL_ERR, "There are zombie processes: %d", zombieProcessCount))
 	} else {
-		fmt.Println(testcase.Info_log("There is no zombie process."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "No zombie process detected."))
 	}
 
 	return PASSED

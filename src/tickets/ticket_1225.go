@@ -8,41 +8,53 @@ import (
 	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
-	"github.com/zukigit/remote_run-go/src/dao"
 	"github.com/zukigit/remote_run-go/src/lib"
 	"golang.org/x/crypto/ssh"
 )
 
 type Ticket_1225 struct {
-	no          uint
-	description string
-	testcases   []dao.TestCase
+	Ticket_no                                   uint
+	Ticket_description                          string
+	PASSED_count, FAILED_count, MUSTCHECK_count int
+	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_1225) New_testcase(testcase_id uint, testcase_description string) *dao.TestCase {
-	return dao.New_testcase(testcase_id, testcase_description)
+func (t *Ticket_1225) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+	return common.New_testcase(testcase_id, testcase_description)
 }
 
 func (t *Ticket_1225) Get_no() uint {
-	return t.no
+	return t.Ticket_no
+}
+
+func (t *Ticket_1225) Set_PASSED_count(passed_count int) {
+	t.PASSED_count = passed_count
+}
+
+func (t *Ticket_1225) Set_FAILED_count(failed_count int) {
+	t.FAILED_count = failed_count
+}
+
+func (t *Ticket_1225) Set_MUSTCHECK_count(mustcheck_count int) {
+	t.MUSTCHECK_count = mustcheck_count
 }
 
 func (t *Ticket_1225) Get_dsctn() string {
-	return t.description
+	return t.Ticket_description
 }
 
-func (t *Ticket_1225) Add_testcase(tc dao.TestCase) {
-	t.testcases = append(t.testcases, tc)
+func (t *Ticket_1225) Add_testcase(tc common.TestCase) {
+	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_1225) Get_testcases() []dao.TestCase {
-	return t.testcases
+func (t *Ticket_1225) Get_testcases() []common.TestCase {
+	return t.Testcases
 }
 
 // Enter your ticket information here
 func (t *Ticket_1225) Set_values() {
-	t.no = 1225 // Enter your ticket id
-	t.description = "Japurge delete records with limit 500."
+	t.Ticket_no = 1225 // Enter your ticket id
+	t.Ticket_description = "Japurge delete records with limit 500."
 }
 
 // Add your test case here
@@ -52,36 +64,36 @@ func (t *Ticket_1225) Add_testcases() {
 	tc_func := func() common.Testcase_status {
 		// Enter your test case logic here
 		if err := lib.Stop_jaz_server(); err != nil {
-			tc_79.Err_log("Failed to stop jobarg-server, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to stop jobarg-server, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_79.Info_log("JAZ Server has been stopped."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ Server has been stopped."))
 
 		// Set log level
 		log_level := "4"
 		if err := lib.Ja_set_server_config_linux("DebugLevel", log_level); err != nil {
-			tc_79.Err_log("Failed to update server config for log level, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to update server config for log level, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_79.Info_log("Log level has been set to %s.", log_level))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Log level has been set to %s.", log_level))
 
 		// Set JaPurgeLimit
 		ja_purge_limit := 500
 		if err := lib.Ja_set_server_config_linux("JaPurgeLimit", strconv.Itoa(ja_purge_limit)); err != nil {
-			tc_79.Err_log("Failed to update server config for JaPurgeLimit, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to update server config for JaPurgeLimit, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_79.Info_log("JaPurgeLimit has been set to %d.", ja_purge_limit))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JaPurgeLimit has been set to %d.", ja_purge_limit))
 
 		if _, err := lib.DBexec("delete from ja_run_jobnet_table;"); err != nil {
-			tc_79.Err_log("Failed to delete jobnet, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to delete jobnet, Error: %s", err.Error())
 			return FAILED
 		}
 
 		if _, err := lib.DBexec(`INSERT INTO ja_run_jobnet_table
 						(inner_jobnet_id, inner_jobnet_main_id) VALUES (%d, %d);`,
 			1500000000000000002, 1500000000000000002); err != nil {
-			tc_79.Err_log("Failed to insert jobnet, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to insert jobnet, Error: %s", err.Error())
 			return FAILED
 		}
 
@@ -90,46 +102,46 @@ func (t *Ticket_1225) Add_testcases() {
 						jobnet_abort_flag, load_status, scheduled_time, start_time, end_time, public_flag)
 						VALUES ('1500000000000000002', '20240704120626', '2024-07-04 07:50:40.064', 1, 1, 3, 0,
 						0, 0, 0, '20240704035042', '20240704035044', 0);`); err != nil {
-			tc_79.Err_log("Failed to insert into jobnet summary table, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Failed to insert into jobnet summary table, Error: %s", err.Error())
 			return FAILED
 		}
 
 		err := insertOneMillionRecords()
 		if err != nil {
-			tc_79.Err_log("Faild to insert records, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Faild to insert records, Error: %s", err.Error())
 			return FAILED
 		}
 
-		fmt.Println(tc_79.Info_log("one million records have been inserted to DB."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "one million records have been inserted to DB."))
 
 		// Backup and clean jobarg server log
 		if err := moveAndBackupJAZServerLog(); err != nil {
-			tc_79.Err_log("Faild to clean the JAZ server log, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Faild to clean the JAZ server log, Error: %s", err.Error())
 			return FAILED
 		}
 
 		// Restart the jobarg server
 		if err := lib.Restart_jaz_server(); err != nil {
-			tc_79.Err_log("Faild to restart the JAZ server, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Faild to restart the JAZ server, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_79.Info_log("JAZ server has been restarted."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "JAZ server has been restarted."))
 
 		// Check the expected result; jobs are being purged at a rate of JaPurgeLimit
 		var server_log string
 		if err := checkPurgeLog(ja_purge_limit, 3, common.Client, &server_log); err != nil {
-			tc_79.Err_log("Faild to check the JAZ server log for purge limit, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Faild to check the JAZ server log for purge limit, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_79.Info_log("The expected JAZ server logs are found. %s", server_log))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "The expected JAZ server logs are found. %s", server_log))
 
 		// Check if all data inside the database gets deleted
 		timeout_min := 240 // timeout in minutes
 		if err := checkRunIconCount(timeout_min, 0); err != nil {
-			tc_79.Err_log("Faild to check the run icon count, Error: %s", err.Error())
+			lib.Logi(common.LOG_LEVEL_ERR, "Faild to check the run icon count, Error: %s", err.Error())
 			return FAILED
 		}
-		fmt.Println(tc_79.Info_log("All run job icons are deleted from DB."))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "All run job icons are deleted from DB."))
 
 		return PASSED
 	}
@@ -253,12 +265,12 @@ func insertOneMillionRecords() error {
 	// prepare query for each database type
 	var query string
 
-	if common.Is_psql {
+	if common.DB_type == common.PSQL {
 		query = `DO $$
 		DECLARE
-			batch_size CONSTANT INTEGER := 500;
+			batch_size CONSTANT INTEGER := 20000;
 			counter INTEGER := 0;
-			total_records INTEGER := 50000;  -- Total number of records to process
+			total_records INTEGER := 1000000;  -- Total number of records to process
 		BEGIN
 			FOR i IN 1..total_records LOOP
 
@@ -377,7 +389,7 @@ CREATE PROCEDURE insert_one_million_records()
 BEGIN
     DECLARE batch_size INT DEFAULT 500;
     DECLARE counter INT DEFAULT 0;
-    DECLARE total_records INT DEFAULT 50000;
+    DECLARE total_records INT DEFAULT 1000000;
     DECLARE i INT DEFAULT 1;
 
     -- Start transaction
@@ -539,8 +551,14 @@ END;
 	}
 
 	// Call the created procedure for mysql
-	if common.Is_mysql {
+	if common.DB_type == common.MYSQL {
 		_, err := common.DB.Exec("CALL insert_one_million_records();")
+		if err != nil {
+			return err
+		}
+
+		// Commit after executing the stored procedure
+		_, err = common.DB.Exec("COMMIT;")
 		if err != nil {
 			return err
 		}

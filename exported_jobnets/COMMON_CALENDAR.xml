@@ -1,0 +1,21 @@
+<Calendar>
+  <UserInfo>
+    <user_name>Admin</user_name>
+    <type>SUPER</type>
+  </UserInfo>
+  <ja_calendar_control_table>
+    <calendar_id>COMMON_CALENDAR</calendar_id>
+    <update_date>20241108123138</update_date>
+    <created_date>2024-11-08T12:31:37+06:30</created_date>
+    <valid_flag>1</valid_flag>
+    <public_flag>0</public_flag>
+    <user_name>Admin</user_name>
+    <calendar_name>COMMON_CALENDAR</calendar_name>
+    <memo/>
+  </ja_calendar_control_table>
+  <ja_calendar_detail_table>
+    <calendar_id>COMMON_CALENDAR</calendar_id>
+    <update_date>20241108123138</update_date>
+    <operating_date>20241111</operating_date>
+  </ja_calendar_detail_table>
+</Calendar>

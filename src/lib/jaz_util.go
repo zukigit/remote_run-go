@@ -44,6 +44,10 @@ func Jobarg_get_LASTEXITCD(registry_number string) (int64, error) {
 		return -1, err
 	}
 
+	if exit_cd == "" {
+		return 0, nil
+	}
+
 	num, err := strconv.ParseInt(exit_cd, 10, 64) // Base 10, 64-bit integer
 	if err != nil {
 		return -1, err
@@ -63,11 +67,16 @@ func Jobarg_get_LASTSTDERR(registry_number string) (string, error) {
 }
 
 // Jobarg_get_jobnet_run_info waits util the jobnet is done or get error and returns Jobnet run info.
+//
+// Modified: Added a elapsed time counter.
 func Jobarg_get_jobnet_run_info(registry_number string) (*common.Jobnet_run_info, error) {
 	var jobnet_status, job_status, std_out, std_error string
 	var err error
 	var index int
 	var exit_cd int64
+
+	// taking current time snapshot
+	start := time.Now()
 
 	for {
 		jobnet_status, err = Jobarg_get_JA_JOBNETSTATUS(registry_number)
@@ -83,7 +92,18 @@ func Jobarg_get_jobnet_run_info(registry_number string) (*common.Jobnet_run_info
 		if jobnet_status == common.END || (jobnet_status == common.RUN && job_status == common.ERROR) || jobnet_status == common.ENDERR || jobnet_status == common.RUNERR {
 			break
 		}
-		Spinner_log(index, Formatted_log(common.INFO, "Getting jobnet[%s] run info but jobnet is not finished yet. jobnet_status: %s, job_status: %s", registry_number, jobnet_status, job_status))
+
+		// Calculating elapsed time.
+		elapsed := time.Since(start)
+		// Extract hours, minutes, and seconds from elapsed time
+		hours := int(elapsed.Hours())
+		minutes := int(elapsed.Minutes()) % 60
+		seconds := int(elapsed.Seconds()) % 60
+
+		// Print in HH:MM:SS format with \r to overwrite the line
+		//fmt.Printf("\r%02d:%02d:%02d", hours, minutes, seconds)
+
+		Spinner_log(index, Formatted_log(common.LOG_LEVEL_INFO, "Getting jobnet[%s] run info but jobnet is not finished yet. jobnet_status: %s, job_status: %s Elapsed Time: %02d:%02d:%02d", registry_number, jobnet_status, job_status, hours, minutes, seconds))
 		time.Sleep(1 * time.Second)
 		index++
 	}
@@ -108,47 +128,63 @@ func Jobarg_get_jobnet_run_info(registry_number string) (*common.Jobnet_run_info
 }
 
 // Jobarg_get_jobnet_run_info waits util the jobnet is done or get error and returns Jobnet run info.
-func Jobarg_get_jobnet_info(registry_number string, targetJobnetStatus string, targetJobStatus string) (*common.Jobnet_run_info, error) {
+func Jobarg_get_jobnet_info(registry_number string, targetJobnetStatus string, targetJobStatus string, timeoutDuration int) (*common.Jobnet_run_info, error) {
 	var jobnet_status, job_status, std_out, std_error string
+	var exit_cd int64
 	var err error
 	var index int
-	var exit_cd int64
+
+	// Set the timeout
+	timeout := time.After(time.Duration(timeoutDuration) * time.Minute)
 
 	for {
-		jobnet_status, err = Jobarg_get_JA_JOBNETSTATUS(registry_number)
-		if err != nil {
-			Formatted_log(common.INFO, "Error:%s", err.Error())
-		}
+		select {
+		case <-timeout:
+			// Timeout reached, return with a timeout error
+			return nil, fmt.Errorf("timeout reached after %d minutes while waiting for jobnet to finish", timeoutDuration)
+		default:
+			// Get jobnet and job statuses
+			jobnet_status, err = Jobarg_get_JA_JOBNETSTATUS(registry_number)
+			if err != nil {
+				Formatted_log(common.LOG_LEVEL_INFO, "Error:%s", err.Error())
+			}
+			job_status, err = Jobarg_get_JA_JOBSTATUS(registry_number)
+			if err != nil {
+				Formatted_log(common.LOG_LEVEL_INFO, "Error:%s", err.Error())
+			}
+			// Check if the jobnet status matches the target statuses
+			if jobnet_status == targetJobnetStatus && job_status == targetJobStatus {
+				goto FetchInfo
+				// Jobnet has reached the desired status, exit loop
+				// Use a labeled statement to exit the loop and fetch info
+			}
 
-		job_status, err = Jobarg_get_JA_JOBSTATUS(registry_number)
-		if err != nil {
-			Formatted_log(common.INFO, "Error:%s", err.Error())
+			// Log progress and wait before the next check
+			Spinner_log(index, Formatted_log(common.LOG_LEVEL_INFO, "Getting jobnet[%s] run info but jobnet is not finished yet ", registry_number))
+			time.Sleep(1 * time.Second)
+			index++
 		}
-
-		if jobnet_status == targetJobnetStatus && job_status == targetJobStatus {
-			break
-		}
-		Spinner_log(index, Formatted_log(common.INFO, "Getting jobnet[%s] run info but jobnet is not finished yet", registry_number))
-		time.Sleep(1 * time.Second)
-		index++
 	}
-
+FetchInfo:
+	// Fetch additional information after successful job completion
 	exit_cd, err = Jobarg_get_LASTEXITCD(registry_number)
 	if err != nil {
-		Formatted_log(common.INFO, "Error:%s", err.Error())
+		Formatted_log(common.LOG_LEVEL_INFO, "Error:%s", err.Error())
 	}
 
 	std_out, err = Jobarg_get_LASTSTDOUT(registry_number)
 	if err != nil {
-		Formatted_log(common.INFO, "Error:%s", err.Error())
+		Formatted_log(common.LOG_LEVEL_INFO, "Error:%s", err.Error())
 	}
 
 	std_error, err = Jobarg_get_LASTSTDERR(registry_number)
 	if err != nil {
-		Formatted_log(common.INFO, "Error:%s", err.Error())
+		Formatted_log(common.LOG_LEVEL_INFO, "Error:%s", err.Error())
 	}
 
 	fmt.Println()
+
+	// Pass values instead of pointers to New_jobnet_run_info
 	return common.New_jobnet_run_info(jobnet_status, job_status, std_out, std_error, exit_cd), nil
 }
 
@@ -232,4 +268,88 @@ func Jobarg_enable_jobnet(jobnet_id string, jobnet_name string) error {
 	}
 
 	return nil
+}
+
+func Jobarg_server_check_log(searchLog string) ([]string, error) {
+	logDirectory := "/var/log/jobarranger/jobarg_server.log"
+	// Construct the command to search the log file using grep
+	command := fmt.Sprintf("cat %s | grep %s", logDirectory, searchLog)
+
+	// Execute the command via SSH
+	output, err := Ssh_exec_to_str(command)
+	if err != nil {
+		return nil, fmt.Errorf("error executing command: %w", err)
+	}
+
+	// Split the output into lines (assuming each log entry is on a new line)
+	matchingLogs := strings.Split(output, "\n")
+	// Remove empty lines if any
+	var filteredLogs []string
+	for _, log := range matchingLogs {
+		if log != "" {
+			filteredLogs = append(filteredLogs, log)
+		}
+	}
+
+	// If no logs match the search term, return an error
+	if len(filteredLogs) == 0 {
+		return nil, fmt.Errorf("no matching logs found for: %s", searchLog)
+	}
+
+	return filteredLogs, nil
+}
+
+func Enable_common_jobnets() {
+	if err := Jobarg_enable_jobnet("Icon_1", "jobicon_linux"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := Jobarg_enable_jobnet("Icon_2", "Icon_2"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := Jobarg_enable_jobnet("Icon_10", "Icon_10"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := Jobarg_enable_jobnet("Icon_100", "Icon_100"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := Jobarg_enable_jobnet("Icon_200", "Icon_200"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := Jobarg_enable_jobnet("Icon_400", "Icon_400"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := Jobarg_enable_jobnet("Icon_500", "Icon_500"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := Jobarg_enable_jobnet("Icon_510", "Icon_510"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := Jobarg_enable_jobnet("Icon_800", "Icon_800"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := Jobarg_enable_jobnet("Icon_1000", "Icon_1000"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := Jobarg_enable_jobnet("Icon_1020", "Icon_1020"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := Jobarg_enable_jobnet("Icon_2040", "Icon_2040"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
+	if err := Jobarg_enable_jobnet("Icon_3000", "Icon_3000"); err != nil {
+		fmt.Println("Failed to enable common jobnets, error: ", err.Error())
+	}
+
 }
