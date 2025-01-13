@@ -25,14 +25,14 @@ type Host interface {
 	Set_Host_type(hostType Host_type)
 
 	// Host utility functions
+	Register(public_key string) error       // Sets the public key for the specified host.
 	Run_cmd(cmd string) ([]byte, error)     // Run cmd on host and get output as byte.
 	Run_cmd_str(cmd string) (string, error) // Run cmd on host and getoutput as string.
-	Register(public_key string) error       // Sets the public key for the specified host.
 }
 
 type Host_struct struct {
 	Host_name, Host_run_username *string     // The host name and username for running commands.
-	Host_ip, Host_dns            *string     `json:"-"` // IP and DNS of the host (excluded from JSON serialization).
+	Host_ip, Host_dns            *string     `json:"-"` // IP and DNS of the host (excluded from JSON).
 	Host_ssh_client              *ssh.Client `json:"-"` // SSH client for connecting to the host (excluded from JSON).
 	Host_use_ip                  *bool       `json:"-"` // Whether to use the IP address for connection (excluded from JSON).
 	Host_connect_port            *int        // The port to use for SSH connection.

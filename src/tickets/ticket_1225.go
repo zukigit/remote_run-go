@@ -265,7 +265,7 @@ func insertOneMillionRecords() error {
 	// prepare query for each database type
 	var query string
 
-	if common.Is_psql {
+	if common.DB_type == common.PSQL {
 		query = `DO $$
 		DECLARE
 			batch_size CONSTANT INTEGER := 20000;
@@ -551,7 +551,7 @@ END;
 	}
 
 	// Call the created procedure for mysql
-	if common.Is_mysql {
+	if common.DB_type == common.MYSQL {
 		_, err := common.DB.Exec("CALL insert_one_million_records();")
 		if err != nil {
 			return err

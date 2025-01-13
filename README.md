@@ -1,6 +1,6 @@
 # Jobarranger unit testing tool using golang
 
-## Register Hosts Command
+## register_hosts Command
 
 The `register_hosts` command will get hosts from Zabbix database and categorizing them based on predefined naming Conventions.
 
@@ -20,12 +20,43 @@ The command uses specific naming conventions to determine the type and category 
 2. **Execution**:
    - Run the command in your terminal or command prompt:
      ```bash
-     .\remote_run.exe register_hosts --db-hostname YOUR_DB_HOSTNAME [--with-postgresql | --with-mysql]
+     .\remote_run.exe register_hosts [-p YOUR_DB_HOSTNAME | -m YOUR_DB_HOSTNAME]
      ```
-   - `--db-hostname`: Specify the hostname of your database. This is mandatory.
-   - `--with-postgresql`: Use this flag if you're working with a PostgreSQL database.
-   - `--with-mysql`: Use this flag if you're working with a MySQL database.
+   - `-p`: Specify the hostname of your postgresql database.
+   - `-m`: Specify the hostname of your mysql database.
+   - `--db-user`: Specify the database username to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-password`: Specify the database password to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-name`: Specify the database name to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-port`: Specify the database port to connect. Default: **5432(psql) | 3306(mysql)**. (OPTIONAL)
+
+   note: Since **remote_run** doesn't not support multiple databases yet, you can choose only one flags between **-p** and **-m**.
 
 3. **Verification**:
-   - Check the `hosts.json` file in the parent folder. If the registration is successful, the registered hosts will be listed there.
-   - If the hosts are registered properly, you will be able to use them from common.Host_pool slice.
+   - Check the `hosts.json` file in the parent folderpath. If the registration is successful, the registered hosts will be listed there.
+   - If the hosts are registered properly, you will be able to use them from **common.Hosts** slice.
+
+## remote_run Command
+
+The `remote_run` command will run specific ticket.
+
+### Usage
+
+1. **Prerequisites**:
+   - Ensure target hosts are registered in **hosts.json** file.
+
+2. **Execution**:
+   - Run the command in your terminal or command prompt:
+     ```bash
+     .\remote_run.exe TICKET_NUMBER [-p YOUR_DB_HOSTNAME | -m YOUR_DB_HOSTNAME]
+     ```
+   - `-p`: Specify the hostname of your postgresql database.
+   - `-m`: Specify the hostname of your mysql database.
+   - `-a`: Use this flag to run all avaliable tickets. Default: **false**. (OPTIONAL)
+   - `--testcase`: Specify testcase number to run specific testcase. Default: **0**. (OPTIONAL)
+   - `--db-user`: Specify the database username to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-password`: Specify the database password to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-name`: Specify the database name to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-port`: Specify the database port to connect. Default: **5432(psql) | 3306(mysql)**. (OPTIONAL)
+   - `--timeout`: Specify common timout in seconds. Default: **300**. (OPTIONAL)
+
+   note: Since **remote_run** doesn't not support multiple databases yet, you can choose only one flags between **-p** and **-m**.

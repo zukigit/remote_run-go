@@ -202,7 +202,7 @@ func modifyHostnameForTestcase(tc *common.TestCase) common.Testcase_status {
 	var changeHostCmd string
 
 	// Check if it's MySQL
-	if common.Is_mysql {
+	if common.DB_type == common.MYSQL {
 		changeHostCmd = `UPDATE hosts SET host = 'new.hostname' WHERE host = 'oss.linux';`
 		_, err := common.DB.Exec(changeHostCmd)
 		if err != nil {
@@ -212,7 +212,7 @@ func modifyHostnameForTestcase(tc *common.TestCase) common.Testcase_status {
 		lib.Logi(common.LOG_LEVEL_INFO, "Hostname successfully changed in MySQL database.")
 
 		// Check if it's PostgreSQL
-	} else if common.Is_psql {
+	} else if common.DB_type == common.PSQL {
 		changeHostCmd = `UPDATE hosts SET host = 'new.hostname' WHERE host = 'oss.linux';`
 		_, err := common.DB.Exec(changeHostCmd)
 		if err != nil {
@@ -232,7 +232,7 @@ func modifyHostnameForTestcase(tc *common.TestCase) common.Testcase_status {
 func resetHostname(tc *common.TestCase) common.Testcase_status {
 	var resetHostCmd string
 
-	if common.Is_mysql {
+	if common.DB_type == common.MYSQL {
 
 		resetHostCmd = `UPDATE hosts SET host = 'oss.linux' WHERE host = 'new.hostname';`
 		_, err := common.DB.Exec(resetHostCmd)
@@ -242,7 +242,7 @@ func resetHostname(tc *common.TestCase) common.Testcase_status {
 		}
 		lib.Logi(common.LOG_LEVEL_INFO, "Hostname successfully reset in MySQL database.")
 
-	} else if common.Is_psql {
+	} else if common.DB_type == common.PSQL {
 		resetHostCmd = `UPDATE hosts SET host = 'oss.linux' WHERE host = 'new.hostname';`
 		_, err := common.DB.Exec(resetHostCmd)
 		if err != nil {

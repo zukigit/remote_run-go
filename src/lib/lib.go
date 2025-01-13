@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"syscall"
 
+	"github.com/zukigit/remote_run-go/src/common"
 	"golang.org/x/term"
 )
 
@@ -83,4 +84,46 @@ func Ask_usrinput_passwd_string(message_to_show string) string {
 	}
 
 	return string(bytepw)
+}
+
+// Get_host returns found host otherwise returns "no such host" error
+func Get_host(hosts []common.Host, host_type common.Host_type) (common.Host, error) {
+	for _, host := range hosts {
+		if host.Get_Host_type() == host_type {
+			return host, nil
+		}
+	}
+
+	return nil, fmt.Errorf("no such host: %s", host_type)
+}
+
+// Get_host returns found hosts otherwise returns "no such host" error
+func Get_hosts(hosts []common.Host, host_types ...common.Host_type) ([]common.Host, error) {
+	var chosen_hosts []common.Host
+	found_host := make(map[int]bool)
+	var found_host_type bool
+
+	for _, host_type := range host_types {
+		found_host_type = false
+
+		for host_idx, host := range hosts {
+			if found_host[host_idx] {
+				continue
+			}
+
+			if host.Get_Host_type() == host_type {
+				chosen_hosts = append(chosen_hosts, host)
+				found_host[host_idx] = true
+				found_host_type = true
+
+				break
+			}
+		}
+
+		if !found_host_type {
+			return nil, fmt.Errorf("no such host: %s", host_type)
+		}
+	}
+
+	return chosen_hosts, nil
 }
