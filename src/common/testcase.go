@@ -43,7 +43,7 @@ func (t *TestCase) Add_doc(doc_type Doc_data_type, doc string) {
 	}
 }
 
-func (t *TestCase) Get_no() uint {
+func (t *TestCase) Get_testcase_no() uint {
 	return t.Testcase_no
 }
 
@@ -55,7 +55,7 @@ func (t *TestCase) Set_ticket_no(ticket_no uint) {
 	*t.ticket_no = ticket_no
 }
 
-func (t *TestCase) Get_dsctn() string {
+func (t *TestCase) Get_ticket_description() string {
 	return t.Testcase_description
 }
 

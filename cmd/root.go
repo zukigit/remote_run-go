@@ -19,21 +19,17 @@ import (
 var tkts, run_tickets []common.Ticket
 var run_testcases []common.TestCase
 
-func set_ticket_values(t []common.Ticket) {
-	for _, ticket := range t {
-		ticket.Set_values()
-	}
-}
-
 func check_duplicated_ticket() {
 	seen := make(map[uint]bool)
 
 	for _, tkt := range tkts {
-		if seen[tkt.Get_no()] {
-			fmt.Printf("Error: ticket[%d] is duplicated\n", tkt.Get_no())
+		tkt.Prepare()
+
+		if seen[tkt.Get_ticket_no()] {
+			fmt.Printf("Error: ticket[%d] is duplicated\n", tkt.Get_ticket_no())
 			os.Exit(1)
 		}
-		seen[tkt.Get_no()] = true
+		seen[tkt.Get_ticket_no()] = true
 	}
 }
 
@@ -42,7 +38,7 @@ func add_run_tickets(ticket_number uint) {
 		run_tickets = tkts
 	} else {
 		for _, t := range tkts {
-			if ticket_number == t.Get_no() {
+			if ticket_number == t.Get_ticket_no() {
 				run_tickets = append(run_tickets, t)
 				break
 			}
@@ -52,11 +48,9 @@ func add_run_tickets(ticket_number uint) {
 
 func add_run_testcases(testcase_number uint) {
 	for _, ticket := range run_tickets {
-		ticket.Add_testcases()
-
 		for _, testcase := range ticket.Get_testcases() {
-			if testcase_number == 0 || testcase_number == testcase.Get_no() {
-				testcase.Set_ticket_no(ticket.Get_no())
+			if testcase_number == 0 || testcase_number == testcase.Get_ticket_no() {
+				testcase.Set_ticket_no(ticket.Get_ticket_no())
 				run_testcases = append(run_testcases, testcase)
 
 				if testcase_number != 0 {
@@ -84,7 +78,7 @@ func save_runtks_records() {
 func run_tc() {
 	for _, testcase := range run_testcases {
 		common.Current_tk_no = testcase.Get_ticket_no()
-		common.Current_tc_no = testcase.Get_no()
+		common.Current_tc_no = testcase.Get_ticket_no()
 
 		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "running..."))
 		if testcase.Is_function_nil() {
@@ -163,7 +157,6 @@ var rootCmd = &cobra.Command{
 		lib.Enable_common_jobnets()
 
 		add_tickets(&tkts)
-		set_ticket_values(tkts)
 		check_duplicated_ticket()
 
 		add_run_tickets(common.Specific_ticket_no)
@@ -195,5 +188,5 @@ func init() {
 
 // Add your tickets here
 func add_tickets(t *[]common.Ticket) {
-	*t = append(*t, new(tickets.Ticket_1))
+	*t = append(*t, new(tickets.Ticket_template))
 }

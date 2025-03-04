@@ -37,17 +37,14 @@ var testcasesCmd = &cobra.Command{
 		var tc_index int
 
 		add_tickets(&tkts)
-		set_ticket_values(tkts)
 		check_duplicated_ticket()
 
 		fmt.Println("Testcases:")
 		for _, tk := range tkts {
-			tk.Add_testcases()
-
 			for _, tc := range tk.Get_testcases() {
-				if target_tc_no == 0 || target_tc_no == tc.Get_no() {
+				if target_tc_no == 0 || target_tc_no == tc.Get_ticket_no() {
 					fmt.Printf("(%d) Ticket: %d, Testcase: %d, Testcase_description: %s\n",
-						tc_index+1, tk.Get_no(), tc.Get_no(), tc.Get_dsctn())
+						tc_index+1, tk.Get_ticket_no(), tc.Get_ticket_no(), tc.Get_ticket_description())
 
 					if target_tc_no != 0 {
 						break
