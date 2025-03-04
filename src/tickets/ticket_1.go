@@ -36,8 +36,8 @@ func (t *Ticket_1) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_1) Add_testcase(tc common.TestCase) {
-	t.Testcases = append(t.Testcases, tc)
+func (t *Ticket_1) Add_testcase(tc *common.TestCase) {
+	t.Testcases = append(t.Testcases, *tc)
 }
 
 func (t *Ticket_1) Get_testcases() []common.TestCase {
@@ -90,5 +90,5 @@ func (t *Ticket_1) Add_testcases() {
 		return PASSED
 	}
 	tc_1.Set_function(tc_func)
-	t.Add_testcase(*tc_1)
+	t.Add_testcase(tc_1)
 }
