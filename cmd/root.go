@@ -195,5 +195,5 @@ func init() {
 
 // Add your tickets here
 func add_tickets(t *[]common.Ticket) {
-	*t = append(*t, new(tickets.Ticket_001))
+	*t = append(*t, new(tickets.Ticket_1))
 }

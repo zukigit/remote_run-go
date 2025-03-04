@@ -5,53 +5,53 @@ import (
 	"github.com/zukigit/remote_run-go/src/lib"
 )
 
-type Ticket_001 struct {
+type Ticket_1 struct {
 	Ticket_no                                   uint
 	Ticket_description                          string
 	PASSED_count, FAILED_count, MUSTCHECK_count int
 	Testcases                                   []common.TestCase
 }
 
-func (t *Ticket_001) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
+func (t *Ticket_1) New_testcase(testcase_id uint, testcase_description string) *common.TestCase {
 	return common.New_testcase(testcase_id, testcase_description)
 }
 
-func (t *Ticket_001) Get_no() uint {
+func (t *Ticket_1) Get_no() uint {
 	return t.Ticket_no
 }
 
-func (t *Ticket_001) Set_PASSED_count(passed_count int) {
+func (t *Ticket_1) Set_PASSED_count(passed_count int) {
 	t.PASSED_count = passed_count
 }
 
-func (t *Ticket_001) Set_FAILED_count(failed_count int) {
+func (t *Ticket_1) Set_FAILED_count(failed_count int) {
 	t.FAILED_count = failed_count
 }
 
-func (t *Ticket_001) Set_MUSTCHECK_count(mustcheck_count int) {
+func (t *Ticket_1) Set_MUSTCHECK_count(mustcheck_count int) {
 	t.MUSTCHECK_count = mustcheck_count
 }
 
-func (t *Ticket_001) Get_dsctn() string {
+func (t *Ticket_1) Get_dsctn() string {
 	return t.Ticket_description
 }
 
-func (t *Ticket_001) Add_testcase(tc common.TestCase) {
+func (t *Ticket_1) Add_testcase(tc common.TestCase) {
 	t.Testcases = append(t.Testcases, tc)
 }
 
-func (t *Ticket_001) Get_testcases() []common.TestCase {
+func (t *Ticket_1) Get_testcases() []common.TestCase {
 	return t.Testcases
 }
 
 // Enter your ticket information here
-func (t *Ticket_001) Set_values() {
+func (t *Ticket_1) Set_values() {
 	t.Ticket_no = 1 // Enter your ticket id
 	t.Ticket_description = "Enter your ticket description here."
 }
 
 // Add your test case here
-func (t *Ticket_001) Add_testcases() {
+func (t *Ticket_1) Add_testcases() {
 	// TESTCASE 001
 	tc_1 := t.New_testcase(1, "Enter your test case description here.")
 	tc_func := func() common.Testcase_status {
