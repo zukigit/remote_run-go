@@ -146,7 +146,7 @@ var rootCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		common.Log_filepath = lib.Get_filepath()
+		common.Log_filepath = lib.Get_log_filepath()
 		common.Set_sugar(common.Log_filepath + ".log")
 		defer common.Sugar.Sync()
 

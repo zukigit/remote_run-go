@@ -8,7 +8,6 @@ import (
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"golang.org/x/crypto/ssh"
 )
 
 type Testcase_status string
@@ -46,10 +45,6 @@ var Log_filepath, DB_hostname, Temp_mysqlDB_hostname, Temp_psqlDB_hostname, DB_u
 var Specific_ticket_no, Specific_testcase_no, DB_port, Timeout, Current_tk_no, Current_tc_no uint
 var Run_alltc_flag bool
 
-// Deprecated: Use Server_host or Hosts instead.
-var Client *ssh.Client // will be deleted.
-// Deprecated: Use Server_host instead.
-var Login_info Auth
 var DB_type Database
 var DB *sql.DB
 var Sugar *zap.SugaredLogger

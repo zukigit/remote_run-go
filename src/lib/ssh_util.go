@@ -18,26 +18,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Get new SSH session
-func Get_session(client *ssh.Client) (*ssh.Session, error) {
-	return client.NewSession()
-}
-
-func Ssh_exec(command string) ([]byte, error) {
-	session, err := Get_session(common.Client)
-	if err != nil {
-		return nil, err
-	}
-	defer session.Close()
-
-	return session.Output(command)
-}
-
-func Ssh_exec_to_str(command string) (string, error) {
-	output, err := Ssh_exec(command)
-	return string(output), err
-}
-
 func Generate_sshkeys(key_filepath string) {
 	private_key_filepath := filepath.Join(key_filepath, "id_rsa")
 	public_key_filepath := filepath.Join(key_filepath, "id_rsa.pub")
@@ -122,7 +102,7 @@ func GetSSHClientWithKey(hostIP string, port int, username string, keyfilepath s
 }
 
 // This is new function of GetSSHClient that does not exit on error.
-func GetSSHClient_(hostIP string, port int, username string, password string) (*ssh.Client, error) {
+func GetSSHClient(hostIP string, port int, username string, password string) (*ssh.Client, error) {
 	clientConfig := &ssh.ClientConfig{
 		User: username,
 		Auth: []ssh.AuthMethod{
@@ -139,26 +119,6 @@ func GetSSHClient_(hostIP string, port int, username string, password string) (*
 	}
 
 	return client, err
-}
-
-func GetSSHClient(hostIP string, port int, username string, password string) *ssh.Client {
-	clientConfig := &ssh.ClientConfig{
-		User: username,
-		Auth: []ssh.AuthMethod{
-			ssh.Password(password),
-		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-	}
-
-	address := fmt.Sprintf("%s:%d", hostIP, port)
-
-	client, err := ssh.Dial("tcp", address, clientConfig)
-	if err != nil {
-		fmt.Println("Failed in getting ssh client, Error:", err.Error())
-		os.Exit(1)
-	}
-
-	return client
 }
 
 // CheckSSHforRebootingAfterDelay checks if the system is up using SSH connection after waiting for a specified timeAmount.
@@ -179,11 +139,9 @@ func CheckSSHforRebootingAfterDelay(client *ssh.Client, timeAmount int) bool {
 }
 
 func ConnectWithRetry(hostIP string, port int, username string, password string, maxRetries int) *ssh.Client {
-	var client *ssh.Client
-
 	for attempts := 0; attempts < maxRetries; attempts++ {
-		client = GetSSHClient(hostIP, port, username, password)
-		if client != nil {
+		client, err := GetSSHClient(hostIP, port, username, password)
+		if err != nil {
 			fmt.Println("SSH client connected successfully.")
 			return client // Return on successful connection
 		}
@@ -198,21 +156,6 @@ func ConnectWithRetry(hostIP string, port int, username string, password string,
 	fmt.Println("Max retry limit reached. Exiting.")
 	os.Exit(1)
 	return nil // Not reached, just for clarity
-}
-
-func ExecuteSSHCommand(client *ssh.Client, command string) ([]byte, error) {
-	session, err := client.NewSession()
-	if err != nil {
-		return nil, err
-	}
-	defer session.Close()
-
-	return session.Output(command)
-}
-
-func GetOutputStrFromSSHCommand(client *ssh.Client, command string) (string, error) {
-	output, err := ExecuteSSHCommand(client, command)
-	return string(output), err
 }
 
 func Set_host_pool(jsonfilepath string) {
@@ -295,7 +238,7 @@ func Set_host_pool(jsonfilepath string) {
 		}
 
 		// Get ips and dns from database
-		rows, err := GetData(`select i.useip, i.dns, i.ip from hosts h, interface i
+		rows, err := DBslect(`select i.useip, i.dns, i.ip from hosts h, interface i
 							where h.hostid = i.hostid and i.main = 1 and i.type = 1 and h.host = $1`, host.Get_Host_name())
 		if err != nil {
 			fmt.Print(Logi(common.LOG_LEVEL_ERR, "Failed in quering hosts, Error: %s", err.Error()))
@@ -349,15 +292,5 @@ func Set_host_pool(jsonfilepath string) {
 
 		// Append the created host to the Hosts
 		common.Hosts = append(common.Hosts, host)
-	}
-
-	// to delete later
-	if common.Server_host == nil {
-		fmt.Println(Logi(common.LOG_LEVEL_ERR, "error: no server host to run, you can not use common.Client and common.Login_info."))
-	} else {
-		common.Client = common.Server_host.Get_Host_ssh_client()
-		common.Login_info.Hostname = common.Server_host.Get_Host_ip()
-		common.Login_info.Username = common.Server_host.Get_Host_run_username()
-		common.Login_info.Port = common.Server_host.Get_Host_connect_port()
 	}
 }

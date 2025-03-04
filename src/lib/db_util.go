@@ -1,10 +1,8 @@
 package lib
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 	"time"
@@ -12,7 +10,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	"github.com/zukigit/remote_run-go/src/common"
-	"golang.org/x/crypto/ssh"
 )
 
 type DBQuery string
@@ -102,7 +99,7 @@ func ConnectDB(user, password, dbname string) {
 }
 
 // ExecuteQuery that changes the state of the database
-func ExecuteQuery(query DBQuery, args ...interface{}) (sql.Result, error) {
+func DBexec(query DBQuery, args ...interface{}) (sql.Result, error) {
 	queryStr := ConvertParamPostgresToMysql(string(query))
 	stmt, err := common.DB.Prepare(queryStr)
 	if err != nil {
@@ -114,7 +111,7 @@ func ExecuteQuery(query DBQuery, args ...interface{}) (sql.Result, error) {
 }
 
 // GetData fetches rows based on a query
-func GetData(query DBQuery, args ...interface{}) (*sql.Rows, error) {
+func DBslect(query DBQuery, args ...interface{}) (*sql.Rows, error) {
 	queryStr := ConvertParamPostgresToMysql(string(query))
 	rows, err := common.DB.Query(queryStr, args...)
 	if err != nil {
@@ -127,12 +124,6 @@ func GetData(query DBQuery, args ...interface{}) (*sql.Rows, error) {
 func GetSingleRow(query DBQuery, args []interface{}, dest ...interface{}) error {
 	// Prepare the query with arguments, then scan the result into the provided destination variables
 	return common.DB.QueryRow(string(query), args...).Scan(dest...)
-}
-
-func DBexec(unfmt string, arg ...any) (sql.Result, error) {
-	query := fmt.Sprintf(unfmt, arg...)
-
-	return common.DB.Exec(query)
 }
 
 // Check count of the query
@@ -188,99 +179,4 @@ func JobProcessDBCountCheck(targetProcessCount int, timeoutDuration int, inner_j
 
 		}
 	}
-}
-
-// StopDatabaseService stops the service on the remote Linux machine using SSH
-func StopDatabaseService(client *ssh.Client, serviceName string) error {
-	session, err := client.NewSession()
-	if err != nil {
-		return fmt.Errorf("failed to create session: %w", err)
-	}
-	defer session.Close()
-
-	// Command to stop the service (e.g., mysqld or postgresql)
-	cmd := fmt.Sprintf("sudo systemctl stop %s", serviceName)
-	err = session.Run(cmd)
-	if err != nil {
-		return fmt.Errorf("failed to stop service %s: %w", serviceName, err)
-	}
-
-	log.Printf("Successfully stopped service: %s", serviceName)
-	return nil
-}
-
-// CheckAndStopDBService executes the query and stops the database service if conditions are met
-func CheckAndStopDBService(db *sql.DB, client *ssh.Client, dbType string, query string, timeout, interval time.Duration) error {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	ticker := time.NewTicker(interval)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ctx.Done():
-			log.Println("Timeout reached; no matching data found.")
-			return nil
-
-		case <-ticker.C:
-			log.Println("Executing query...")
-
-			// Define variables to capture the row's columns
-			var jobID string
-			var status, jobType int
-
-			// Execute the query and scan the result into variables
-			err := db.QueryRow(query).Scan(&jobID, &status, &jobType)
-
-			// Handle no rows found by continuing to the next interval
-			if err == sql.ErrNoRows {
-				log.Println("No matching data found; continuing to next interval.")
-				continue
-			} else if err != nil {
-				log.Printf("Error executing query: %v\n", err)
-				return fmt.Errorf("error executing query: %w", err)
-			}
-
-			// Log the result for debugging
-			log.Printf("Matching data found: stop the db...")
-
-			// Stop the database service if a matching row was found
-			if dbType == "mysql" {
-				err := StopDatabaseService(client, "mysqld")
-				if err != nil {
-					return fmt.Errorf("failed to stop MySQL service: %w", err)
-				}
-			} else if dbType == "postgresql" {
-				err := StopDatabaseService(client, "postgresql")
-				if err != nil {
-					return fmt.Errorf("failed to stop PostgreSQL service: %w", err)
-				}
-			}
-			return nil
-		}
-	}
-}
-
-// StartDatabaseService starts the specified database service on the remote Linux machine using SSH
-func StartDatabaseService(client *ssh.Client, serviceName string) error {
-	// Create a new SSH session
-	session, err := client.NewSession()
-	if err != nil {
-		return fmt.Errorf("failed to create session: %w", err)
-	}
-	defer session.Close()
-
-	// Prepare the command to start the service
-	cmd := fmt.Sprintf("sudo systemctl start %s", serviceName)
-
-	// Run the command to start the service
-	err = session.Run(cmd)
-	if err != nil {
-		return fmt.Errorf("failed to start service %s: %w", serviceName, err)
-	}
-
-	// Log success
-	log.Printf("Successfully started service: %s", serviceName)
-	return nil
 }

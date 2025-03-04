@@ -176,7 +176,7 @@ func register(ssh_key_filepath string) {
 
 		temp_sshcli, err = lib.GetSSHClientWithKey(temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), ssh_key_filepath)
 		if err != nil {
-			temp_sshcli, err = lib.GetSSHClient_(temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
+			temp_sshcli, err = lib.GetSSHClient(temp_host.Get_Host_ip(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
 			if err != nil {
 				fmt.Printf("Error: failed to register host[%s], Error: %s\n", temp_host.Get_Host_name(), err.Error())
 				return
@@ -188,7 +188,7 @@ func register(ssh_key_filepath string) {
 		fmt.Printf("host_dns: %s:%d...\n", temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port())
 		temp_sshcli, err = lib.GetSSHClientWithKey(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), ssh_key_filepath)
 		if err != nil {
-			temp_sshcli, err = lib.GetSSHClient_(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
+			temp_sshcli, err = lib.GetSSHClient(temp_host.Get_Host_dns(), temp_host.Get_Host_connect_port(), temp_host.Get_Host_run_username(), temp_passwd)
 			if err != nil {
 				fmt.Printf("Error: failed to register host[%s], Error: %s\n", temp_host.Get_Host_name(), err.Error())
 				return
