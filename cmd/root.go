@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+Copyright © 2024 htoozawaung <zukidono@gmail.com>
 */
 package cmd
 
@@ -131,10 +131,6 @@ var rootCmd = &cobra.Command{
 		if common.Temp_mysqlDB_hostname != "" && common.Temp_psqlDB_hostname != "" {
 			return fmt.Errorf("err: doesn't support for multiple databases yet")
 		}
-
-		// if common.Specific_testcase_no > 0 && common.Specific_ticket_no == 0 {
-		// 	return fmt.Errorf("specify the ticket number too by using --ticket")
-		// }
 
 		return nil
 	},
