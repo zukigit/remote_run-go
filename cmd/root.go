@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/zukigit/remote_run-go/src/common"
 	"github.com/zukigit/remote_run-go/src/lib"
@@ -78,15 +79,25 @@ func save_runtks_records() {
 func run_tc() {
 	for _, testcase := range run_testcases {
 		common.Current_tk_no = testcase.Get_ticket_no()
-		common.Current_tc_no = testcase.Get_ticket_no()
+		common.Current_tc_no = testcase.Get_testcase_no()
 
 		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "running..."))
 		if testcase.Is_function_nil() {
 			testcase.Set_status(common.FAILED)
 			fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "has no function. SKIPPED"))
 		} else {
-			common.Run_testcase(testcase)
+			// start time
+			startTime := time.Now()
+
+			testcase.Set_status(testcase.Run_function())
+
+			// total elasped time or duration of testcase
+			duration := time.Since(startTime)
+			durationStr := fmt.Sprintf("%02d:%02d:%02d", int(duration/time.Hour), int(duration/time.Minute)%60, int(duration/time.Second)%60)
+
+			testcase.Set_duration(durationStr)
 		}
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "done running!"))
 
 		common.Current_tk_no = 0
 		common.Current_tc_no = 0
@@ -146,7 +157,7 @@ var rootCmd = &cobra.Command{
 		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "Connecting to %s:%d ...", common.DB_hostname, common.DB_port))
 		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_name)
 		defer common.DB.Close()
-		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "connected"))
+		fmt.Println(lib.Logi(common.LOG_LEVEL_INFO, "connected!"))
 
 		lib.Set_host_pool("hosts.json")
 

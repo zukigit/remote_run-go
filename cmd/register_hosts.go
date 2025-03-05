@@ -259,7 +259,7 @@ var registerHostsCmd = &cobra.Command{
 		fmt.Printf("Connecting to %s:%d ...", common.DB_hostname, common.DB_port)
 		lib.ConnectDB(common.DB_user, common.DB_passwd, common.DB_name)
 		defer common.DB.Close()
-		fmt.Println("connected")
+		fmt.Println("connected!")
 
 		current_user, err := user.Current()
 		if err != nil {

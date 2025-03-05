@@ -288,7 +288,7 @@ func Set_host_pool(jsonfilepath string) {
 			host.Set_Host_ip(host.Get_Host_dns())
 			host.Set_Host_ssh_client(client)
 		}
-		fmt.Println(Logi(common.LOG_LEVEL_INFO, "done."))
+		fmt.Println(Logi(common.LOG_LEVEL_INFO, "done getting client!"))
 
 		// Append the created host to the Hosts
 		common.Hosts = append(common.Hosts, host)

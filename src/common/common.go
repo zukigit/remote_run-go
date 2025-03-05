@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -88,19 +87,6 @@ func Set_db_hostname() {
 			DB_port = 5432
 		}
 	}
-}
-
-func Run_testcase(tc TestCase) {
-	// start time
-	startTime := time.Now()
-
-	tc.Set_status(tc.Run_function())
-
-	// total elasped time or duration of testcase
-	duration := time.Since(startTime)
-	durationStr := fmt.Sprintf("%02d:%02d:%02d", int(duration/time.Hour), int(duration/time.Minute)%60, int(duration/time.Second)%60)
-
-	tc.Set_duration(durationStr)
 }
 
 func Update_testcase_results_in_tickets(tks []Ticket) {

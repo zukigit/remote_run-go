@@ -57,11 +57,11 @@ func (t *Ticket_template) Prepare() {
 	t.Set_ticket_description("Enter your ticket description here.")
 
 	// TESTCASE 001
-	tc_1 := t.New_testcase(1, "Enter your test case description here.")
+	tc := t.New_testcase(3, "Enter your test case description here.")
 	tc_func := func() common.Testcase_status {
 		//Enter your testcase function here
 		return FAILED
 	}
-	tc_1.Set_function(tc_func)
-	t.Add_testcase(tc_1)
+	tc.Set_function(tc_func)
+	t.Add_testcase(tc)
 }
