@@ -25,9 +25,9 @@ The command uses specific naming conventions to determine the type and category 
      ```
    - `-p`: Specify the hostname of your postgresql database.
    - `-m`: Specify the hostname of your mysql database.
-   - `--db-user`: Specify the database username to connect. Default: **zabbix**. (OPTIONAL)
-   - `--db-password`: Specify the database password to connect. Default: **zabbix**. (OPTIONAL)
-   - `--db-name`: Specify the database name to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-user`: Specify the database username to connect. (OPTIONAL)
+   - `--db-password`: Specify the database password to connect. (OPTIONAL)
+   - `--db-name`: Specify the database name to connect. (OPTIONAL)
    - `--db-port`: Specify the database port to connect. Default: **5432(psql) | 3306(mysql)**. (OPTIONAL)
 
    note: Since **remote_run** doesn't not support multiple databases yet, you can choose only one flags between **-p** and **-m**.
@@ -54,9 +54,9 @@ The `remote_run` command will run specific ticket.
    - `-m`: Specify the hostname of your mysql database.
    - `-a`: Use this flag to run all avaliable tickets. Default: **false**. (OPTIONAL)
    - `--testcase`: Specify testcase number to run specific testcase. Default: **0**. (OPTIONAL)
-   - `--db-user`: Specify the database username to connect. Default: **zabbix**. (OPTIONAL)
-   - `--db-password`: Specify the database password to connect. Default: **zabbix**. (OPTIONAL)
-   - `--db-name`: Specify the database name to connect. Default: **zabbix**. (OPTIONAL)
+   - `--db-user`: Specify the database username to connect. (OPTIONAL)
+   - `--db-password`: Specify the database password to connect. (OPTIONAL)
+   - `--db-name`: Specify the database name to connect. (OPTIONAL)
    - `--db-port`: Specify the database port to connect. Default: **5432(psql) | 3306(mysql)**. (OPTIONAL)
    - `--timeout`: Specify common timout in seconds. Default: **300**. (OPTIONAL)
 
